@@ -1,8 +1,8 @@
 
 # App-Arena.com App Template
-----------------------------
 
 Github: https://github.com/apparena/aa_app_template
+
 Docs:   http://www.app-arena.com/docs/display/developer
 
 ## File structure:
@@ -24,7 +24,6 @@ Docs:   http://www.app-arena.com/docs/display/developer
 - readme.md					--> Central readme file with more information about this app
 
 ## Install needed sources
--------------------------
 
 ### Install Bower and requirejs/r.js on windows:
 1. Downlaod nodejs and install it: http://nodejs.org/
@@ -40,23 +39,23 @@ Docs:   http://www.app-arena.com/docs/display/developer
 
 ### Get vendor sources:
 Open a GIT console, change into the app sources directory and enter:
-```
-bower install
-```
+    ```
+    bower install
+    ```
 
 ### Compile sources:
 Open a GIT console, change into the app sources/build directory and enter:
-```
-./build.sh
-```
+    ```
+    ./build.sh
+    ```
 
 ### Install new app packages:
 Open a GIT console, change into the app sources directory and enter:
-```
-bower install <PACKAGENAME> or <URL TO ZIP PACKAGE>
-```
+    ```
+    bower install <PACKAGENAME> or <URL TO ZIP PACKAGE>
+    ```
 
 To install save the package to the app install/update process enter:
-```
-bower install <PACKAGENAME> or <URL TO ZIP PACKAGE> --save
-```
+    ```
+    bower install <PACKAGENAME> or <URL TO ZIP PACKAGE> --save
+    ```
