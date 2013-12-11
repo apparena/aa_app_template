@@ -1,0 +1,7 @@
+source/js/vendor/
+source/config.php
+source/configs/config.php
+build/node_modules/
+build/build_own.sh
+dist/
+atlassian-ide-plugin.xml

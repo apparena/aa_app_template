@@ -1,0 +1,17 @@
+{
+    "name":         "Adventskalender App",
+    "version":      "3.0.0",
+    "dependencies": {
+        "backbone.localStorage": "1.1",
+        "font-awesome":          "3.2",
+        "bootstrap":             "3.0",
+        "requirejs-text":        "2.0",
+        "requirejs":             "2.1",
+        "backbone-amd":          "1.1",
+        "underscore-amd":        "1.5",
+        "underscore.string":     "2.3",
+        "jquery.validation":     "1.11",
+        "javascript-debug":      "latest",
+        "jquery":                "1.10"
+    }
+}

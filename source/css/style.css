@@ -1,0 +1,139 @@
+.env-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 3px 5px;
+    z-index: 9999;
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+    color: #B94A48;
+    border-radius: 4px;
+    font-size: .8em;
+}
+
+.optivo #content .page-background,
+.optivo-main #content .page-background {
+    display: none;
+}
+
+.optivo #content,
+.optivo-main #content {
+    background: none;
+}
+
+#debug,
+#debug-config,
+#debug-instance,
+#debug-locale,
+#debug-fb,
+#debug-env {
+    display: none;
+}
+
+/*
+online sprite generator: http://de.spritegen.website-performance.org/
+*/
+.flag-sprite {
+    background: url(../../img/flag-sprite-02.png) no-repeat top left;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.flag-cs_CZ {
+    background-position: 0 0;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-de_DE {
+    background-position: 0 -74px;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-en_UK {
+    background-position: 0 -148px;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-en_US {
+    background-position: 0 -222px;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-es_ES {
+    background-position: 0 -296px;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-fr_FR {
+    background-position: 0 -370px;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-it_IT {
+    background-position: 0 -444px;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-nl_NL {
+    background-position: 0 -518px;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-pt_BR {
+    background-position: 0 -592px;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-pt_PT {
+    background-position: 0 -666px;
+    width: 24px;
+    height: 24px;
+}
+
+.flag-tr_TR {
+    background-position: 0 -740px;
+    width: 24px;
+    height: 24px;
+}
+
+/*
+body #nav-lang {
+    display: block;
+}*/
+
+.css_template_04.desktop, .css_template_04.tablet {
+
+header p, header img, footer p, footer img {
+    display: none;
+}
+
+header {
+    background-color: @base_color;
+    background-image: url(https://www.app-arena.com/uploads/apps/model/276/0/de_DE/img/header-transparent.png);
+    background-repeat: no-repeat;
+    height: 147px;
+    width: 100%;
+}
+
+.page-background img {
+    display: none;
+}
+
+.page-background {
+    background-color: @base_color;
+    background-image: url(https://www.app-arena.com/uploads/apps/instance/6279/547/de_DE/img/Hintergrund_adventskalender.jpg);
+    background-repeat: no-repeat;
+    height: 810px;
+    width: 100%;
+}
+
+    }
