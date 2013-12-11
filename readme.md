@@ -39,23 +39,23 @@ Docs:   http://www.app-arena.com/docs/display/developer
 
 ### Get vendor sources:
 Open a GIT console, change into the app sources directory and enter:
-    ```
-    bower install
-    ```
+```
+bower install
+```
 
 ### Compile sources:
 Open a GIT console, change into the app sources/build directory and enter:
-    ```
-    ./build.sh
-    ```
+```
+./build.sh
+```
 
 ### Install new app packages:
 Open a GIT console, change into the app sources directory and enter:
-    ```
-    bower install <PACKAGENAME> or <URL TO ZIP PACKAGE>
-    ```
+```
+bower install <PACKAGENAME> or <URL TO ZIP PACKAGE>
+```
 
 To install save the package to the app install/update process enter:
-    ```
-    bower install <PACKAGENAME> or <URL TO ZIP PACKAGE> --save
-    ```
+```
+bower install <PACKAGENAME> or <URL TO ZIP PACKAGE> --save
+```
