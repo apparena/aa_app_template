@@ -10,3 +10,4 @@ source/tmp/cache/pd*
 source/tmp/export/*.csv
 atlassian-ide-plugin.xml
 xhprof/
+.vagrant/
