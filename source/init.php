@@ -329,7 +329,32 @@ if (AJAX === false && !defined('REDIRECTION'))
     $css_file['checksum_internal'] = file_get_contents($css_file['checksum_path'] . '_int');
 
     // build checksum from config values
-    $config_checksum = md5(__c('css_app') . __c('css_user') . __c(__c('design_template')) . __c('app_base_color') . __c('app_base_color_bright') . __c('css_update'));
+    // get all sources and put them into a collection variable
+    $css_collector = '';
+    if (is_array($css_import))
+    {
+        foreach ($css_import AS $import_file => $type)
+        {
+            if ($import_file === 'main')
+            {
+                $css_collector .= file_get_contents(ROOT_PATH . $type);
+                continue;
+            }
+
+            if ($type === 'file' && file_exists(ROOT_PATH . $import_file))
+            {
+                $css_collector .= file_get_contents(ROOT_PATH . $import_file);
+                continue;
+            }
+
+            if ($type === 'config' && __c($import_file) !== false)
+            {
+                $css_collector .= __c($import_file);
+                continue;
+            }
+        }
+    }
+    $config_checksum = md5($css_collector . __c('app_base_color') . __c('app_base_color_bright'));
     $css_checksum    = $css_file['checksum_internal'];
     if (!empty($css_import['main']) && file_exists(ROOT_PATH . $css_import['main']))
     {
@@ -372,41 +397,37 @@ if (AJAX === false && !defined('REDIRECTION'))
          */
         $less->setPreserveComments(false);
 
-        // get all sources and put them into a collection variable
+        /*// get all sources and put them into a collection variable
         $css_collector = '';
         if (is_array($css_import))
         {
-            foreach ($css_import AS $import_file)
+            foreach ($css_import AS $import_file => $type)
             {
-                if (file_exists(ROOT_PATH . $import_file))
+                if($import_file === 'main')
+                {
+                    $css_collector .= file_get_contents(ROOT_PATH . $type);
+                    continue;
+                }
+
+                if($type === 'file' && file_exists(ROOT_PATH . $import_file))
                 {
                     $css_collector .= file_get_contents(ROOT_PATH . $import_file);
-                    $css_collector .= PHP_EOL;
+                    continue;
+                }
+
+                if ($type === 'config' && __c($import_file) !== false)
+                {
+                    $css_collector .= __c($import_file);
+                    continue;
                 }
             }
-        }
-        if (__c('css_app') !== false)
-        {
-            $css_collector .= __c('css_app');
-        }
-        if (__c(__c('design_template')) !== false)
-        {
-            $css_collector .= __c(__c('design_template'));
-        }
-        if (__c('css_user') !== false)
-        {
-            $css_collector .= __c('css_user');
-        }
-        if (__c('css_update') !== false)
-        {
-            $css_collector .= __c('css_update');
-        }
+        }*/
 
         // replace some appmanager variables with right css/less code
-        // ToDo[maXus]: add this part into a config - 02.10.13
-        $css_collector = str_replace('{{app_base_color.value}}', __c('app_base_color'), $css_collector);
-        $css_collector = str_replace('../font/fontawesome', '../../js/vendor/font-awesome/font/fontawesome', $css_collector);
-        $css_collector = str_replace('../fonts/glyphicons', '../../js/vendor/bootstrap/dist/fonts/glyphicons', $css_collector);
+        foreach($css_path_replacements AS $search => $replace)
+        {
+            $css_collector = str_replace($search, $replace, $css_collector);
+        }
 
         // compile collection variable and save them as file
         $compiled_source = $less->compile($css_collector);
