@@ -141,14 +141,14 @@
                                 if ($cur_locale !== $locale):
                                     $param_name  = 'locale';
                                     $param_value = $locale;
-                                    if ($aa['env']['base'] !== 'website')
+                                    if ($aa->env->base !== 'website')
                                     {
                                         $param_name  = 'app_data';
                                         $param_value = urlencode('{"locale":"' . $locale . '"}');
                                     }
                                     ?>
                                     <li class="link-element">
-                                        <a href="<?php echo $aa['instance']['share_url'] ?>&amp;page=<?php echo $aa['env']['base']; ?>&amp;<?php echo $param_name . '=' . $param_value; ?>"><span class="flag-sprite flag-<?php echo $locale; ?>"></span> <?php __p('lang_' . $locale) ?>
+                                        <a href="<?php echo $aa->instance->share_url ?>&amp;page=<?php echo $aa->env->base; ?>&amp;<?php echo $param_name . '=' . $param_value; ?>"><span class="flag-sprite flag-<?php echo $locale; ?>"></span> <?php __p('lang_' . $locale) ?>
                                         </a>
                                     </li>
                                 <?php
@@ -162,7 +162,7 @@
         </div>
     </div>
 </nav>
-<?php if (!empty($aa['fb']['is_fb_user_admin'])): ?>
+<?php if (!empty($aa->fb->is_fb_user_admin)): ?>
     <div class="alert alert-info alert-dismissable admin-fb-info">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <?php

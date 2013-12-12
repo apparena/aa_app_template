@@ -5,8 +5,9 @@
  */
 function app_current_uri()
 {
-  $url='http://'.$_SERVER['HTTP_HOST'].'/'.$_SERVER['REQUEST_URI'];
-  return $url;
+    $url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
+
+    return $url;
 }
 
 /** translate functions **/
@@ -16,67 +17,50 @@ function app_current_uri()
 */
 function __t()
 {
-	global $aa_translate;
-	$translate=$aa_translate->translate;
-	
-	$args=func_get_args();
-	$num=func_num_args();
+    global $aa_translate;
+    $translate = $aa_translate->translate;
 
-	if($num == 0)
-	return '';
+    $args = func_get_args();
+    $num  = func_num_args();
 
-	$str=$args[0];
-	if($num == 1)
-	{
-		return  $translate->_($str);
-	}
+    if ($num == 0)
+    {
+        return '';
+    }
 
-	unset($args[0]);
-	$param='"'.implode('","',$args).'"';
+    $str = $args[0];
+    if ($num == 1)
+    {
+        return $translate->_($str);
+    }
 
-	$str='$ret=sprintf("'.$translate->_($str).'",'.$param.');';
-	eval($str);
+    unset($args[0]);
+    $param = '"' . implode('","', $args) . '"';
 
-	return $ret;
+    $str = '$ret=sprintf("' . $translate->_($str) . '",' . $param . ');';
+    eval($str);
+
+    return $ret;
 }
+
 /*
  *translate ,but print directly
 */
 function __p()
 {
-	//$translate=Frd::getGlobal("translate");
-	global $aa_translate;
+    $args = func_get_args();
+    $num = func_num_args();
 
-    if(is_object($aa_translate))
+    if ($num == 0)
     {
-        $translate=$aa_translate->translate;
-    }
-    else
-    {
-        // ToDo:  error log schreiben
+        echo '';
         return false;
     }
 
-	$args=func_get_args();
-	$num=func_num_args();
+    $ret = __t(implode(',', $args));
 
-	if($num == 0)
-	return '';
+    echo $ret;
 
-	$str=$args[0];
-	if($num == 1)
-	{
-		echo  $translate->_($str);
-		return false;
-	}
-
-	unset($args[0]);
-	$param='"'.implode('","',$args).'"';
-
-	$str='$ret=sprintf("'.$translate->_($str).'",'.$param.');';
-	eval($str);
-
-	echo  $ret;
     return true;
 }
 
@@ -87,10 +71,16 @@ function __c($config, $key = 'value')
 {
     global $aa;
 
-    if(!empty($aa['config'][$config][$key]))
+    if (empty($config))
     {
-        return $aa['config'][$config][$key];
+        throw new Exception('$config is empty in config helper');
     }
+
+    if (!empty($aa->config->$config->$key))
+    {
+        return $aa->config->$config->$key;
+    }
+
     return false;
 }
 
@@ -101,7 +91,7 @@ function __pc($config, $key = 'value')
 {
     $output = __c($config, $key);
 
-    if($output !== false)
+    if ($output !== false)
     {
         echo $output;
     }
@@ -109,96 +99,111 @@ function __pc($config, $key = 'value')
 
 function getBrowser()
 {
-    $ub = "Other";
-    $u_agent = $_SERVER['HTTP_USER_AGENT'];
-    $bname = 'Unknown';
+    $ub       = "Other";
+    $u_agent  = $_SERVER['HTTP_USER_AGENT'];
+    $bname    = 'Unknown';
     $platform = 'Unknown';
-    $version= "";
+    $version  = "";
 
     //First get the platform?
-    if (preg_match('/linux/i', $u_agent)) {
+    if (preg_match('/linux/i', $u_agent))
+    {
         $platform = 'linux';
     }
-    elseif (preg_match('/macintosh|mac os x/i', $u_agent)) {
+    elseif (preg_match('/macintosh|mac os x/i', $u_agent))
+    {
         $platform = 'mac';
     }
-    elseif (preg_match('/windows|win32/i', $u_agent)) {
+    elseif (preg_match('/windows|win32/i', $u_agent))
+    {
         $platform = 'windows';
     }
 
     // Next get the name of the useragent yes seperately and for good reason
-    if(preg_match('/MSIE/i',$u_agent) && !preg_match('/Opera/i',$u_agent))
+    if (preg_match('/MSIE/i', $u_agent) && !preg_match('/Opera/i', $u_agent))
     {
         $bname = 'Internet Explorer';
-        $ub = "MSIE";
+        $ub    = "MSIE";
     }
-    elseif(preg_match('/Firefox/i',$u_agent))
+    elseif (preg_match('/Firefox/i', $u_agent))
     {
         $bname = 'Mozilla Firefox';
-        $ub = "Firefox";
+        $ub    = "Firefox";
     }
-    elseif(preg_match('/Chrome/i',$u_agent))
+    elseif (preg_match('/Chrome/i', $u_agent))
     {
         $bname = 'Google Chrome';
-        $ub = "Chrome";
+        $ub    = "Chrome";
     }
-    elseif(preg_match('/Safari/i',$u_agent))
+    elseif (preg_match('/Safari/i', $u_agent))
     {
         $bname = 'Apple Safari';
-        $ub = "Safari";
+        $ub    = "Safari";
     }
-    elseif(preg_match('/Opera/i',$u_agent))
+    elseif (preg_match('/Opera/i', $u_agent))
     {
         $bname = 'Opera';
-        $ub = "Opera";
+        $ub    = "Opera";
     }
-    elseif(preg_match('/Netscape/i',$u_agent))
+    elseif (preg_match('/Netscape/i', $u_agent))
     {
         $bname = 'Netscape';
-        $ub = "Netscape";
+        $ub    = "Netscape";
     }
 
     // finally get the correct version number
-    $known = array('Version', $ub, 'other');
-    $pattern = '#(?<browser>' . join('|', $known) .
-        ')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
-    if (!preg_match_all($pattern, $u_agent, $matches)) {
+    $known   = array('Version', $ub, 'other');
+    $pattern = '#(?<browser>' . join('|', $known) . ')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
+    if (!preg_match_all($pattern, $u_agent, $matches))
+    {
         // we have no matching number just continue
     }
 
     // see how many we have
     $i = count($matches['browser']);
-    if ($i != 1) {
+    if ($i != 1)
+    {
         //we will have two since we are not using 'other' argument yet
         //see if version is before or after the name
-        if (strripos($u_agent,"Version") < strripos($u_agent,$ub)){
-            $version= $matches['version'][0];
+        if (strripos($u_agent, "Version") < strripos($u_agent, $ub))
+        {
+            $version = $matches['version'][0];
         }
-        elseif ( isset( $matches['version'][1] ) ) {
-            $version= $matches['version'][1];
+        elseif (isset($matches['version'][1]))
+        {
+            $version = $matches['version'][1];
         }
     }
-    else {
-        $version= $matches['version'][0];
+    else
+    {
+        $version = $matches['version'][0];
     }
 
     // check if we have a number
-    if ($version==null || $version=="") {$version="?";}
+    if ($version == null || $version == "")
+    {
+        $version = "?";
+    }
 
-    if ( $version )
-        $tmpVersion = explode( ".", $version );
-    if ( is_array( $tmpVersion ) ){
+    if ($version)
+    {
+        $tmpVersion = explode(".", $version);
+    }
+    if (is_array($tmpVersion))
+    {
         $majVersion = $tmpVersion[0];
-    } else {
+    }
+    else
+    {
         $majVersion = $version;
     }
 
-    return array(
+    return (object)array(
         'userAgent' => $u_agent,
         'name'      => $ub,
-        'version'   => intval( $majVersion ),
+        'version'   => intval($majVersion),
         'platform'  => $platform,
-        'pattern'    => $pattern
+        'pattern'   => $pattern
     );
 }
 
@@ -207,16 +212,28 @@ function getBrowser()
  */
 function get_client_ip()
 {
-	// Get client ip address
+    // Get client ip address
     $client_ip = '';
-	if (isset($_SERVER["REMOTE_ADDR"]))
-		$client_ip = $_SERVER["REMOTE_ADDR"];
-	else if (isset($_SERVER["HTTP_X_FORWARDED_FOR"]))
-		$client_ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
-	else if (isset($_SERVER["HTTP_CLIENT_IP"]))
-		$client_ip = $_SERVER["HTTP_CLIENT_IP"];
+    if (isset($_SERVER["REMOTE_ADDR"]))
+    {
+        $client_ip = $_SERVER["REMOTE_ADDR"];
+    }
+    else
+    {
+        if (isset($_SERVER["HTTP_X_FORWARDED_FOR"]))
+        {
+            $client_ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+        }
+        else
+        {
+            if (isset($_SERVER["HTTP_CLIENT_IP"]))
+            {
+                $client_ip = $_SERVER["HTTP_CLIENT_IP"];
+            }
+        }
+    }
 
-	return $client_ip;
+    return $client_ip;
 }
 
 //escape $_GET, $_POST, $_REQUIRE $_COOKIE ()
@@ -260,6 +277,7 @@ function unregister_globals()
                 unset($GLOBALS[$key]);
             }
         }
+
         return true;
     }
     else
@@ -283,6 +301,7 @@ if (!function_exists('escape'))
             $value = htmlspecialchars($value);
         }
         $value = trim($value);
+
         return $value;
     }
 }
@@ -302,6 +321,7 @@ if (!function_exists('sql_escape'))
             //use old addslashes
             $value = addslashes($value);
         }
+
         return $value;
     }
 }
@@ -314,10 +334,11 @@ if (!function_exists('printr'))
         print_r($var);
         echo '</pre>';
 
-        if ($exit)
+        if ($exit !== false)
         {
-            exit;
+            exit($exit);
         }
+
         return true;
     }
 }
@@ -339,6 +360,7 @@ if (!function_exists('ifempty'))
         {
             $var = $value;
         }
+
         return $var;
     }
 }

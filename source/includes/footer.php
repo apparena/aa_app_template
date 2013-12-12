@@ -1,7 +1,7 @@
 <?php
-unset($aa['config']['css_bootstrap']);
-unset($aa['config']['css_app']);
-unset($aa['config']['tac']);
+unset($aa->config->css_bootstrap);
+unset($aa->config->css_app);
+unset($aa->config->tac);
 
 if (__c('admin_debug_mode') === '1')
 {
@@ -19,19 +19,19 @@ if (__c('admin_debug_mode') === '1')
     echo '</pre>';
 
     echo '<pre id="debug-config">';
-    print_r($aa['config']);
+    print_r($aa->config);
     echo '</pre>';
 
     echo '<pre id="debug-locale">';
-    print_r($aa['locale']);
+    print_r($aa->locale);
     echo '</pre>';
 
     echo '<pre id="debug-fb">';
-    print_r($aa['fb']);
+    print_r($aa->fb);
     echo '</pre>';
 
     echo '<pre id="debug-env">';
-    print_r($aa['env']);
+    print_r($aa->env);
     echo '</pre>';
 
     echo '</div>';
@@ -51,5 +51,5 @@ if (defined('ENV_MODE') && ENV_MODE === 'dev')
     var aa = <?php echo json_encode($aaForJs); ?>; // copy aa as a global object to js
 </script>
 
-<script src="js/config.js"></script>
+<script src="configs/require-config.js"></script>
 <script id="requirejs" data-main="js/main" src="js/vendor/requirejs/require.js"></script>

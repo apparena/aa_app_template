@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title><?php __pc('general_title'); ?></title>
     <meta name="description" content="<?php __pc('general_desc'); ?>" />
-    <link rel="canonical" href="<?php echo $aa['instance']['share_url']; ?>" />
+    <link rel="canonical" href="<?php echo $aa->instance->share_url; ?>" />
 
     <link type="text/css" rel="stylesheet" href="<?php echo $css_file['name']; ?>" />
 
@@ -22,11 +22,6 @@
     <![endif]-->
 
     <!--Current server date: <?php echo $current_date->format("d.m.Y H:i:s");?>-->
-    <!--loaded template style: <?php __pc('design_template') ?> -->
-
-    <!--
-    <?php pr($aa['env']); ?>
-    -->
 </head>
 <body class="<?php echo $classbody ?> <?php __pc('design_template') ?>">
 
@@ -41,7 +36,7 @@
         <figure class="page-background">
             <?php
             $app_background_image = __c('overview_background_mobile');
-            if ($aa['env']['device']['type'] !== 'mobile')
+            if ($aa->env->device->type !== 'mobile')
             {
                 $app_background_image = __c('overview_background_desktop');
             }
@@ -58,7 +53,7 @@
         <div id="comment-box">
             <h3><?php __pc('fb_comments_title'); ?></h3>
 
-            <div class="fb-comments" data-href="<?php echo $aa['instance']['fb_canvas_url'] . "/share.php?aa_inst_id=" . $aa['instance']['aa_inst_id']; ?>" data-colorscheme="light" data-width="810" data-num_posts="<?php __pc('fb_comments_amount'); ?>"></div>
+            <div class="fb-comments" data-href="<?php echo $aa->instance->share_url; ?>" data-colorscheme="light" data-width="810" data-num_posts="<?php __pc('fb_comments_amount'); ?>"></div>
         </div>
     <?php ENDIF; ?>
     <div class="content-terms text-center text-muted">

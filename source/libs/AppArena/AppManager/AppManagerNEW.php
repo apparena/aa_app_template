@@ -16,161 +16,219 @@ namespace com\apparena\api;
 
 class AA_AppManager
 {
-    protected $client = null; //soap client
-    protected $server_url = 'https://www.app-arena.com/manager/server/api.php'; //soap server url
-    protected $error_msg = ''; // Error message on failed soap call
-
+    const SERVER_URL = 'http://manager.app-arena.com/api/v1/instances/';
     //this params will transport each call
-    protected $api_params = array(
-        'aa_app_id' => false, 'aa_app_secret' => false, 'aa_inst_id' => false, 'fb_page_id' => false, 'locale' => false,
+    protected $_api_params = array(
+        'aa_app_id'     => null,
+        'aa_app_secret' => null,
+        'aa_inst_id'    => null,
+        'fb_page_id'    => null,
+        'locale'        => null,
     );
+    protected $_config = null;
+    protected $_translation = array();
+    protected $_instance = null;
 
     /**
      * Class constructor to establish the app-manager connection
      *
      * @param array $params All facebook parameters to initialize the app-manager
      */
-    function __construct($params)
+    public function __construct($params)
+    {
+        $this->setAppId($params)->setLocale($params)->setInstanceId($params)->setFbPageId($params)
+             ->setAppSecret($params);
+    }
+
+    public function setLocale($locale)
+    {
+        $this->setParam($locale, 'locale');
+
+        return $this;
+    }
+
+    public function setAppId($id)
+    {
+        $this->setParam($id, 'aa_app_id');
+
+        return $this;
+    }
+
+    protected function setParam($param, $key)
+    {
+        if ($this->isArray($param, $key) === false)
+        {
+            $this->_api_params[$key] = $param;
+        }
+    }
+
+    protected function isArray($array, $key)
+    {
+        if (is_array($array))
+        {
+            if (array_key_exists($key, $this->_api_params) && array_key_exists($key, $array))
+            {
+                $this->_api_params[$key] = $array[$key];
+
+                return true;
+            }
+
+            return null;
+        }
+
+        return false;
+    }
+
+    public function getAppId()
+    {
+        if ($this->_api_params['aa_app_id'] === null)
+        {
+            throw new \Exception('App ID is not defined');
+        }
+
+        return $this->_api_params['aa_app_id'];
+    }
+
+    public function getAppSecret()
+    {
+        if ($this->_api_params['aa_app_secret'] === null)
+        {
+            throw new \Exception('App-Secret is not defined');
+        }
+
+        return $this->_api_params['aa_app_secret'];
+    }
+
+    public function setAppSecret($secret)
+    {
+        $this->setParam($secret, 'aa_app_secret');
+
+        return $this;
+    }
+
+    public function getFbPageId()
+    {
+        if ($this->_api_params['fb_page_id'] === null)
+        {
+            throw new \Exception('Facebook Page ID is not defined');
+        }
+
+        return $this->_api_params['fb_page_id'];
+    }
+
+    public function setFbPageId($id)
+    {
+        $this->setParam($id, 'fb_page_id');
+
+        return $this;
+    }
+
+    public function setInstanceId($id)
+    {
+        $this->setParam($id, 'aa_inst_id');
+
+        return $this;
+    }
+
+    public function getInstance($type = 'all')
+    {
+        if ($this->_instance === null)
+        {
+            $scope           = '.json';
+            $this->_instance = $this->call($scope);
+        }
+
+        return $this->defineReturn($this->_instance, $type);
+    }
+
+    public function call($scope)
+    {
+        $return = json_decode(@file_get_contents(self::SERVER_URL . $this->getInstanceId() . $scope));
+        if ($return === null)
+        {
+            throw new \Exception('API Call error: "' . self::SERVER_URL . $this->getInstanceId() . $scope . '"');
+        }
+
+        return $return;
+    }
+
+    protected function defineReturn($data, $return_type)
+    {
+        if (empty($data))
+        {
+            return false;
+        }
+
+        if ($return_type === 'all')
+        {
+            return $data;
+        }
+
+        return $data->$return_type;
+    }
+
+    public function getInstanceId()
+    {
+        if ($this->_api_params['aa_inst_id'] === null)
+        {
+            throw new \Exception('Instance ID is not defined');
+        }
+
+        return $this->_api_params['aa_inst_id'];
+    }
+
+    public function getConfig($type = 'all')
+    {
+        if ($this->_config === null)
+        {
+            $scope           = '/config.json?limit=0';
+            $this->_config = $this->call($scope);
+        }
+
+        return $this->defineReturn($this->_config, $type);
+    }
+
+    public function getTranslation($type = 'all')
+    {
+        $locale = $this->getLocale();
+
+        if (empty($this->_translation[$locale]))
+        {
+            $scope              = '/locale.json?locale=' . $this->getLocale() . '&limit=0';
+            $this->_translation[$locale] = $this->call($scope);
+        }
+
+        $return = $this->defineReturn($this->_translation[$locale], $type);
+
+        if($return !== false)
+        {
+            $return = (object) $return->$locale;
+        }
+
+        return $return;
+    }
+
+    public function getLocale()
+    {
+        if ($this->_api_params['locale'] === null)
+        {
+            throw new \Exception('Locale is not defined');
+        }
+
+        return $this->_api_params['locale'];
+    }
+
+    public function getConfigById($id)
     {
         // void
     }
 
-    /**
-     * Set current localization for the app-manager connection
-     */
-    function setLocale($locale)
+    public function getTranslationById($id)
     {
         // void
     }
 
-    /**
-     * Try get fb page id from $_REQUEST['signed_request']. This will only work in fan page tabs
-     *
-     * @return string|boolean   fb_page_id for success and false for failed
-     */
-    private function getFbPageId()
-    {
-        // void
-    }
-
-    /**
-     * Initialize the app-manager connection. Class can be overwritten to use a different soap server url
-     */
-    private function init()
-    {
-        // void
-    }
-
-    /**
-     * Change the soap server url before initializing the connection
-     */
-    public function setServerUrl($url)
-    {
-        // void
-    }
-
-    /**
-     * Get the soap server url
-     */
-    function getServerUrl()
-    {
-        // void
-    }
-
-    /**
-     * Initialize the soap client
-     */
-    private function initCLient()
-    {
-        // void
-    }
-
-    /**
-     * Call a soap server method. If failed, return false and set error_msg
-     *
-     * @param  string        $method
-     * @param  array|boolean $params  which for the $method
-     *
-     * @return boolean  true or false, when false,you can call  getErrorMsg
-     */
-    private function call($method, $params = array())
-    {
-        // void
-    }
-
-    /**
-     * Returns the error message
-     *
-     * @return string Error message
-     */
-    function getErrorMsg()
-    {
-        // void
-    }
-
-    /**
-     * Get app's current aa_inst_id
-     *
-     * @return int
-     */
-    function getInstanceId()
-    {
-        // void
-    }
-
-    /**
-     * Returns all instance information in an array
-     *
-     * @return array All available instance information
-     */
-    function getInstance()
-    {
-        // void
-    }
-
-    /**
-     * Get content for the current instance
-     *
-     * @params Mix identifiers , if false , get all config data, if is config identifiers array, only get the value of these identifiers
-     *
-     * @return array
-     */
-    function getConfig($identifiers = false, $locale = false)
-    {
-        // void
-    }
-
-    /**
-     * Get all config elements filtered by type
-     *
-     * @param type Type of config elements: text, css, html, image, checkbox, select, multiselect, color, date
-     *
-     * @return array All config values of submitted type
-     */
-    function getConfigByType($type)
-    {
-        // void
-    }
-
-    /**
-     * Get config element by config identifier
-     *
-     * @param String Identifier of the config element
-     *
-     * @return array One single config element
-     */
-    function getConfigById($identifier)
-    {
-    }
-
-    /**
-     * get Translate
-     *
-     * @param string $locale False for app model's default locale
-     *
-     * @return array Returns all available string translations of the current app-models
-     */
-    function getTranslation($locale = false)
+    public function translate($id, $locale)
     {
         // void
     }

@@ -11,7 +11,7 @@
  * @author      "Marcus Merchel" <kontakt@marcusmerchel.de>
  * @version     1.0.0 (19.08.13 - 10:25)
  */
-namespace com\apparena\utils\database;
+namespace com\apparena\system;
 
 use \PDO AS PDO;
 

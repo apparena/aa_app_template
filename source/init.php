@@ -30,9 +30,9 @@ set_include_path(ROOT_PATH . '/libs/' . PATH_SEPARATOR);
 /**
  * Include necessary libraries
  */
-if (file_exists(ROOT_PATH . '/configs/config.php'))
+if (file_exists(ROOT_PATH . '/configs/app-config.php'))
 {
-    require_once ROOT_PATH . '/configs/config.php';
+    require_once ROOT_PATH . '/configs/app-config.php';
 
     if (ENV_MODE === 'dev')
     {
@@ -43,19 +43,18 @@ if (file_exists(ROOT_PATH . '/configs/config.php'))
 }
 else
 {
-    throw new Exception('Config file not exist. Please rename config_sample.php to config.php in /configs/ and fill it with live ;)');
+    throw new Exception('Config file not exist. Please rename app-config_sample.php to app-config.php in /configs/ and fill it with live ;)');
 }
-require_once ROOT_PATH . '/libs/AppArena/Utils/aa_helper.php';
-//require_once ROOT_PATH . '/libs/AppArena/Utils/facebook.php';
-require_once ROOT_PATH . '/libs/AppArena/Utils/fb_helper.php';
-require_once ROOT_PATH . '/libs/AppArena/AppManager/AppManager.php';
+require_once ROOT_PATH . '/libs/AppArena/Helper/aa_helper.php';
+require_once ROOT_PATH . '/libs/AppArena/Helper/fb_helper.php';
+require_once ROOT_PATH . '/libs/AppArena/AppManager/AppManagerNEW.php';
 require_once ROOT_PATH . '/libs/Zend/Translate.php';
 
 // register global and magic quote escaping
 global_escape();
 
 /* Try to init some basic variables */
-$aa         = false;
+$aa         = new stdClass();
 $aa_inst_id = false;
 
 /**
@@ -63,11 +62,11 @@ $aa_inst_id = false;
  */
 if ($db_activated)
 {
-    require_once ROOT_PATH . '/libs/AppArena/Utils/class.database.php';
+    require_once ROOT_PATH . '/libs/AppArena/System/class.database.php';
 
     try
     {
-        $db = new \com\apparena\utils\database\Database($db_user, $db_host, $db_name, $db_pass, $db_option);
+        $db = new \com\apparena\system\Database($db_user, $db_host, $db_name, $db_pass, $db_option);
         // set all returned value keys to lower cases
         $db->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
         // return all query requests automatically as object
@@ -92,12 +91,13 @@ if (!empty($_REQUEST['aa_inst_id']))
 }
 
 // check redirections for friendsrequests
-require_once ROOT_PATH . '/fb_friendsrequest_return.php';
+// ToDo
+//require_once ROOT_PATH . '/fb_friendsrequest_return.php';
 
 /* Initialize and set Facebook information in the session */
 if (isset ($_REQUEST["signed_request"]))
 {
-    $aa['fb']          = array();
+    $aa->fb            = array();
     $fb_signed_request = parse_signed_request($_REQUEST["signed_request"]);
     $is_fb_user_admin  = is_fb_user_admin();
     $is_fb_user_fan    = is_fb_user_fan();
@@ -120,18 +120,16 @@ if (isset ($_REQUEST["signed_request"]))
     }
     foreach ($fb_data as $k => $v)
     {
-        $aa['fb'][$k] = $v;
+        $aa->fb[$k] = $v;
     }
 }
 
 /* Initialize localization */
 $change_lang = true;
 $cur_locale  = $aa_default_locale;
-if (!empty($aa['fb']['signed_request']['app_data']))
+if (!empty($aa->fb['signed_request']['app_data']))
 {
-    $app_data = json_decode($aa['fb']['signed_request']['app_data'], true);
-    // ToDo[maXus]: REMOVE THIS - 29.11.13
-    //pr($app_data);
+    $app_data = json_decode($aa->fb['signed_request']['app_data'], true);
 }
 
 if (!empty($_GET['locale']))
@@ -157,63 +155,60 @@ else
 }
 
 /*  Connect to App-Arena.com App-Manager and init session */
-$appmanager = new AA_AppManager(array(
-                                     'aa_app_id'     => $aa_app_id,
-                                     'aa_app_secret' => $aa_app_secret,
-                                     'aa_inst_id'    => $aa_inst_id,
-                                     'locale'        => $cur_locale
-                                ));
+$appmanager = new com\apparena\api\AA_AppManager(array(
+                                                      'aa_app_id'     => $aa_app_id,
+                                                      'aa_app_secret' => $aa_app_secret,
+                                                      'aa_inst_id'    => $aa_inst_id,
+                                                      'locale'        => $cur_locale
+                                                 ));
 
 /* Start session and initialize App-Manager content */
-$aa_instance = $appmanager->getInstance();
+$aa_instance = $appmanager->getInstance('data');
 
 /* Catch error, in case there is no instance */
-if (empty($aa_instance['aa_inst_id']) && $aa_instance === 'instance not activated')
+if (empty($aa_instance->i_id) && $aa_instance === 'instance not activated')
 {
     throw new Exception('instance not activated');
 }
-elseif (empty($aa_instance['aa_inst_id']) && $aa_instance === 'instance not exist')
+elseif (empty($aa_instance->i_id) && $aa_instance === 'instance not exist')
 {
     throw new Exception('instance not exist');
 }
-elseif (empty($aa_instance['aa_inst_id']))
+elseif (empty($aa_instance->i_id))
 {
     throw new Exception('aa_inst_id not given or wrong in ' . __FILE__ . ' in line ' . __LINE__);
 }
 
 if (empty($aa_inst_id))
 {
-    $aa_inst_id = $aa_instance['aa_inst_id'];
+    $aa_inst_id = $aa_instance->i_id;
 }
 
-$aa_scope = 'aa_' . $aa_instance['aa_inst_id'];
+$aa_scope = 'aa_' . $aa_inst_id;
 session_name($aa_scope);
 session_start();
 
-$fb_temp = $aa['fb'];
-$aa      =& $_SESSION;
-//$aa['instance']                 = $appmanager->getInstance();
-$aa['instance']                 = $aa_instance;
-$aa['instance']['page_tab_url'] = $aa['instance']['fb_page_url'] . "?sk=app_" . $aa['instance']['fb_app_id'];
-$aa['instance']['share_url']    = $aa['instance']['fb_canvas_url'] . "share.php?aa_inst_id=" . $aa['instance']['aa_inst_id'];
+//$fb_temp = $aa->fb;
+
+$aa->instance               = $aa_instance;
+$aa->instance->page_tab_url = $aa->instance->fb_page_url . "?sk=app_" . $aa->instance->fb_app_id;
+$aa->instance->share_url    = $aa->instance->fb_canvas_url . "share.php?aa_inst_id=" . $aa_inst_id;
 
 if ($change_lang)
 {
-    $cur_locale = $aa['instance']['aa_inst_locale'];
+    $cur_locale = $aa->instance->locale;
     $appmanager->setLocale($cur_locale);
 }
-$aa['locale'] = $appmanager->getTranslation($cur_locale);
-$aa['config'] = $appmanager->getConfig();
-$aa['fb']     = $fb_temp;
+$aa->locale = $appmanager->getTranslation('data');
 
-$aa['fb']['share_url'] = "https://apps.facebook.com/" . $aa['instance']['fb_app_url'] . "/share.php?aa_inst_id=" . $aa['instance']['aa_inst_id'];
+$aa->config = $appmanager->getConfig('data');
+//$aa->fb     = $fb_temp;
 
 // store locale value in cookie
-//setcookie('aa_inst_locale_' . $aa_inst_id, $cur_locale, 0, '/', $aa['instance']['fb_canvas_url'], isset($_SERVER["HTTPS"]), true);
 setcookie('aa_inst_locale_' . $aa_inst_id, $cur_locale, 0, '/', $_SERVER['HTTP_HOST'], isset($_SERVER["HTTPS"]), true);
 
 $current_date            = new DateTime('now', new DateTimeZone($aa_default_timezone));
-$aa_inst_expiration_date = new DateTime($aa['instance']['aa_inst_expiration_date'], new DateTimeZone($aa_default_timezone));
+$aa_inst_expiration_date = new DateTime($aa->instance->expiration_date, new DateTimeZone($aa_default_timezone));
 // if instance is expired, redirect to expired.php
 if ($aa_inst_expiration_date < $current_date && !defined('REDIRECT'))
 {
@@ -222,7 +217,7 @@ if ($aa_inst_expiration_date < $current_date && !defined('REDIRECT'))
 
 if (__c('use_only_https') === '1' && isSSL() === false)
 {
-    $url = str_replace('http://', 'https://', $aa['instance']['fb_canvas_url'] . "?aa_inst_id=" . $aa['instance']['aa_inst_id']);
+    $url = str_replace('http://', 'https://', $aa->instance->fb_canvas_url . "?aa_inst_id=" . $aa_inst_id);
     if (ENV_MODE === 'product')
     {
         hrd($url);
@@ -231,42 +226,43 @@ if (__c('use_only_https') === '1' && isSSL() === false)
 
 /* Collect environment information */
 require_once 'libs/Mobile_Detect.php';
+$aa->env = new stdClass();
 $detector = new Mobile_Detect;
 if (isset($_REQUEST['signed_request']))
 {
     if (isset($fb_signed_request['page']))
     {
-        $aa['env']['base_url'] = $aa['instance']['page_tab_url'];
-        $aa['env']['base']     = 'page';
+        $aa->env->base_url = $aa->instance->page_tab_url;
+        $aa->env->base     = 'page';
     }
     else
     {
-        $aa['env']['base_url'] = "https://apps.facebook.com/" . $aa['instance']['fb_app_url'] . "/?aa_inst_id=" . $aa['instance']['aa_inst_id'];
-        $aa['env']['base']     = 'canvas';
+        $aa->env->base_url = "https://apps.facebook.com/" . $aa->instance->fb_app_url . "/?aa_inst_id=" . $aa_inst_id;
+        $aa->env->base     = 'canvas';
     }
 }
 else
 {
-    $aa['env']['base_url'] = $aa['instance']['fb_canvas_url'] . "?aa_inst_id=" . $aa['instance']['aa_inst_id'];
-    $aa['env']['base']     = 'website';
+    $aa->env->base_url = $aa->instance->fb_canvas_url . "?aa_inst_id=" . $aa_inst_id;
+    $aa->env->base     = 'website';
 }
-$aa['env']['device']         = array();
-$aa['env']['device']['type'] = "desktop";
+$aa->env->device         = new stdClass();
+$aa->env->device->type = "desktop";
 if ($detector->isMobile())
 {
-    $aa['env']['device']['type'] = 'mobile';
+    $aa->env->device->type = 'mobile';
 }
 if ($detector->isTablet())
 {
-    $aa['env']['device']['type'] = 'tablet';
+    $aa->env->device->type = 'tablet';
 }
 // Add browser info to the env
-$aa['env']['browser'] = getBrowser();
+$aa->env->browser = getBrowser();
 
 // check browser version and redirect on old browser
-$browser = strtolower($aa['env']['browser']['name']);
-$version = strtolower($aa['env']['browser']['version']);
-$device  = strtolower($aa['env']['device']['type']);
+$browser = strtolower($aa->env->browser->name);
+$version = strtolower($aa->env->browser->version);
+$device  = strtolower($aa->env->device->type);
 
 // ToDo[maXus]: put this in a config file - 02.10.13
 if (!defined('REDIRECT')
@@ -285,7 +281,7 @@ if (!defined('REDIRECT')
 }
 
 /* Setup the translation objects */
-$aa_locale = new Zend_Translate('array', $aa['locale'], $cur_locale);
+$aa_locale = new Zend_Translate('array', (array) $aa->locale, $cur_locale);
 $aa_locale->setLocale($cur_locale);
 
 $aa_translate            = new StdClass();
@@ -294,20 +290,20 @@ $aa_translate->translate = $aa_locale;
 // set global body classes
 $classbody = '';
 // set device type
-if (!empty($aa['env']['device']['type']))
+if (!empty($aa->env->device->type))
 {
-    $classbody .= ' ' . strtolower($aa['env']['device']['type']);
+    $classbody .= ' ' . strtolower($aa->env->device->type);
 }
 // set env base
-if (!empty($aa['env']['base']))
+if (!empty($aa->env->base))
 {
-    $classbody .= ' ' . strtolower($aa['env']['base']);
+    $classbody .= ' ' . strtolower($aa->env->base);
 }
 // set browser
-if (!empty($aa['env']['browser']))
+if (!empty($aa->env->browser))
 {
-    $classbody .= ' ' . strtolower($aa['env']['browser']['name']);
-    $classbody .= ' ' . strtolower($aa['env']['browser']['platform']);
+    $classbody .= ' ' . strtolower($aa->env->browser->name);
+    $classbody .= ' ' . strtolower($aa->env->browser->platform);
 }
 $classbody = trim($classbody);
 
@@ -316,7 +312,7 @@ if (AJAX === false && !defined('REDIRECTION'))
     /**
      * compile less from appmanager
      */
-    require_once ROOT_PATH . '/configs/css_config.php';
+    require_once ROOT_PATH . '/configs/css-config.php';
 
     $css_file                  = array();
     $css_file['checksum_path'] = ROOT_PATH . '/tmp/cache/css_' . md5('style_md5' . $aa_inst_id);
@@ -433,11 +429,11 @@ if (AJAX === false && !defined('REDIRECTION'))
      */
     // prepare data to log - key = scope, value = value
     $log = array(
-        'user_device'  => $aa['env']['device']['type'], // mobile desktop tablet ...
-        'user_browser' => $aa['env']['browser']['name'] . ' ' . $aa['env']['browser']['version'],
+        'user_device'  => $aa->env->device->type, // mobile desktop tablet ...
+        'user_browser' => $aa->env->browser->name . ' ' . $aa->env->browser->version,
         // browser with version
-        'user_os'      => $aa['env']['browser']['platform'], // os
-        'app_page'     => $aa['env']['base'], // type of page - tab canvas
+        'user_os'      => $aa->env->browser->platform, // os
+        'app_page'     => $aa->env->base, // type of page - tab canvas
         'app_openings' => 'start' // count app apenings, value is not relevant
     );
 

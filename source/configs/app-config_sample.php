@@ -25,7 +25,7 @@ $db_option    = array(
 );
 
 // define app admins
-define('APP_ADMINS', 'kontakt@marcusmerchel.de');
+define('APP_ADMINS', '');
 
 // define ENV (dev|stage|product)
 $env_mode = 'product';
