@@ -28,7 +28,12 @@ $db_option    = array(
 define('APP_ADMINS', 'kontakt@marcusmerchel.de');
 
 // define ENV (dev|stage|product)
-define('ENV_MODE', 'product');
+$env_mode = 'product';
+if(!empty($_SERVER['APP_ENV']))
+{
+    $env_mode = $_SERVER['APP_ENV'];
+}
+define('ENV_MODE', $env_mode);
 
 // settings optivo mailing
 define('OPTIVO_SERVER', '');

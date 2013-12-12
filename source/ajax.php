@@ -17,7 +17,7 @@ try
 {
     require_once("init.php");
 
-    if (!defined('ENV_MODE') || ENV_MODE !== 'dev')
+    if (ENV_MODE !== 'dev')
     {
         if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest')
         {
@@ -26,7 +26,7 @@ try
         }
     }
 
-    if (defined('ENV_MODE') && ENV_MODE === 'dev' && isset($_GET['debug']))
+    if (ENV_MODE === 'dev' && isset($_GET['debug']))
     {
         echo '<pre>';
         print_r($_GET);
@@ -53,7 +53,7 @@ try
     );
     $path   = ROOT_PATH;
 
-    if (defined('ENV_MODE') && ENV_MODE === 'dev' && !empty($_GET['module']))
+    if (ENV_MODE === 'dev' && !empty($_GET['module']))
     {
         $path .= DS . 'modules' . DS . $_GET['module'] . DS . 'libs';
     }
@@ -62,14 +62,14 @@ try
         $path .= DS . 'modules' . DS . $_POST['module'] . DS . 'libs';
     }
 
-    if (!defined('ENV_MODE') || ENV_MODE !== 'dev')
+    if (ENV_MODE !== 'dev')
     {
         if (empty($_POST['action']))
         {
             throw new Exception('action is not defined in call');
         }
     }
-    if (defined('ENV_MODE') && ENV_MODE === 'dev' && !empty($_GET['action']))
+    if (ENV_MODE === 'dev' && !empty($_GET['action']))
     {
         $action = $_GET['action'];
     }
@@ -86,7 +86,7 @@ try
     }
     include_once($path);
 
-    if (defined('ENV_MODE') && ENV_MODE === 'dev' && !empty($_GET['module']))
+    if (ENV_MODE === 'dev' && !empty($_GET['module']))
     {
         pr($return);
     }
@@ -103,7 +103,7 @@ catch (Exception $e)
     // attache json file as download
     $return['message'] = $e->getMessage();
     $return['trace']   = $e->getTrace();
-    if (defined('ENV_MODE') && ENV_MODE === 'dev' && !empty($_GET['module']))
+    if (ENV_MODE === 'dev' && !empty($_GET['module']))
     {
         pr($return);
     }

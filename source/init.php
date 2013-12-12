@@ -34,7 +34,7 @@ if (file_exists(ROOT_PATH . '/configs/config.php'))
 {
     require_once ROOT_PATH . '/configs/config.php';
 
-    if (defined('ENV_MODE') && ENV_MODE === 'dev')
+    if (ENV_MODE === 'dev')
     {
         ini_set('display_errors', 1);
         ini_set('display_startup_errors', 1);
@@ -75,7 +75,7 @@ if ($db_activated)
     }
     catch (PDOException $e)
     {
-        if (defined('ENV_MODE') && ENV_MODE !== 'product')
+        if (ENV_MODE !== 'product')
         {
             echo '<pre>';
             print_r($e->getMessage());
@@ -223,7 +223,7 @@ if ($aa_inst_expiration_date < $current_date && !defined('REDIRECT'))
 if (__c('use_only_https') === '1' && isSSL() === false)
 {
     $url = str_replace('http://', 'https://', $aa['instance']['fb_canvas_url'] . "?aa_inst_id=" . $aa['instance']['aa_inst_id']);
-    if (!defined('ENV_MODE') || (defined('ENV_MODE') && ENV_MODE === 'product'))
+    if (ENV_MODE === 'product')
     {
         hrd($url);
     }
@@ -340,7 +340,7 @@ if (AJAX === false && !defined('REDIRECTION'))
         $css_checksum = md5(file_get_contents(ROOT_PATH . $css_import['main']));
     }
 
-    if (defined('ENV_MODE') && ENV_MODE === 'dev')
+    if (ENV_MODE === 'dev')
     {
         // only for development and debugging
         if ($config_checksum !== $css_file['checksum_config'])
@@ -357,7 +357,7 @@ if (AJAX === false && !defined('REDIRECTION'))
 
     if ($config_checksum !== $css_file['checksum_config'] || $css_checksum !== $css_file['checksum_internal'])
     {
-        if (defined('ENV_MODE') && ENV_MODE === 'dev')
+        if (ENV_MODE === 'dev')
         {
             // only for development and debugging
             pr('compile');

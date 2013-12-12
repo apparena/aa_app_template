@@ -5,17 +5,15 @@ try
 }
 catch (Exception $e)
 {
-    if (defined('ENV_MODE') && ENV_MODE !== 'product')
+    if ((defined('ENV_MODE') && ENV_MODE !== 'product') || (!empty($_SERVER['APP_ENV']) && $_SERVER['APP_ENV'] !== 'product'))
     {
         echo '<pre style="background-color: #F2DEDE;border-color: #EBCCD1;color: #B94A48;padding: 15px;border: 1px solid rgba(0, 0, 0, 0);border-radius: 4px;margin-bottom: 20px;padding: 15px;font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 1.42857;">';
         print_r($e->getMessage());
         echo '</pre>';
-        //if (defined('ENV_MODE') && ENV_MODE !== 'product')
-        //{
+
         echo '<pre style="background-color: #FCF8E3;border-color: #FAEBCC;color: #C09853;padding: 15px;border: 1px solid rgba(0, 0, 0, 0);border-radius: 4px;margin-bottom: 20px;padding: 15px;font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;font-size: 14px;line-height: 1.42857;">';
         print_r($e->getTrace());
         echo '</pre>';
-        //}
     }
     exit();
 }
