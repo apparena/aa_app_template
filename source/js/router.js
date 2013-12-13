@@ -2,15 +2,13 @@
 define([
     'jquery',
     'underscore',
-    'backbone',
-    'logger'
-], function ($, _, Backbone, Logger) {
+    'backbone'
+], function ($, _, Backbone) {
 
     var AppRouter,
         initialize;
 
     AppRouter = Backbone.Router.extend({
-        // we'll define routes in a moment
         routes: {
             '':                           'homeAction',
             'page/:module':               'moduleAction',
@@ -24,13 +22,23 @@ define([
         currentPage:   '',
         lastPage:      '',
 
-        // set up default routes
-        initialize:    function () {
+        initialize: function () {
             _.bindAll(this, 'setEnv', 'homeAction', 'callAction', 'moduleAction', 'loadModule', 'goToPreviewsAction', 'goToPreviewsPage');
         },
 
-        loadModule: function (module, id) {
-            //_.debug.log('load: ', module, 'id: ', id);
+        loadModule: function (module, id, check_mobile) {
+            var that = this,
+                current_module = module;
+
+            if (typeof check_mobile === 'undefined') {
+                check_mobile = true;
+            }
+
+            // add mobile to module name and try to load a mibile version first
+            if (_.aa.env.device.type === 'mobile' && check_mobile !== false) {
+                module += '-mobile';
+            }
+            console.log(module);
             require([module], function (module) {
                 if (id !== false) {
                     module(id);
@@ -38,15 +46,19 @@ define([
                     module();
                 }
             }, function (err) {
-                //The errback, error callback
-                //The error has a list of modules that failed
-                var failedModule = err.requireModules && err.requireModules[0];
-                //_.debug.log('canot loadmodule: ', failedModule);
+                // The errback, error callback
+                // The error has a list of modules that failed
+                if (_.aa.env.device.type !== 'mobile' || check_mobile === false) {
+                    var failedModule = err.requireModules && err.requireModules[0];
+                    _.debug.error('canot loadmodule: ', failedModule);
+                } else {
+                    // if this was a mobile call, try now to load a desktop module
+                    that.loadModule(current_module, id, false);
+                }
             });
         },
 
         moduleAction: function (module, filename, id) {
-            //_.debug.log('load module', module, filename);
             var env = module;
 
             if (_.isUndefined(filename)) {
@@ -65,7 +77,7 @@ define([
                 //console.log('set last page', this.currentPage);
                 this.lastPage = this.currentPage;
             }
-            //console.log('set current page', module, 'last:' + this.lastPage);
+
             this.currentPage = module;
 
             this.setEnv(env);
@@ -73,14 +85,11 @@ define([
         },
 
         callAction: function (module) {
-            //_.debug.log('call action', module);
-
             // handle last and current action
             if (_(this.currentAction).isBlank() === false) {
-                //console.log('set last action', this.currentAction);
                 this.lastAction = this.currentAction;
             }
-            //console.log('set current action', module, 'last:' + this.lastAction);
+
             this.currentAction = module;
 
             if (_.isUndefined(this.lastEnvClass) || this.lastEnvClass === '') {
@@ -91,38 +100,19 @@ define([
         },
 
         homeAction: function () {
-            //_.debug.log('home action');
-            //_.debug.log(_.aa.env.device.type);
-            //var module = '../modules/home/js/main';
-
             // detect mobile version and load mobile home
             var module = 'home';
-            if (_.aa.env.device.type === 'mobile') {
-                module = 'home-mobile';
-            }
-            _.current_door_id = null;
+            /*if (_.aa.env.device.type === 'mobile') {
+             module = 'home-mobile';
+             }*/
+
             this.setEnv(module);
             this.loadModule(module, false);
         },
 
-        setEnv: function (envClass) {
-            //_.debug.log('envClass', envClass);
-
+        // added a new class to body from current route and removed the last one
+        setEnv:     function (envClass) {
             var body = $('body');
-
-            // removed redirection body classes (Workaround for commerce bank)
-            if (body.hasClass('redirectionclass')) {
-                body
-                    .removeClass('redirectionclass')
-                    .removeClass('app-static-1')
-                    .removeClass('app-static-2')
-                    .removeClass('app-static-3')
-                    .removeClass('app-terms')
-                    .removeClass('app-privacy')
-                    .removeClass('app-imprint')
-                    .removeClass('greetingcards-main')
-                ;
-            }
 
             if (typeof this.lastEnvClass !== 'undefined') {
                 body.removeClass(this.lastEnvClass);
@@ -132,17 +122,13 @@ define([
         },
 
         goToPreviewsAction: function () {
-            //_.debug.log('goToPreviewsAction');
             this.redirection('call', this.lastAction);
         },
 
         goToPreviewsPage: function (trigger) {
-            //_.debug.log('goToPreviewsPage');
-
             if (_(trigger).isBlank()) {
                 trigger = true;
             }
-
             this.redirection('page', this.lastPage, trigger);
         },
 
@@ -154,13 +140,12 @@ define([
             if (_(trigger).isBlank()) {
                 trigger = true;
             }
-            //_.debug.log('router redirection', type, page, redirect);
             _.router.navigate(redirect, {trigger: trigger});
         }
-
     });
 
     initialize = function () {
+        console.log('test');
         var app_router = new AppRouter();
 
         // Extend the View class to include a navigation method goTo
@@ -174,7 +159,6 @@ define([
 
         // Extend the View class to make global ajax requests with jquery
         Backbone.View.prototype.ajax = function (data, async, callback) {
-            //_.debug.log('ajax', data);
             var returnData = {type: 'notReturned', data: {}};
 
             if (typeof async === 'undefined') {
@@ -216,47 +200,44 @@ define([
          * @param data json params as json to save
          * @returns {*}
          */
-        Backbone.View.prototype.log = function (type, scope, data) {
-            //_.debug.log('log', type, scope, data);
+        /*Backbone.View.prototype.log = function (type, scope, data) {
+         if (_.isUndefined(type) === true || _.isUndefined(scope) === true || _.isUndefined(data) === true) {
+         _.debug.error('Log params are not complete or wrong! Third param must be an object.', type, scope, data);
+         return false;
+         }
 
-            if (_.isUndefined(type) === true || _.isUndefined(scope) === true || _.isUndefined(data) === true) {
-                //_.debug.log('Log params are not complete or wrong! Thirt param must be an object.', type, scope, data);
-                return false;
-            }
+         if (_.isEmpty(data.data_obj)) {
+         data.data_obj = {
+         empty: true
+         };
+         }
 
-            if (_.isEmpty(data.data_obj)) {
-                data.data_obj = {
-                    empty: true
-                };
-            }
+         //var log = new Logger();
+         if (_.isUndefined(_.singleton.view.logger)) {
+         _.singleton.view.logger = new Logger();
+         }
+         var log = _.singleton.view.logger;
 
-            //var log = new Logger();
-            if (_.isUndefined(_.singleton.view.logger)) {
-                _.singleton.view.logger = new Logger();
-            }
-            var log = _.singleton.view.logger;
+         switch (type) {
+         case 'action':
+         data.scope = scope;
+         log.action(data);
+         break;
 
-            switch (type) {
-                case 'action':
-                    data.scope = scope;
-                    log.action(data);
-                    break;
+         case 'admin':
+         data.scope = scope;
+         log.admin(data);
+         break;
 
-                case 'admin':
-                    data.scope = scope;
-                    log.admin(data);
-                    break;
+         case 'agent':
+         log.agent();
+         break;
+         }
 
-                case 'agent':
-                    log.agent();
-                    break;
-            }
-
-            return this;
-        };
+         return this;
+         };*/
 
         Backbone.View.prototype.destroy = function () {
-            //_.debug.log('destroy view');
             //COMPLETELY UNBIND THE VIEW
             this.undelegateEvents();
 

@@ -13,23 +13,34 @@ var require = {
      })(),
      */
 
+    'packages': [
+        {
+            'name':     'lodash',
+            'location': 'vendor/lodash-amd/compat'
+        },
+        {
+            'name':     'underscore',
+            'location': 'vendor/lodash-amd/underscore'
+        }
+    ],
+
     paths: {
-        'jquery':            'vendor/jquery/jquery',
-        'underscore':        'vendor/underscore-amd/underscore',
-        'backbone':          'vendor/backbone-amd/backbone',
-        'bootstrap':         'vendor/bootstrap/dist/js/bootstrap',
+        'jquery':       'vendor/jquery/jquery',
+        //'underscore':        'vendor/underscore-amd/underscore',
+        'backbone':     'vendor/backbone-amd/backbone',
+        'bootstrap':    'vendor/bootstrap/dist/js/bootstrap',
 
         // vendor extensions and helper functions
-        'text':              'vendor/requirejs-text/text',
+        'text':         'vendor/requirejs-text/text',
         'underscore.string': 'vendor/underscore.string/lib/underscore.string',
-        'localstorage':      'vendor/backbone.localStorage/backbone.localStorage',
-        'aa_helper':         'utils/apparena/helper',
-        'debug':             'vendor/javascript-debug/ba-debug',
+        'localstorage': 'vendor/backbone.localStorage/backbone.localStorage',
+        'aa_helper':    'utils/apparena/helper',
+        'debug':        'vendor/javascript-debug/ba-debug',
 
         // directory settings
-        'templates':         '../templates',
-        'modulesSrc':        '../modules',
-        'rootSrc':           '../js'
+        'templates':    '../templates',
+        'modulesSrc':   '../modules',
+        'rootSrc':      '../js'
     },
 
     shim: {
@@ -38,9 +49,9 @@ var require = {
             exports: 'bootstrap'
         },
 
-        'underscore.string': {
-            deps: ['underscore']
-        },
+        /*'underscore.string': {
+         deps: ['underscore']
+         },*/
 
         'debug': {
             exports: 'debug'
