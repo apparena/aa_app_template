@@ -1,5 +1,4 @@
 <?php include_once('includes/bootstrap.php'); ?>
-
 <!doctype html>
 <html lang="de-DE">
 <head>
@@ -15,36 +14,20 @@
     <link type="text/css" rel="stylesheet" href="css/ie9.css" />
     <![endif]-->
 
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-
     <!--Current server date: <?php echo $current_date->format("d.m.Y H:i:s");?>-->
 </head>
-<body class="<?php echo $classbody ?> <?php __pc('design_template') ?>">
+<body class="<?php echo $classbody ?>">
 
 <?php include_once('includes/navigation.php'); ?>
 
 <div class="container">
     <header class="gradient">
         <?php __pc('header_custom'); ?>
-        <?php __pc('header_custom_design'); ?>
     </header>
     <div id="content">
-        <figure class="page-background">
-            <?php
-            $app_background_image = __c('overview_background_mobile');
-            if ($aa->env->device->type !== 'mobile')
-            {
-                $app_background_image = __c('overview_background_desktop');
-            }
-            ?>
-            <img src="<?php echo $app_background_image; ?>" title="" alt="background" />
-        </figure>
         <div class="content-wrapper clearfix">
-            <i class="<?php __pc('loader_class') ?> icon-spin startloader"></i></div>
+            <i class="<?php __pc('loader_class') ?> icon-spin startloader"></i>
+        </div>
     </div>
     <footer>
         <?php __pc('footer_custom') ?>
