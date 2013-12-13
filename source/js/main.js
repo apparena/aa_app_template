@@ -12,24 +12,21 @@
         'debug',
         'router',
         // libs with no object declaration
-        //'underscore.string',
         'bootstrap'
     ], function ($, _, AaHelper, Debug, Router) {
         var admin = $('.nav-admin'), nav;
 
-        // load underscore extension and implement it into underscore
-        //_.str = require('underscore.string');
-        //_.mixin(_.str.exports());
         // extend underscore with our aa object, so that it is accessible everywhere where the _ underscore object is known.
         _.extend(_, {
-            aa:              aa,                // the $aa var in JS
-            c:               AaHelper.__c,      // aa helper like in PHP
-            t:               AaHelper.__t,      // aa helper like in PHP
-            debug:           Debug,             // browser safty console.log version
-            uid:             0,                 // user id
-            uid_temp:        aa.uid_temp,       // temporary user id, maybe for logging module
-            gid:             0,                 // group ID
-            singleton:       {                  // storage for initialized backbone objects to init them only one time and destroy them later easier
+            aa:        aa,                // the $aa var in JS
+            sprintf:   AaHelper.sprintf,  // aa helper sprintf like in php but inly for %s
+            c:         AaHelper.__c,      // aa helper like in PHP
+            t:         AaHelper.__t,      // aa helper like in PHP
+            debug:     Debug,             // browser safty console.log version
+            uid:       0,                 // user id
+            uid_temp:  aa.uid_temp,       // temporary user id, maybe for logging module
+            gid:       0,                 // group ID
+            singleton: {                  // storage for initialized backbone objects to init them only one time and destroy them later easier
                 view:       {},
                 model:      {},
                 collection: {}
@@ -44,32 +41,32 @@
         // (calling serializeObject will pack the data from the name attributes as a js-object)
         // ToDo maybe put this into a jQuery plugin file under utils
         /*$.fn.serializeObject = function () {
-            var items = {},
-                form = this[ 0 ],
-                index,
-                item;
+         var items = {},
+         form = this[ 0 ],
+         index,
+         item;
 
-            if (typeof form === 'undefined') {
-                return {};
-            }
+         if (typeof form === 'undefined') {
+         return {};
+         }
 
-            for (index = 0; index < form.length; index++) {
-                item = form[ index ];
+         for (index = 0; index < form.length; index++) {
+         item = form[ index ];
 
-                if (typeof( item.type ) !== 'undefined' && item.type === 'checkbox') {
-                    item.value = $(item).is(':checked');
-                }
+         if (typeof( item.type ) !== 'undefined' && item.type === 'checkbox') {
+         item.value = $(item).is(':checked');
+         }
 
-                if (typeof( item.name ) !== 'undefined' && item.name.length > 0) {
-                    items[ item.name ] = item.value;
-                } else {
-                    if (typeof( item.id ) !== 'undefined' && item.id.length > 0) {
-                        items[ item.id ] = item.value;
-                    }
-                }
-            }
-            return items;
-        };*/
+         if (typeof( item.name ) !== 'undefined' && item.name.length > 0) {
+         items[ item.name ] = item.value;
+         } else {
+         if (typeof( item.id ) !== 'undefined' && item.id.length > 0) {
+         items[ item.id ] = item.value;
+         }
+         }
+         }
+         return items;
+         };*/
 
         // show and hide debug output
         $('.show-debug').on('click', function () {
@@ -120,6 +117,6 @@
             router: Router.initialize()
         });
 
-        _.t('footer_terms');
+        console.log(_.t('footer_terms', '<a href="#/page/app/terms">' + _.t('terms') + '</a>'));
     });
 }());

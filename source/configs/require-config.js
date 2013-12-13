@@ -19,7 +19,6 @@ var require = {
 
         // vendor extensions and helper functions
         'text':         'vendor/requirejs-text/text',
-        'underscore.string': 'vendor/underscore.string/lib/underscore.string',
         'localstorage': 'vendor/backbone.localStorage/backbone.localStorage',
         'aa_helper':    'utils/apparena/helper',
         'debug':        'vendor/javascript-debug/ba-debug',
