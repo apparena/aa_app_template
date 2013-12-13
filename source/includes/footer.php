@@ -42,9 +42,10 @@ if (defined('OFFLINE_MODE') && OFFLINE_MODE === true)
 {
     $offline_mode = '<br>offline mode';
 }
-if (defined('ENV_MODE') && ENV_MODE === 'dev')
+if (ENV_MODE === 'dev')
 {
     echo '<div class="env-mode">' . ENV_MODE . $offline_mode . '</div>';
+    pr($dev_message);
 }
 ?>
 <script id="tempcontainer">

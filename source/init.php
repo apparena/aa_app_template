@@ -47,7 +47,7 @@ else
 }
 require_once ROOT_PATH . '/libs/AppArena/Helper/aa_helper.php';
 require_once ROOT_PATH . '/libs/AppArena/Helper/fb_helper.php';
-require_once ROOT_PATH . '/libs/AppArena/AppManager/AppManagerNEW.php';
+require_once ROOT_PATH . '/libs/AppArena/AppManager/AppManager.php';
 //require_once ROOT_PATH . '/libs/Zend/Translate.php';
 
 // register global and magic quote escaping
@@ -56,6 +56,7 @@ global_escape();
 /* Try to init some basic variables */
 $aa         = new stdClass();
 $aa_inst_id = false;
+$dev_message = array();
 
 /**
  * Setup mysql database connection
@@ -366,13 +367,13 @@ if (AJAX === false && !defined('REDIRECTION'))
         // only for development and debugging
         if ($config_checksum !== $css_file['checksum_config'])
         {
-            pr('config ist unterschiedlich');
-            pr($config_checksum . ' !== ' . $css_file['checksum_config']);
+            $dev_message[] = 'config ist unterschiedlich';
+            $dev_message[] = $config_checksum . ' !== ' . $css_file['checksum_config'];
         }
         if ($css_checksum !== $css_file['checksum_internal'])
         {
-            pr('internal ist unterschiedlich');
-            pr($css_checksum . ' !== ' . $css_file['checksum_internal']);
+            $dev_message[] = 'internal ist unterschiedlich';
+            $dev_message[] = $css_checksum . ' !== ' . $css_file['checksum_internal'];
         }
     }
 
@@ -381,7 +382,7 @@ if (AJAX === false && !defined('REDIRECTION'))
         if (ENV_MODE === 'dev')
         {
             // only for development and debugging
-            pr('compile');
+            $dev_message[] = 'compile';
         }
         require_once ROOT_PATH . '/libs/lessc.inc.php';
 
