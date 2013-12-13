@@ -1,5 +1,3 @@
-//var requirejsElem = document.getElementById('requirejs');
-
 var require = {
     waitSeconds: 60,
 
