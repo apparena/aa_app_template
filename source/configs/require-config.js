@@ -3,16 +3,6 @@
 var require = {
     waitSeconds: 60,
 
-    /*
-     // uncomment only in develope mode! this make problems in r.js
-     urlArgs: (function () {
-     // add cache busting for development
-     return !!(requirejsElem.getAttribute('data-devmode') | 0)
-     ? 'bust=' + Date.now()
-     : '';
-     })(),
-     */
-
     'packages': [
         {
             'name':     'lodash',
@@ -26,7 +16,6 @@ var require = {
 
     paths: {
         'jquery':       'vendor/jquery/jquery',
-        //'underscore':        'vendor/underscore-amd/underscore',
         'backbone':     'vendor/backbone-amd/backbone',
         'bootstrap':    'vendor/bootstrap/dist/js/bootstrap',
 
@@ -48,10 +37,6 @@ var require = {
             deps:    [ 'jquery' ],
             exports: 'bootstrap'
         },
-
-        /*'underscore.string': {
-         deps: ['underscore']
-         },*/
 
         'debug': {
             exports: 'debug'
