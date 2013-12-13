@@ -11,7 +11,7 @@ function __t()
     $args = func_get_args();
     $num  = func_num_args();
 
-    if ($num == 0)
+    if ($num === 0)
     {
         return '';
     }

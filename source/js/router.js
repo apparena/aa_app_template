@@ -73,7 +73,7 @@ define([
             }
 
             // handle last and current page
-            if (_(this.currentPage).isBlank() === false) {
+            if (_.isEmpty(this.currentPage) === false) {
                 //console.log('set last page', this.currentPage);
                 this.lastPage = this.currentPage;
             }
@@ -86,7 +86,7 @@ define([
 
         callAction: function (module) {
             // handle last and current action
-            if (_(this.currentAction).isBlank() === false) {
+            if (_.isEmpty(this.currentAction) === false) {
                 this.lastAction = this.currentAction;
             }
 
@@ -126,7 +126,7 @@ define([
         },
 
         goToPreviewsPage: function (trigger) {
-            if (_(trigger).isBlank()) {
+            if (_.isEmpty(trigger)) {
                 trigger = true;
             }
             this.redirection('page', this.lastPage, trigger);
@@ -134,10 +134,10 @@ define([
 
         redirection: function (type, page, trigger) {
             var redirect = type + '/' + page;
-            if (_(page).isBlank()) {
+            if (_.isEmpty(page)) {
                 redirect = '';
             }
-            if (_(trigger).isBlank()) {
+            if (_.isEmpty(trigger)) {
                 trigger = true;
             }
             _.router.navigate(redirect, {trigger: trigger});

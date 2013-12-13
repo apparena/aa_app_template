@@ -12,14 +12,14 @@
         'debug',
         'router',
         // libs with no object declaration
-        'underscore.string',
+        //'underscore.string',
         'bootstrap'
     ], function ($, _, AaHelper, Debug, Router) {
         var admin = $('.nav-admin'), nav;
 
         // load underscore extension and implement it into underscore
-        _.str = require('underscore.string');
-        _.mixin(_.str.exports());
+        //_.str = require('underscore.string');
+        //_.mixin(_.str.exports());
         // extend underscore with our aa object, so that it is accessible everywhere where the _ underscore object is known.
         _.extend(_, {
             aa:              aa,                // the $aa var in JS
@@ -119,5 +119,7 @@
         _.extend(_, {
             router: Router.initialize()
         });
+
+        _.t('footer_terms');
     });
 }());
