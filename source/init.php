@@ -48,7 +48,7 @@ else
 require_once ROOT_PATH . '/libs/AppArena/Helper/aa_helper.php';
 require_once ROOT_PATH . '/libs/AppArena/Helper/fb_helper.php';
 require_once ROOT_PATH . '/libs/AppArena/AppManager/AppManagerNEW.php';
-require_once ROOT_PATH . '/libs/Zend/Translate.php';
+//require_once ROOT_PATH . '/libs/Zend/Translate.php';
 
 // register global and magic quote escaping
 global_escape();
@@ -281,11 +281,11 @@ if (!defined('REDIRECT')
 }
 
 /* Setup the translation objects */
-$aa_locale = new Zend_Translate('array', (array) $aa->locale, $cur_locale);
+/*$aa_locale = new Zend_Translate('array', (array) $aa->locale, $cur_locale);
 $aa_locale->setLocale($cur_locale);
 
 $aa_translate            = new StdClass();
-$aa_translate->translate = $aa_locale;
+$aa_translate->translate = $aa_locale;*/
 
 // set global body classes
 $classbody = '';
@@ -397,32 +397,6 @@ if (AJAX === false && !defined('REDIRECTION'))
          */
         $less->setPreserveComments(false);
 
-        /*// get all sources and put them into a collection variable
-        $css_collector = '';
-        if (is_array($css_import))
-        {
-            foreach ($css_import AS $import_file => $type)
-            {
-                if($import_file === 'main')
-                {
-                    $css_collector .= file_get_contents(ROOT_PATH . $type);
-                    continue;
-                }
-
-                if($type === 'file' && file_exists(ROOT_PATH . $import_file))
-                {
-                    $css_collector .= file_get_contents(ROOT_PATH . $import_file);
-                    continue;
-                }
-
-                if ($type === 'config' && __c($import_file) !== false)
-                {
-                    $css_collector .= __c($import_file);
-                    continue;
-                }
-            }
-        }*/
-
         // replace some appmanager variables with right css/less code
         foreach($css_path_replacements AS $search => $replace)
         {
@@ -443,27 +417,6 @@ if (AJAX === false && !defined('REDIRECTION'))
         // create checksum to stop compiling on each app call
         file_put_contents($css_file['checksum_path'], $config_checksum);
         file_put_contents($css_file['checksum_path'] . '_int', $css_checksum);
-    }
-
-    /**
-     * some basic loggings, if module exists
-     */
-    // prepare data to log - key = scope, value = value
-    $log = array(
-        'user_device'  => $aa->env->device->type, // mobile desktop tablet ...
-        'user_browser' => $aa->env->browser->name . ' ' . $aa->env->browser->version,
-        // browser with version
-        'user_os'      => $aa->env->browser->platform, // os
-        'app_page'     => $aa->env->base, // type of page - tab canvas
-        'app_openings' => 'start' // count app apenings, value is not relevant
-    );
-
-    $logging_path = ROOT_PATH . '/modules/logging/libs/logAdmin.php';
-    if (file_exists($logging_path))
-    {
-        $_POST['aa_inst_id']  = $aa_inst_id;
-        $_POST['data']['log'] = $log;
-        require_once $logging_path;
     }
 }
 

@@ -14,7 +14,7 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse navbar-main-collapse">
             <ul class="nav navbar-nav">
-                <!--li class="home"><a href="#"><?php __p('navigation_tab_home') ?></a></li-->
+                <!--li class="home"><a href="#"><?php __pt('navigation_tab_home') ?></a></li-->
                 <?php
                 $custom_tabs = explode(',', __c('navigation_pagetab_selector'));
                 $tabs = array();
@@ -79,7 +79,7 @@
                 // only for desktop
                 ?>
                 <li id="nav-more" class="dropdown hidden-xs">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-align-justify"></i> <?php __p('navi'); ?>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-align-justify"></i> <?php __pt('navi'); ?>
                         <b class="caret"></b></a>
 
                     <ul class="dropdown-menu" role="menu">
@@ -103,10 +103,10 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li id="nav-login" class="link-element <?php echo $show_login ?>">
-                    <a href="#/page/participate"><i class="icon-signin"></i> <?php __p('login'); ?></a>
+                    <a href="#/page/participate"><i class="icon-signin"></i> <?php __pt('login'); ?></a>
                 </li>
                 <li id="nav-admin" class="nav-admin link-element <?php echo $show_admin ?>">
-                <a href="#" class="btn btn-danger"><i class="icon-wrench"> </i><? __p('admin'); ?></a>
+                <a href="#" class="btn btn-danger"><i class="icon-wrench"> </i><? __pt('admin'); ?></a>
                 </li>
                 <li id="nav-profile" class="nav-profile <?php echo $show_profil ?>">
                     <a href="#page/profile"><img src="https://secure.gravatar.com/avatar/<?php echo md5(strtolower($user)) ?>?s=40&amp;d=mm" alt="avatar"></a>
@@ -114,18 +114,18 @@
                     <!--ul class="dropdown-menu" aria-labelledby="dropdownMore" role="menu">
                         <?php //echo $show_admin ?>
                         <li class="nav-admin link-element" id="admin">
-                            <a href="#"><i class="icon-wrench"> </i><? __p('admin'); ?></a>
+                            <a href="#"><i class="icon-wrench"> </i><? __pt('admin'); ?></a>
                         </li>
                         <li class="link-element">
-                            <a href="#page/profile"><i class="icon-user"></i> <?php echo __p('profile') ?></a>
+                            <a href="#page/profile"><i class="icon-user"></i> <?php echo __pt('profile') ?></a>
                         </li>
                         <li class="link-element">
-                            <a href="#page/profile/logout"><i class="icon-signout"></i> <?php echo __p('logout') ?></a>
+                            <a href="#page/profile/logout"><i class="icon-signout"></i> <?php echo __pt('logout') ?></a>
                         </li>
                     </ul-->
                 </li>
                 <li class="link-element nav-logout  <?php echo $show_logout ?>">
-                <a href="#page/profile/logout"><i class="icon-signout"></i> <?php echo __p('logout') ?></a>
+                <a href="#page/profile/logout"><i class="icon-signout"></i> <?php echo __pt('logout') ?></a>
                 </li>
                 <?php
                 $languages = explode(',', __c('language_selection'));
@@ -148,7 +148,7 @@
                                     }
                                     ?>
                                     <li class="link-element">
-                                        <a href="<?php echo $aa->instance->share_url ?>&amp;page=<?php echo $aa->env->base; ?>&amp;<?php echo $param_name . '=' . $param_value; ?>"><span class="flag-sprite flag-<?php echo $locale; ?>"></span> <?php __p('lang_' . $locale) ?>
+                                        <a href="<?php echo $aa->instance->share_url ?>&amp;page=<?php echo $aa->env->base; ?>&amp;<?php echo $param_name . '=' . $param_value; ?>"><span class="flag-sprite flag-<?php echo $locale; ?>"></span> <?php __pt('lang_' . $locale) ?>
                                         </a>
                                     </li>
                                 <?php

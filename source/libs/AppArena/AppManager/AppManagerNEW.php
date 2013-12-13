@@ -17,6 +17,9 @@ namespace com\apparena\api;
 class AA_AppManager
 {
     const SERVER_URL = 'http://manager.app-arena.com/api/v1/instances/';
+    const CACHE_TIME = '86400'; //24h
+    const CACHE_PREFIX = 'api_';
+    protected $cache_path = null;
     //this params will transport each call
     protected $_api_params = array(
         'aa_app_id'     => null,
@@ -36,7 +39,14 @@ class AA_AppManager
      */
     public function __construct($params)
     {
-        $this->setAppId($params)->setLocale($params)->setInstanceId($params)->setFbPageId($params)
+        // set cache path
+        $this->cache_path = ROOT_PATH . '/tmp/cache/';
+
+        // set params
+        $this->setAppId($params)
+             ->setLocale($params)
+             ->setInstanceId($params)
+             ->setFbPageId($params)
              ->setAppSecret($params);
     }
 
@@ -143,6 +153,18 @@ class AA_AppManager
 
     public function call($scope)
     {
+        // first on ajax calls, try to get call from cache
+        $filename = self::CACHE_PREFIX . md5($scope . implode('-', $this->_api_params));
+        if (AJAX || defined('REDIRECTION'))
+        {
+            $return = $this->getCachedFile($this->cache_path . $filename);
+            if (!empty($return))
+            {
+                return $return;
+            }
+        }
+
+        // cache is empty or not called, get resource now from API
         $return = json_decode(@file_get_contents(self::SERVER_URL . $this->getInstanceId() . $scope));
         if ($return === null)
         {
@@ -167,6 +189,28 @@ class AA_AppManager
         return $data->$return_type;
     }
 
+    /**
+     * get call return from cache
+     *
+     * @param      $filename
+     * @param bool $timecheck
+     *
+     * @return bool|mixed
+     */
+    protected function getCachedFile($filename, $timecheck = true)
+    {
+        if (file_exists($filename) && ($timecheck === false || (time() - filemtime($filename)) < self::CACHE_TIME))
+        {
+            // get cached file
+            $cachedfile = file_get_contents($filename);
+
+            // return as array (secont param as true)
+            return json_decode($cachedfile, true);
+        }
+
+        return false;
+    }
+
     public function getInstanceId()
     {
         if ($this->_api_params['aa_inst_id'] === null)
@@ -181,7 +225,7 @@ class AA_AppManager
     {
         if ($this->_config === null)
         {
-            $scope           = '/config.json?limit=0';
+            $scope         = '/config.json?limit=0';
             $this->_config = $this->call($scope);
         }
 
@@ -194,18 +238,32 @@ class AA_AppManager
 
         if (empty($this->_translation[$locale]))
         {
-            $scope              = '/locale.json?locale=' . $this->getLocale() . '&limit=0';
+            $scope                       = '/locale.json?locale=' . $this->getLocale() . '&limit=0';
             $this->_translation[$locale] = $this->call($scope);
         }
 
         $return = $this->defineReturn($this->_translation[$locale], $type);
 
-        if($return !== false)
+        if ($return !== false)
         {
-            $return = (object) $return->$locale;
+            $return = (object)$return->$locale;
+            $return->index = $this->createTranslationIndex($this->_translation[$locale]->data);
         }
 
         return $return;
+    }
+
+    protected function createTranslationIndex($translations)
+    {
+        $locale = $this->getLocale();
+        $index = new \stdClass();
+
+        foreach($translations->$locale AS $key => $value)
+        {
+            $value = md5($value->l_id);
+            $index->$value = $key;
+        }
+        return $index;
     }
 
     public function getLocale()

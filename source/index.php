@@ -58,11 +58,7 @@
     <?php ENDIF; ?>
     <div class="content-terms text-center text-muted">
         <small>
-            <?php
-            $terms_trans = __t('footer_terms');
-            $terms_link = '<a href="#/page/app/terms">' . __t('terms') . '</a>';
-            echo sprintf($terms_trans, $terms_link);
-            ?>
+            <?php __pt('footer_terms', '<a href="#/page/app/terms">' . __t('terms') . '</a>'); ?>
         </small>
     </div>
     <?php if (__c('branding_activated') === '1'): ?>

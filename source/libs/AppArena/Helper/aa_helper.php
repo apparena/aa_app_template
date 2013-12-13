@@ -1,24 +1,12 @@
 <?php
-
-/*
- * get current uri
- */
-function app_current_uri()
-{
-    $url = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $_SERVER['REQUEST_URI'];
-
-    return $url;
-}
-
 /** translate functions **/
-/*
- *translate , may be for the future
-* use __('name')  replace 'name'
-*/
 function __t()
 {
-    global $aa_translate;
-    $translate = $aa_translate->translate;
+    global $aa;
+
+    // START version for old API version
+    $translate = json_decode(json_encode($aa->locale), true);
+    $index     = $aa->locale->index;
 
     $args = func_get_args();
     $num  = func_num_args();
@@ -28,38 +16,38 @@ function __t()
         return '';
     }
 
-    $str = $args[0];
-    if ($num == 1)
+    $hash = md5($args[0]);
+    $pos  = $index->$hash;
+    $text = $translate[$pos]['value'];
+    // END version for old API version
+
+    // ToDo - version for new API version, remove all above if you activate this one! REMOVE createTranslationIndex() from AppManager class too!
+    /*$translate = $aa->locale;
+    $key = $args[0];
+    $text = $translate->$key->value;*/
+
+    if ($num > 1)
     {
-        return $translate->_($str);
+        unset($args[0]);
+        $param = '"' . implode('","', $args) . '"';
+        $text  = sprintf($text, $param);
     }
 
-    unset($args[0]);
-    $param = '"' . implode('","', $args) . '"';
-
-    $str = '$ret=sprintf("' . $translate->_($str) . '",' . $param . ');';
-    eval($str);
-
-    return $ret;
+    return $text;
 }
 
 /*
- *translate ,but print directly
+ *translate, but print directly
 */
-function __p()
+function __pt()
 {
-    $args = func_get_args();
-    $num = func_num_args();
-
-    if ($num == 0)
+    if (func_num_args() == 0)
     {
         echo '';
+
         return false;
     }
-
-    $ret = __t(implode(',', $args));
-
-    echo $ret;
+    echo call_user_func_array("__t", func_get_args());
 
     return true;
 }
@@ -326,28 +314,67 @@ if (!function_exists('sql_escape'))
     }
 }
 
-if (!function_exists('printr'))
+if (!function_exists('pr'))
 {
-    function printr($var, $exit = false)
+    function pr()
     {
-        echo '<pre>';
-        print_r($var);
-        echo '</pre>';
+        $args = func_get_args();
+        //$num  = func_num_args();
 
-        if ($exit !== false)
+        if (is_array($args[0]))
         {
-            exit($exit);
+
+            foreach ($args[0] AS $var)
+            {
+                echo '<pre>';
+                print_r($var);
+                echo '</pre>';
+            }
+        }
+        else
+        {
+            echo '<pre>';
+            print_r($args[0]);
+            echo '</pre>';
+        }
+        if (!empty($args[1]))
+        {
+            exit($args[1]);
         }
 
         return true;
     }
 }
 
-if (!function_exists('pr'))
+if (!function_exists('vd'))
 {
-    function pr($var, $exit = false)
+    function vd()
     {
-        return printr($var, $exit);
+        $args = func_get_args();
+        //$num  = func_num_args();
+
+        if (is_array($args[0]))
+        {
+
+            foreach ($args[0] AS $var)
+            {
+                echo '<pre>';
+                var_dump($var);
+                echo '</pre>';
+            }
+        }
+        else
+        {
+            echo '<pre>';
+            var_dump($args[0]);
+            echo '</pre>';
+        }
+        if (!empty($args[1]))
+        {
+            exit($args[1]);
+        }
+
+        return true;
     }
 }
 
