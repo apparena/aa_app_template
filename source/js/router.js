@@ -38,7 +38,7 @@ define([
             if (_.aa.env.device.type === 'mobile' && check_mobile !== false) {
                 module += '-mobile';
             }
-            console.log(module);
+
             require([module], function (module) {
                 if (id !== false) {
                     module(id);
@@ -145,7 +145,6 @@ define([
     });
 
     initialize = function () {
-        console.log('test');
         var app_router = new AppRouter();
 
         // Extend the View class to include a navigation method goTo
