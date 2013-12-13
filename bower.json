@@ -8,9 +8,8 @@
         "requirejs-text":        "latest",
         "requirejs":             "latest",
         "backbone-amd":          "latest",
-        "underscore-amd":        "latest",
-        "underscore.string":     "latest",
         "javascript-debug":      "latest",
-        "jquery":                "latest"
+        "jquery":                "latest",
+        "lodash-amd":            "latest"
     }
 }
