@@ -1,0 +1,8 @@
+.idea/
+xhprof/
+source/js/vendor/
+.vagrant/
+source/tmp/cache/
+source/tmp/export/
+atlassian-ide-plugin.xml
+source/configs/app-config.php
