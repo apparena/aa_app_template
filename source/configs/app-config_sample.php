@@ -11,7 +11,7 @@ $aa_default_timezone = "Europe/Berlin";
 /**
  * Setup your database access data
  */
-$db_activated = true;
+$db_activated = false;
 $db_option    = array(
     'type' => 'mysql', // database driver
     'pdo'  => array(
