@@ -21,7 +21,7 @@
 <?php include_once('includes/navigation.php'); ?>
 
 <div class="container">
-    <header class="gradient">
+    <header>
         <?php __pc('header_custom'); ?>
     </header>
     <div id="content">

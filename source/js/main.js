@@ -116,7 +116,5 @@
         _.extend(_, {
             router: Router.initialize()
         });
-
-        console.log(_.t('footer_terms', '<a href="#/page/app/terms">' + _.t('terms') + '</a>'));
     });
 }());

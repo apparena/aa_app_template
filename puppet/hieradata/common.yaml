@@ -67,6 +67,7 @@ apache:
             port: '80'
             setenv:
                 - 'APP_ENV dev'
+                - 'APP_ENV_SERVER vigrant'
             override:
                 - All
         SAzoWyma23Wp:

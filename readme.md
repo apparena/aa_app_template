@@ -89,8 +89,8 @@ Vagrant configuration file
 
 ## Install needed sources
 
-### Install Bower and requirejs/r.js on windows:
-1. Downlaod nodejs and install it: http://nodejs.org/
+### Install Bower, requirejs/r.js on windows:
+1. Downlaod nodejs and install it from: http://nodejs.org/
 2. Open a GIT console and enter:
 
     ```
@@ -119,7 +119,7 @@ Open a GIT console, change into the app sources directory and enter:
 bower install <PACKAGENAME> or <URL TO ZIP PACKAGE>
 ```
 
-To install save the package to the app install/update process enter:
+To save the package to the app install/update process enter:
 ```
 bower install <PACKAGENAME> or <URL TO ZIP PACKAGE> --save
 ```

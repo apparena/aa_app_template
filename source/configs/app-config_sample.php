@@ -11,25 +11,37 @@ $aa_default_timezone = "Europe/Berlin";
 /**
  * Setup your database access data
  */
-$db_activated = true;
-$db_host      = "";
-$db_name      = "";
-$db_user      = "";
-$db_pass      = "";
+$db_activated = false;
 $db_option    = array(
-    'port' => '3306', // default port
     'type' => 'mysql', // database driver
-    'pdo'  => array( // default driver attributes
+    'pdo'  => array(
+        // default driver attributes
         \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
     )
 );
+if (!empty($_SERVER['APP_ENV_SERVER']) && $_SERVER['APP_ENV_SERVER'] === 'vigrant')
+{
+    $db_host           = "localhost";
+    $db_name           = "app";
+    $db_user           = "app";
+    $db_pass           = "app";
+    $db_option['port'] = '3306'; // default port
+}
+else
+{
+    $db_host           = "";
+    $db_name           = "";
+    $db_user           = "";
+    $db_pass           = "";
+    $db_option['port'] = '3306'; // default port
+}
 
 // define app admins
 define('APP_ADMINS', '');
 
 // define ENV (dev|stage|product)
 $env_mode = 'product';
-if(!empty($_SERVER['APP_ENV']))
+if (!empty($_SERVER['APP_ENV']))
 {
     $env_mode = $_SERVER['APP_ENV'];
 }
