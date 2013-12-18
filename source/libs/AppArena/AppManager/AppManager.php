@@ -155,7 +155,7 @@ class AA_AppManager
     {
         // first on ajax calls, try to get call from cache
         $filename = self::CACHE_PREFIX . md5($scope . implode('-', $this->_api_params));
-        if (AJAX || defined('REDIRECTION'))
+        if (AJAX || defined('REDIRECTION') || !empty($_GET['cache']))
         {
             $return = $this->getCachedFile($this->cache_path . $filename);
             if (!empty($return))
@@ -170,6 +170,11 @@ class AA_AppManager
         {
             throw new \Exception('API Call error: "' . self::SERVER_URL . $this->getInstanceId() . $scope . '"');
         }
+
+        // cache result
+        $cachedfile = json_encode($return);
+        pr($cachedfile);
+        file_put_contents($this->cache_path . $filename, $cachedfile);
 
         return $return;
     }
@@ -204,8 +209,8 @@ class AA_AppManager
             // get cached file
             $cachedfile = file_get_contents($filename);
 
-            // return as array (secont param as true)
-            return json_decode($cachedfile, true);
+            // return as stdClass object
+            return json_decode($cachedfile);
         }
 
         return false;
@@ -246,7 +251,7 @@ class AA_AppManager
 
         if ($return !== false)
         {
-            $return = (object)$return->$locale;
+            $return        = (object)$return->$locale;
             $return->index = $this->createTranslationIndex($this->_translation[$locale]->data);
         }
 
@@ -256,13 +261,14 @@ class AA_AppManager
     protected function createTranslationIndex($translations)
     {
         $locale = $this->getLocale();
-        $index = new \stdClass();
+        $index  = new \stdClass();
 
-        foreach($translations->$locale AS $key => $value)
+        foreach ($translations->$locale AS $key => $value)
         {
-            $value = md5($value->l_id);
+            $value         = md5($value->l_id);
             $index->$value = $key;
         }
+
         return $index;
     }
 
