@@ -32,11 +32,9 @@ define([
     Init = function (init) {
 
         if (_.isUndefined(_.singleton.view.demo)) {
-            console.log('init normal');
             _.singleton.view[namespace] = new View();
         } else {
             if (!_.isUndefined(init) && init === true) {
-                console.log('reinit');
                 Remove();
                 _.singleton.view[namespace] = new View();
             }
