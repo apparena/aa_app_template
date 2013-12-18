@@ -1,0 +1,15 @@
+{
+    "name":         "APP-Template",
+    "version":      "2.0.0",
+    "dependencies": {
+        "backbone.localStorage": "latest",
+        "font-awesome":          "latest",
+        "bootstrap":             "latest",
+        "requirejs-text":        "latest",
+        "requirejs":             "latest",
+        "backbone-amd":          "latest",
+        "javascript-debug":      "latest",
+        "jquery":                "latest",
+        "lodash-amd":            "latest"
+    }
+}
