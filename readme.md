@@ -110,7 +110,7 @@ bower install
 ### Compile sources:
 Open a GIT console, change into the app sources/build directory and enter:
 ```
-./build.sh
+sh ./build.sh
 ```
 
 ### Install new app packages:
