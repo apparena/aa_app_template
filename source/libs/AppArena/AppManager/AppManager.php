@@ -173,7 +173,6 @@ class AA_AppManager
 
         // cache result
         $cachedfile = json_encode($return);
-        pr($cachedfile);
         file_put_contents($this->cache_path . $filename, $cachedfile);
 
         return $return;
