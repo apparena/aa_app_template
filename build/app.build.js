@@ -2,7 +2,7 @@
     /**
      * more infos under: https://github.com/jrburke/r.js/blob/master/build/example.build.js
      */
-    mainConfigFile: '../source/config/require-config.js',
+    mainConfigFile: '../source/configs/require-config.js',
     appDir:         '../source',
     baseUrl:        './js',
     dir:            '../dist',
@@ -29,7 +29,7 @@
         // by all your bundles.
         {
             name:    'main',
-            include: ['require', 'text', 'main', 'app']
+            include: ['require', 'text', 'main']
         },
 
         //
