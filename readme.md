@@ -1,6 +1,4 @@
-
 # App-Arena.com App Template
-
 Github: https://github.com/apparena/aa_app_template
 
 Docs:   http://www.app-arena.com/docs/display/developer

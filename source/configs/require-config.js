@@ -25,7 +25,7 @@ var require = {
 
         // directory settings
         'templates':    '../templates',
-        'modulesSrc':   '../modules',
+        'modules':      '../modules',
         'rootSrc':      '../js'
     },
 
