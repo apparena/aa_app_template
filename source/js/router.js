@@ -74,7 +74,6 @@ define([
 
             // handle last and current page
             if (_.isEmpty(this.currentPage) === false) {
-                //console.log('set last page', this.currentPage);
                 this.lastPage = this.currentPage;
             }
 
@@ -200,33 +199,29 @@ define([
          * @returns {*}
          */
         Backbone.View.prototype.log = function (type, scope, data) {
-            if (_.isUndefined(type) === true || _.isUndefined(scope) === true || _.isUndefined(data) === true) {
+            if (_.isUndefined(type) === true || _.isUndefined(scope) === true || (type !== 'group' && _.isUndefined(data) === true)) {
                 _.debug.error('Log params are not complete or wrong! Third param must be an object.', type, scope, data);
                 return false;
             }
 
-            if (_.isEmpty(data.data_obj)) {
-                data.data_obj = {
-                    empty: true
-                };
+            if (type === 'group') {
+                data = scope;
             }
 
-            require(['logger'], function(Logger) {
+            require(['modules/logging/js/views/LoggerView'], function (Logger) {
                 var log = Logger.init();
 
                 switch (type) {
                     case 'action':
-                        data.scope = scope;
-                        log.action(data);
+                        log.action(scope, data);
                         break;
 
                     case 'admin':
-                        data.scope = scope;
-                        log.admin(data);
+                        log.admin(scope, data);
                         break;
 
-                    case 'agent':
-                        log.agent();
+                    case 'group':
+                        log.group(data);
                         break;
                 }
             });
