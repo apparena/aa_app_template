@@ -25,6 +25,24 @@
         <?php __pc('header_custom'); ?>
     </header>
     <div id="content">
+
+        <!-- DEMO PART START. please remove this, before deployment -->
+        <div class="btn-group btn-group-justified">
+        <?php
+        if(file_exists('modules/fangate/'))
+        {
+            echo '<a href="#page/fangate" class="btn btn-default">Fangate Demo</a>';
+        }
+        if(file_exists('modules/logging/'))
+        {
+            echo '<a href="#page/logging/demo/action" class="btn btn-default">Action-Log Demo</a>';
+            echo '<a href="#page/logging/demo/admin" class="btn btn-default">Admin-Log Demo</a>';
+            echo '<a href="#page/logging/demo/group" class="btn btn-default">Group-Log Demo</a>';
+        }
+        ?>
+        </div>
+        <!-- DEMO PART END. -->
+
         <div class="content-wrapper clearfix">
             <i class="<?php __pc('loader_class') ?> icon-spin startloader"></i>
         </div>
