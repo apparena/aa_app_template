@@ -39,6 +39,11 @@
             echo '<a href="#page/logging/demo/admin" class="btn btn-default">Admin-Log Demo</a>';
             echo '<a href="#page/logging/demo/group" class="btn btn-default">Group-Log Demo</a>';
         }
+        if (file_exists('modules/auth/'))
+        {
+            echo '<a href="#page/auth" class="btn btn-default">Login Demo</a>';
+            echo '<a href="#page/auth/modal" class="btn btn-default">Login-Modal Demo</a>';
+        }
         ?>
         </div>
         <!-- DEMO PART END. -->

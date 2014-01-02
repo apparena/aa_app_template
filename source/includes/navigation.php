@@ -102,32 +102,25 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
+                <?php
+                // show login and admin buttons only if auth module is installed
+                if (file_exists('modules/auth/')):
+                ?>
                 <li id="nav-login" class="link-element <?php echo $show_login ?>">
-                    <a href="#/page/participate"><i class="icon-signin"></i> <?php __pt('login'); ?></a>
+                    <a href="#/page/auth/modal"><i class="icon-signin"></i> <?php __pt('login'); ?></a>
                 </li>
                 <li id="nav-admin" class="nav-admin link-element <?php echo $show_admin ?>">
                 <a href="#" class="btn btn-danger"><i class="icon-wrench"> </i><? __pt('admin'); ?></a>
                 </li>
                 <li id="nav-profile" class="nav-profile <?php echo $show_profil ?>">
                     <a href="#page/profile"><img src="https://secure.gravatar.com/avatar/<?php echo md5(strtolower($user)) ?>?s=40&amp;d=mm" alt="avatar"></a>
-
-                    <!--ul class="dropdown-menu" aria-labelledby="dropdownMore" role="menu">
-                        <?php //echo $show_admin ?>
-                        <li class="nav-admin link-element" id="admin">
-                            <a href="#"><i class="icon-wrench"> </i><? __pt('admin'); ?></a>
-                        </li>
-                        <li class="link-element">
-                            <a href="#page/profile"><i class="icon-user"></i> <?php echo __pt('profile') ?></a>
-                        </li>
-                        <li class="link-element">
-                            <a href="#page/profile/logout"><i class="icon-signout"></i> <?php echo __pt('logout') ?></a>
-                        </li>
-                    </ul-->
                 </li>
                 <li class="link-element nav-logout  <?php echo $show_logout ?>">
                 <a href="#page/profile/logout"><i class="icon-signout"></i> <?php echo __pt('logout') ?></a>
                 </li>
                 <?php
+                ENDIF;
+
                 $languages = explode(',', __c('language_selection'));
                 if (is_array($languages) && count($languages) > 1):
                     ?>
