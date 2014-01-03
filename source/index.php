@@ -49,7 +49,7 @@
         <!-- DEMO PART END. -->
 
         <div class="content-wrapper clearfix">
-            <i class="<?php __pc('loader_class') ?> icon-spin startloader"></i>
+            <i class="fa <?php __pc('loader_class') ?> fa-spin startloader"></i>
         </div>
     </div>
     <footer>
