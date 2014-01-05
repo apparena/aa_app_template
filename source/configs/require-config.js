@@ -22,6 +22,8 @@ var require = {
         'localstorage': 'vendor/backbone.localStorage/backbone.localStorage',
         'aa_helper':    'utils/apparena/helper',
         'debug':        'vendor/javascript-debug/ba-debug',
+        'jquery.serialize_object': 'utils/jquery/serialize-object',
+        'jquery.validator_config': 'utils/jquery/validator-config',
 
         // directory settings
         'templates':    '../templates',
@@ -37,6 +39,16 @@ var require = {
 
         'debug': {
             exports: 'debug'
+        },
+
+        'jquery.serialize_object': {
+            deps:    [ 'jquery' ],
+            exports: 'jquery'
+        },
+
+        'jquery.validator_config': {
+            deps:    [ 'jquery' ],
+            exports: 'jquery'
         }
     }
 };
