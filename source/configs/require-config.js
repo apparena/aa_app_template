@@ -13,27 +13,28 @@ var require = {
     ],
 
     paths: {
-        'jquery':       'vendor/jquery/jquery',
-        'backbone':     'vendor/backbone-amd/backbone',
-        'bootstrap':    'vendor/bootstrap/dist/js/bootstrap',
+        'jquery':                  'vendor/jquery/jquery',
+        'backbone':                'vendor/backbone-amd/backbone',
+        'bootstrap':               'vendor/bootstrap/dist/js/bootstrap',
 
         // vendor extensions and helper functions
-        'text':         'vendor/requirejs-text/text',
-        'localstorage': 'vendor/backbone.localStorage/backbone.localStorage',
-        'aa_helper':    'utils/apparena/helper',
-        'debug':        'vendor/javascript-debug/ba-debug',
+        'text':                    'vendor/requirejs-text/text',
+        'localstorage':            'vendor/backbone.localStorage/backbone.localStorage',
+        'aa_helper':               'utils/apparena/helper',
+        'debug':                   'vendor/javascript-debug/ba-debug',
+        'jquery.validation':       'vendor/jquery.validation/jquery.validate',
         'jquery.serialize_object': 'utils/jquery/serialize-object',
         'jquery.validator_config': 'utils/jquery/validator-config',
 
         // directory settings
-        'templates':    '../templates',
-        'modules':      '../modules',
-        'rootSrc':      '../js'
+        'templates':               '../templates',
+        'modules':                 '../modules',
+        'rootSrc':                 '../js'
     },
 
     shim: {
         'bootstrap': {
-            deps:    [ 'jquery' ],
+            deps:    ['jquery'],
             exports: 'bootstrap'
         },
 
@@ -41,13 +42,18 @@ var require = {
             exports: 'debug'
         },
 
-        'jquery.serialize_object': {
-            deps:    [ 'jquery' ],
+        'jquery.validator_config': {
+            deps:    ['jquery', 'jquery.validation'],
             exports: 'jquery'
         },
 
-        'jquery.validator_config': {
-            deps:    [ 'jquery' ],
+        'jquery.validation': {
+            deps:    ['jquery'],
+            exports: 'jquery'
+        },
+
+        'jquery.serialize_object': {
+            deps:    ['jquery'],
             exports: 'jquery'
         }
     }
