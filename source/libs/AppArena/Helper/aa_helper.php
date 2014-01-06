@@ -17,6 +17,12 @@ function __t()
     }
 
     $hash = md5($args[0]);
+
+    // if translation not exist, return key
+    if(empty($index->$hash))
+    {
+        return $args[0];
+    }
     $pos  = $index->$hash;
     $text = $translate[$pos]['value'];
     // END version for old API version
