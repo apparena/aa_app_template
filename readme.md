@@ -1,6 +1,4 @@
-
 # App-Arena.com App Template
-
 Github: https://github.com/apparena/aa_app_template
 
 Docs:   http://www.app-arena.com/docs/display/developer
@@ -110,7 +108,7 @@ bower install
 ### Compile sources:
 Open a GIT console, change into the app sources/build directory and enter:
 ```
-./build.sh
+sh ./build.sh
 ```
 
 ### Install new app packages:

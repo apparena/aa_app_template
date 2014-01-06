@@ -74,14 +74,13 @@ define([
 
             // handle last and current page
             if (_.isEmpty(this.currentPage) === false) {
-                //console.log('set last page', this.currentPage);
                 this.lastPage = this.currentPage;
             }
 
             this.currentPage = module;
 
             this.setEnv(env);
-            this.loadModule('modulesSrc/' + module + '/js/' + filename, id);
+            this.loadModule('modules/' + module + '/js/' + filename, id);
         },
 
         callAction: function (module) {
@@ -165,7 +164,7 @@ define([
             }
 
             // add instance id
-            data.aa_inst_id = _.aa.instance.aa_inst_id;
+            data.aa_inst_id = _.aa.instance.i_id;
 
             $.ajax({
                 url:      'ajax.php',
@@ -199,42 +198,36 @@ define([
          * @param data json params as json to save
          * @returns {*}
          */
-        /*Backbone.View.prototype.log = function (type, scope, data) {
-         if (_.isUndefined(type) === true || _.isUndefined(scope) === true || _.isUndefined(data) === true) {
-         _.debug.error('Log params are not complete or wrong! Third param must be an object.', type, scope, data);
-         return false;
-         }
+        Backbone.View.prototype.log = function (type, scope, data) {
+            if (_.isUndefined(type) === true || _.isUndefined(scope) === true || (type !== 'group' && _.isUndefined(data) === true)) {
+                _.debug.error('Log params are not complete or wrong! Third param must be an object.', type, scope, data);
+                return false;
+            }
 
-         if (_.isEmpty(data.data_obj)) {
-         data.data_obj = {
-         empty: true
-         };
-         }
+            if (type === 'group') {
+                data = scope;
+            }
 
-         //var log = new Logger();
-         if (_.isUndefined(_.singleton.view.logger)) {
-         _.singleton.view.logger = new Logger();
-         }
-         var log = _.singleton.view.logger;
+            require(['modules/logging/js/views/LoggerView'], function (Logger) {
+                var log = Logger.init();
 
-         switch (type) {
-         case 'action':
-         data.scope = scope;
-         log.action(data);
-         break;
+                switch (type) {
+                    case 'action':
+                        log.action(scope, data);
+                        break;
 
-         case 'admin':
-         data.scope = scope;
-         log.admin(data);
-         break;
+                    case 'admin':
+                        log.admin(scope, data);
+                        break;
 
-         case 'agent':
-         log.agent();
-         break;
-         }
+                    case 'group':
+                        log.group(data);
+                        break;
+                }
+            });
 
-         return this;
-         };*/
+            return this;
+        };
 
         Backbone.View.prototype.destroy = function () {
             //COMPLETELY UNBIND THE VIEW

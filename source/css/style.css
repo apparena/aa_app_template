@@ -11,16 +11,6 @@
     font-size: .8em;
 }
 
-.optivo #content .page-background,
-.optivo-main #content .page-background {
-    display: none;
-}
-
-.optivo #content,
-.optivo-main #content {
-    background: none;
-}
-
 #debug,
 #debug-config,
 #debug-instance,
@@ -104,36 +94,3 @@ online sprite generator: http://de.spritegen.website-performance.org/
     width: 24px;
     height: 24px;
 }
-
-/*
-body #nav-lang {
-    display: block;
-}*/
-
-.css_template_04.desktop, .css_template_04.tablet {
-
-header p, header img, footer p, footer img {
-    display: none;
-}
-
-header {
-    background-color: @base_color;
-    background-image: url(https://www.app-arena.com/uploads/apps/model/276/0/de_DE/img/header-transparent.png);
-    background-repeat: no-repeat;
-    height: 147px;
-    width: 100%;
-}
-
-.page-background img {
-    display: none;
-}
-
-.page-background {
-    background-color: @base_color;
-    background-image: url(https://www.app-arena.com/uploads/apps/instance/6279/547/de_DE/img/Hintergrund_adventskalender.jpg);
-    background-repeat: no-repeat;
-    height: 810px;
-    width: 100%;
-}
-
-    }

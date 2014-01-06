@@ -14,6 +14,6 @@ $css_import = array(
 // some stuf that replaces after compiling key = search, value = replace
 $css_path_replacements = array(
     '{{app_base_color.value}}' => __c('app_base_color'),
-    '../font/fontawesome'      => '../../js/vendor/font-awesome/font/fontawesome',
+    '../fonts/fontawesome'     => '../../js/vendor/font-awesome/fonts/fontawesome',
     '../fonts/glyphicons'      => '../../js/vendor/bootstrap/dist/fonts/glyphicons'
 );

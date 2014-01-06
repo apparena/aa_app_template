@@ -31,7 +31,7 @@ define([
 
     Init = function (init) {
 
-        if (_.isUndefined(_.singleton.view.demo)) {
+        if (_.isUndefined(_.singleton.view[namespace])) {
             _.singleton.view[namespace] = new View();
         } else {
             if (!_.isUndefined(init) && init === true) {

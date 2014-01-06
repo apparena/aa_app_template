@@ -13,7 +13,7 @@ define(['underscore'], function (_) {
 
             translate = _.filter(_.aa.locale, {l_id: arguments[0]});
 
-            if (typeof translate !== 'object') {
+            if (typeof translate !== 'object' || typeof translate[0] === 'undefined') {
                 return arguments[0].toString();
             }
 
