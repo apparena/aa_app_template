@@ -29,7 +29,12 @@ var require = {
         // directory settings
         'templates':               '../templates',
         'modules':                 '../modules',
-        'rootSrc':                 '../js'
+        'rootSrc':                 '../js',
+
+        // backbone extending
+        'ViewExtend':              'utils/apparena/View',
+        'ModelExtend':             'utils/apparena/Model',
+        'CollectionExtend':        'utils/apparena/Collection'
     },
 
     shim: {
