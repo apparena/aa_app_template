@@ -23,7 +23,7 @@ define([
             }
         }
 
-        return _.singleton.view[ReturnObj.namespace];
+        return Instance();
     };
 
     Instance = function () {

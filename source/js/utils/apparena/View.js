@@ -15,6 +15,7 @@ define([
 
     Init = function (init) {
         if (_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
+
             _.singleton.view[ReturnObj.namespace] = new ReturnObj.code();
         } else {
             if (!_.isUndefined(init) && init === true) {
@@ -23,7 +24,7 @@ define([
             }
         }
 
-        return _.singleton.view[ReturnObj.namespace];
+        return Instance();
     };
 
     Instance = function () {
