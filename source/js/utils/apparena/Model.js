@@ -4,30 +4,38 @@ define([
 
     'use strict';
 
-    var Init, Remove, Instance, ReturnObj;
+    var Init, Remove, Instance, ReturnObj, GetInstanze;
 
     Remove = function () {
-        if (!_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
-            _.singleton.view[ReturnObj.namespace].stopListening().undelegateEvents().remove();
-            delete _.singleton.view[ReturnObj.namespace];
+        if (!_.isUndefined(_.singleton.model[ReturnObj.namespace])) {
+            _.singleton.model[ReturnObj.namespace].stopListening().undelegateEvents().remove();
+            delete _.singleton.model[ReturnObj.namespace];
         }
     };
 
-    Init = function (init) {
-        if (_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
-            _.singleton.view[ReturnObj.namespace] = new ReturnObj.code();
+    Init = function (init, id) {
+        id = id || 1;
+
+        if (_.isUndefined(_.singleton.model[ReturnObj.namespace])) {
+            GetInstanze(id);
         } else {
             if (!_.isUndefined(init) && init === true) {
                 Remove();
-                _.singleton.view[ReturnObj.namespace] = new ReturnObj.code();
+                GetInstanze(id);
             }
         }
 
         return Instance();
     };
 
+    GetInstanze = function (id) {
+        _.singleton.model[ReturnObj.namespace] = new ReturnObj.code({
+            id: 'model_' + ReturnObj.namespace + id
+        });
+    };
+
     Instance = function () {
-        return _.singleton.view[ReturnObj.namespace];
+        return _.singleton.model[ReturnObj.namespace];
     };
 
     ReturnObj = {

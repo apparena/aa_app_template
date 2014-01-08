@@ -5,6 +5,6 @@ define([
     'use strict';
 
     return function () {
-        DemoView.init().render();
+        DemoView().init().render();
     };
 });

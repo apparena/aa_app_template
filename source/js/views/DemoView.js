@@ -7,22 +7,25 @@ define([
 ], function (View, $, _, Backbone, HomeTemplate) {
     'use strict';
 
-    View.namespace = 'demo';
+    return function () {
+        View.namespace = 'demo';
 
-    View.code = Backbone.View.extend({
-        el: $('.content-wrapper'),
+        View.code = Backbone.View.extend({
+            el: $('.content-wrapper'),
 
-        events: {},
+            events: {},
 
-        initialize: function () {
-            _.bindAll(this, 'render');// fixes loss of context for 'this' within methods, every function that uses 'this' as the current object should be in here
-        },
+            initialize: function () {
+                _.bindAll(this, 'render');// fixes loss of context for 'this' within methods, every function that uses 'this' as the current object should be in here
+            },
 
-        render: function () {
-            var compiledTemplate = _.template(HomeTemplate, {});
-            this.$el.html(compiledTemplate);
-        }
-    });
+            render: function () {
+                var compiledTemplate = _.template(HomeTemplate, {});
+                this.$el.html(compiledTemplate);
+                return this;
+            }
+        });
 
-    return View;
+        return View;
+    }
 });

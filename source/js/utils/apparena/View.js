@@ -4,7 +4,7 @@ define([
 
     'use strict';
 
-    var Init, Remove, Instance, ReturnObj;
+    var Init, Remove, Instance, ReturnObj, GetInstanze;
 
     Remove = function () {
         if (!_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
@@ -13,18 +13,25 @@ define([
         }
     };
 
-    Init = function (init) {
-        if (_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
+    Init = function (init, id) {
+        id = id || 1;
 
-            _.singleton.view[ReturnObj.namespace] = new ReturnObj.code();
+        if (_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
+            GetInstanze(id);
         } else {
             if (!_.isUndefined(init) && init === true) {
                 Remove();
-                _.singleton.view[ReturnObj.namespace] = new ReturnObj.code();
+                GetInstanze(id);
             }
         }
 
         return Instance();
+    };
+
+    GetInstanze = function(id) {
+        _.singleton.view[ReturnObj.namespace] = new ReturnObj.code({
+            id: 'view_' + ReturnObj.namespace + id
+        });
     };
 
     Instance = function () {
