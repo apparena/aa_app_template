@@ -115,7 +115,7 @@
                     <a href="#page/profile"><img src="https://secure.gravatar.com/avatar/<?php echo md5(strtolower($user)) ?>?s=40&amp;d=mm" alt="avatar"></a>
                 </li>
                 <li class="link-element nav-logout  <?php echo $show_logout ?>">
-                <a href="#page/profile/logout"><i class="fa fa-sign-out"></i> <?php echo __pt('logout') ?></a>
+                <a href="#page/auth/logout"><i class="fa fa-sign-out"></i> <?php echo __pt('logout') ?></a>
                 </li>
                 <?php
                 ENDIF;
