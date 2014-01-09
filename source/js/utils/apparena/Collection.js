@@ -13,25 +13,30 @@ define([
         }
     };
 
-    Init = function (init, id) {
-        id = id || 1;
+    Init = function (settings) {
+        var settings = settings || {},
+            init = settings.init || false;
 
         if (_.isUndefined(_.singleton.collection[ReturnObj.namespace])) {
-            GetInstanze(id);
+            GetInstanze(settings);
         } else {
-            if (!_.isUndefined(init) && init === true) {
+            if (init === true) {
                 Remove();
-                GetInstanze(id);
+                GetInstanze(settings);
             }
         }
 
         return Instance();
     };
 
-    GetInstanze = function (id) {
-        _.singleton.collection[ReturnObj.namespace] = new ReturnObj.code({
-            id: 'collection_' + ReturnObj.namespace + id
-        });
+    GetInstanze = function (settings) {
+        var settings = settings || {},
+            id = settings.id || 1,
+            attributes = settings.attributes || {};
+
+        attributes.id = 'collection_' + ReturnObj.namespace + id;
+
+        _.singleton.collection[ReturnObj.namespace] = new ReturnObj.code(attributes);
     };
 
     Instance = function () {
