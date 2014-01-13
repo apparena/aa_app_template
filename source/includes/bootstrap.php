@@ -76,7 +76,14 @@ if (isset($aaForJs->instance->fb_app_secret))
 }
 
 // add basic app admins
+if(isset($aaForJs->config->admin_mails))
+{
 $aaForJs->config->admin_mails->value = $aaForJs->config->admin_mails->value . ',' . APP_ADMINS;
+}
+else
+{
+    pr('Missing app wizard config "admin_mails"');
+}
 
 // show admin button or login form
 $show_admin  = 'hide';
