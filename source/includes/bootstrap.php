@@ -63,7 +63,7 @@ else
 // save current time as timestamp in JS varible to handle temporary uid
 $aaForJs->timestamp = $current_date->getTimestamp();
 // create a unique id to use as temporary uid
-$aaForJs->uid_temp = md5($aa_inst_id . uniqid() . $current_date->getTimestamp());
+$aaForJs->uid_temp = md5($i_id . uniqid() . $current_date->getTimestamp());
 
 // delete some important variables
 if (isset($aaForJs->instance->aa_app_secret))
@@ -102,4 +102,4 @@ if (!empty($_SESSION['login']['user']['mail']))
 }
 
 // generate admin key for admin button
-$aaForJs->custom = (object) array('admin_key' => md5($aa_inst_id . '_' . $aa_app_secret));
+$aaForJs->custom = (object) array('admin_key' => md5($i_id . '_' . $aa_app_secret));

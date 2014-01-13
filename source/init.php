@@ -54,8 +54,8 @@ require_once ROOT_PATH . '/libs/AppArena/AppManager/AppManager.php';
 global_escape();
 
 /* Try to init some basic variables */
-$aa         = new stdClass();
-$aa_inst_id = false;
+$aa          = new stdClass();
+$i_id        = false;
 $dev_message = array();
 
 /**
@@ -86,9 +86,9 @@ if ($db_activated)
 }
 
 // Try to get the instance id from GET-Parameter
-if (!empty($_REQUEST['aa_inst_id']))
+if (!empty($_REQUEST['i_id']))
 {
-    $aa_inst_id = $_REQUEST['aa_inst_id'];
+    $i_id = $_REQUEST['i_id'];
 }
 
 // check redirections for friendsrequests
@@ -147,9 +147,9 @@ else
     }
     else
     {
-        if (!empty($aa_inst_id) && !empty($_COOKIE['aa_inst_locale_' . $aa_inst_id]))
+        if (!empty($i_id) && !empty($_COOKIE['aa_inst_locale_' . $i_id]))
         {
-            $cur_locale  = $_COOKIE['aa_inst_locale_' . $aa_inst_id];
+            $cur_locale  = $_COOKIE['aa_inst_locale_' . $i_id];
             $change_lang = false;
         }
     }
@@ -157,11 +157,11 @@ else
 
 /*  Connect to App-Arena.com App-Manager and init session */
 $appmanager = new com\apparena\api\AA_AppManager(array(
-                                                      'aa_app_id'     => $aa_app_id,
-                                                      'aa_app_secret' => $aa_app_secret,
-                                                      'aa_inst_id'    => $aa_inst_id,
-                                                      'locale'        => $cur_locale
-                                                 ));
+    'aa_app_id'     => $aa_app_id,
+    'aa_app_secret' => $aa_app_secret,
+    'i_id'          => $i_id,
+    'locale'        => $cur_locale
+));
 
 /* Start session and initialize App-Manager content */
 $aa_instance = $appmanager->getInstance('data');
@@ -177,15 +177,15 @@ elseif (empty($aa_instance->i_id) && $aa_instance === 'instance not exist')
 }
 elseif (empty($aa_instance->i_id))
 {
-    throw new Exception('aa_inst_id not given or wrong in ' . __FILE__ . ' in line ' . __LINE__);
+    throw new Exception('i_id not given or wrong in ' . __FILE__ . ' in line ' . __LINE__);
 }
 
-if (empty($aa_inst_id))
+if (empty($i_id))
 {
-    $aa_inst_id = $aa_instance->i_id;
+    $i_id = $aa_instance->i_id;
 }
 
-$aa_scope = 'aa_' . $aa_inst_id;
+$aa_scope = 'aa_' . $i_id;
 session_name($aa_scope);
 session_start();
 
@@ -193,7 +193,7 @@ session_start();
 
 $aa->instance               = $aa_instance;
 $aa->instance->page_tab_url = $aa->instance->fb_page_url . "?sk=app_" . $aa->instance->fb_app_id;
-$aa->instance->share_url    = $aa->instance->fb_canvas_url . "share.php?aa_inst_id=" . $aa_inst_id;
+$aa->instance->share_url    = $aa->instance->fb_canvas_url . "share.php?i_id=" . $i_id;
 
 if ($change_lang)
 {
@@ -206,19 +206,19 @@ $aa->config = $appmanager->getConfig('data');
 //$aa->fb     = $fb_temp;
 
 // store locale value in cookie
-setcookie('aa_inst_locale_' . $aa_inst_id, $cur_locale, 0, '/', $_SERVER['HTTP_HOST'], isset($_SERVER["HTTPS"]), true);
+setcookie('aa_inst_locale_' . $i_id, $cur_locale, 0, '/', $_SERVER['HTTP_HOST'], isset($_SERVER["HTTPS"]), true);
 
 $current_date            = new DateTime('now', new DateTimeZone($aa_default_timezone));
 $aa_inst_expiration_date = new DateTime($aa->instance->expiration_date, new DateTimeZone($aa_default_timezone));
 // if instance is expired, redirect to expired.php
 if ($aa_inst_expiration_date < $current_date && !defined('REDIRECT'))
 {
-    hrd('expired.php?aa_inst_id=' . $aa_inst_id);
+    hrd('expired.php?i_id=' . $i_id);
 }
 
 if (__c('use_only_https') === '1' && isSSL() === false)
 {
-    $url = str_replace('http://', 'https://', $aa->instance->fb_canvas_url . "?aa_inst_id=" . $aa_inst_id);
+    $url = str_replace('http://', 'https://', $aa->instance->fb_canvas_url . "?i_id=" . $i_id);
     if (ENV_MODE === 'product')
     {
         hrd($url);
@@ -227,7 +227,7 @@ if (__c('use_only_https') === '1' && isSSL() === false)
 
 /* Collect environment information */
 require_once 'libs/Mobile_Detect.php';
-$aa->env = new stdClass();
+$aa->env  = new stdClass();
 $detector = new Mobile_Detect;
 if (isset($_REQUEST['signed_request']))
 {
@@ -238,16 +238,16 @@ if (isset($_REQUEST['signed_request']))
     }
     else
     {
-        $aa->env->base_url = "https://apps.facebook.com/" . $aa->instance->fb_app_url . "/?aa_inst_id=" . $aa_inst_id;
+        $aa->env->base_url = "https://apps.facebook.com/" . $aa->instance->fb_app_url . "/?i_id=" . $i_id;
         $aa->env->base     = 'canvas';
     }
 }
 else
 {
-    $aa->env->base_url = $aa->instance->fb_canvas_url . "?aa_inst_id=" . $aa_inst_id;
+    $aa->env->base_url = $aa->instance->fb_canvas_url . "?i_id=" . $i_id;
     $aa->env->base     = 'website';
 }
-$aa->env->device         = new stdClass();
+$aa->env->device       = new stdClass();
 $aa->env->device->type = "desktop";
 if ($detector->isMobile())
 {
@@ -277,7 +277,7 @@ if (!defined('REDIRECT')
 {
     if (__c('activate_browser_detection') === '1')
     {
-        hrd('browser.php?aa_inst_id=' . $aa_inst_id);
+        hrd('browser.php?i_id=' . $i_id);
     }
 }
 
@@ -316,8 +316,8 @@ if (AJAX === false && !defined('REDIRECTION'))
     require_once ROOT_PATH . '/configs/css-config.php';
 
     $css_file                  = array();
-    $css_file['checksum_path'] = ROOT_PATH . '/tmp/cache/css_' . md5('style_md5' . $aa_inst_id);
-    $css_file['name']          = 'tmp/cache/css_' . md5('style' . $aa_inst_id) . '.css';
+    $css_file['checksum_path'] = ROOT_PATH . '/tmp/cache/css_' . md5('style_md5' . $i_id);
+    $css_file['name']          = 'tmp/cache/css_' . md5('style' . $i_id) . '.css';
 
     if (!file_exists($css_file['checksum_path']))
     {
@@ -332,7 +332,7 @@ if (AJAX === false && !defined('REDIRECTION'))
     // build checksum from config values
     // get all sources and put them into a collection variable
     $css_collector = '';
-    if (is_array($css_import))
+    if (isset($css_import) && is_array($css_import))
     {
         foreach ($css_import AS $import_file => $type)
         {
@@ -398,17 +398,20 @@ if (AJAX === false && !defined('REDIRECTION'))
          */
         $less->setPreserveComments(false);
 
-        // replace some appmanager variables with right css/less code
-        foreach($css_path_replacements AS $search => $replace)
+        // replace some appmanager variables with right css/less
+        if (isset($css_path_replacements))
         {
-            $css_collector = str_replace($search, $replace, $css_collector);
+            foreach ($css_path_replacements AS $search => $replace)
+            {
+                $css_collector = str_replace($search, $replace, $css_collector);
+            }
         }
 
         // compile collection variable and save them as file
         $compiled_source = $less->compile($css_collector);
         file_put_contents(ROOT_PATH . '/' . $css_file['name'], $compiled_source);
 
-        // check chmod and change them if them needed
+        // check chmod and change them if them is needed
         $perms = substr(sprintf('%o', fileperms(ROOT_PATH . '/' . $css_file['name'])), -4);
         if ((int)$perms < 644)
         {

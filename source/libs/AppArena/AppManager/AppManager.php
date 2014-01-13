@@ -24,7 +24,7 @@ class AA_AppManager
     protected $_api_params = array(
         'aa_app_id'     => null,
         'aa_app_secret' => null,
-        'aa_inst_id'    => null,
+        'i_id'    => null,
         'fb_page_id'    => null,
         'locale'        => null,
     );
@@ -135,7 +135,7 @@ class AA_AppManager
 
     public function setInstanceId($id)
     {
-        $this->setParam($id, 'aa_inst_id');
+        $this->setParam($id, 'i_id');
 
         return $this;
     }
@@ -217,12 +217,12 @@ class AA_AppManager
 
     public function getInstanceId()
     {
-        if ($this->_api_params['aa_inst_id'] === null)
+        if ($this->_api_params['i_id'] === null)
         {
             throw new \Exception('Instance ID is not defined');
         }
 
-        return $this->_api_params['aa_inst_id'];
+        return $this->_api_params['i_id'];
     }
 
     public function getConfig($type = 'all')

@@ -160,7 +160,7 @@
         <?php
         $info = __t('fb_admin_info');
         $link1 = '<a href="#page/participate">' . __t('fb_admin_info_link1') . '</a>';
-        $link2 = '<a href="https://manager.app-arena.com/instances/' . $aa_inst_id . '/wizard" target="_blank">' . __t('fb_admin_info_link2') . '</a>';
+        $link2 = '<a href="https://manager.app-arena.com/instances/' . i_id . '/wizard" target="_blank">' . __t('fb_admin_info_link2') . '</a>';
         printf($info, $link1, $link2);
         ?>
     </div>

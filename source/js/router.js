@@ -164,7 +164,7 @@ define([
             }
 
             // add instance id
-            data.aa_inst_id = _.aa.instance.i_id;
+            data.i_id = _.aa.instance.i_id;
 
             $.ajax({
                 url:      'ajax.php',
