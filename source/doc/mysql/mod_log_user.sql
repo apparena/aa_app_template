@@ -1,7 +1,7 @@
 CREATE TABLE `mod_log_adminpanel` (
     `id`         INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     `hash`       VARCHAR(32)      NOT NULL,
-    `aa_inst_id` INT(11) UNSIGNED NOT NULL,
+    `i_id` INT(11) UNSIGNED NOT NULL,
     `scope`      VARCHAR(100)     NOT NULL,
     `value`      VARCHAR(255)     NOT NULL,
     `counter`    INT(11) UNSIGNED NOT NULL DEFAULT '0',
@@ -14,7 +14,7 @@ CREATE TABLE `mod_log_adminpanel` (
 
 CREATE TABLE `mod_log_user` (
     `id`            INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
-    `aa_inst_id`    INT(11) UNSIGNED    NOT NULL,
+    `i_id`    INT(11) UNSIGNED    NOT NULL,
     `auth_uid`      BIGINT(20) UNSIGNED NULL DEFAULT '0',
     `auth_uid_temp` VARCHAR(32)         NOT NULL DEFAULT '0',
     `scope`         VARCHAR(255)        NOT NULL,

@@ -3,7 +3,7 @@ CREATE TABLE `mod_facebook_friends` (
     `request_id`       BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
     `fb_uid`           BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
     `auth_uid`         BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
-    `aa_inst_id`       INT(11) UNSIGNED    NOT NULL DEFAULT '0',
+    `i_id`       INT(11) UNSIGNED    NOT NULL DEFAULT '0',
     `request_accepted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
     `door_id`          TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
     `date_added`       TIMESTAMP           NULL DEFAULT NULL,
