@@ -209,7 +209,7 @@ define([
             }
 
             require(['modules/logging/js/views/LoggerView'], function (Logger) {
-                var log = Logger.init();
+                var log = Logger().init();
 
                 switch (type) {
                     case 'action':
