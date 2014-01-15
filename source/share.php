@@ -6,9 +6,9 @@
  */
 define('REDIRECTION', true);
 require_once 'init.php';
-//$fb_share_url = "https://apps.facebook.com/" . $aa['instance']['fb_app_url'] . "/share.php?i_id=" . $aa['instance']['i_id'];
+//$fb_share_url = "https://apps.facebook.com/" . $aa['instance']['fb_app_url'] . "/share.php?i_id=" . $aa->instance->i_id;
 
-$fb_share_url = $aa['instance']["fb_canvas_url"] . "share.php?i_id=" . $aa['instance']['i_id'];
+$fb_share_url = $aa['instance']["fb_canvas_url"] . "share.php?i_id=" . $aa->instance->i_id;
 
 $redirect_url = $aa['instance']['fb_page_url'] . "?sk=app_" . $aa['instance']['fb_app_id'];
 
@@ -18,7 +18,7 @@ if (__c('app_using_on') === 'website'
     || (!empty($_GET['page']) && $_GET['page'] === 'website')
 )
 {
-    $redirect_url = $aa['instance']["fb_canvas_url"] . "index.php?i_id=" . $aa['instance']['i_id'];
+    $redirect_url = $aa['instance']["fb_canvas_url"] . "index.php?i_id=" . $aa->instance->i_id;
 }
 
 if (!empty($_GET['locale']))
@@ -97,7 +97,7 @@ if (!empty($_GET['og-object']))
     <meta property="og:image" content="<?php echo $share_image; ?>" />
     <meta property="og:site_name" content="<?php echo $share_title; ?>" />
     <meta property="og:description" content="<?php echo $share_description; ?>" />
-    <!--meta property="og:i_id" content="<?php echo $aa['instance']['i_id']; ?>" /-->
+    <!--meta property="og:i_id" content="<?php echo $aa->instance->i_id; ?>" /-->
 </head>
 
 <body>
