@@ -8,7 +8,7 @@ define([
 
     Remove = function () {
         if (!_.isUndefined(_.singleton.collection[ReturnObj.namespace])) {
-            _.singleton.collection[ReturnObj.namespace].stopListening().undelegateEvents().remove();
+            _.singleton.collection[ReturnObj.namespace].stopListening();
             delete _.singleton.collection[ReturnObj.namespace];
         }
     };
