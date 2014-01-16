@@ -14,8 +14,9 @@ define([
     };
 
     Init = function (settings) {
-        settings = settings || {},
-            init = settings.init || false;
+        settings = settings || {};
+
+        var init = settings.init || false;
 
         if (_.isUndefined(_.singleton.model[ReturnObj.namespace])) {
             GetInstanze(settings);
@@ -30,8 +31,9 @@ define([
     };
 
     GetInstanze = function (settings) {
-        settings = settings || {},
-            id = settings.id || 1,
+        settings = settings || {};
+
+        var id = settings.id || 1,
             attributes = settings.attributes || {};
 
         attributes.id = 'model_' + ReturnObj.namespace + id;
