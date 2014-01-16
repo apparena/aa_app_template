@@ -1,6 +1,5 @@
 // extend jquery to be able to pass form data as a json automatically
 // (calling serializeObject will pack the data from the name attributes as a js-object)
-console.log('serializeObject');
 $.fn.serializeObject = function () {
     var items = {},
         form = this[ 0 ],

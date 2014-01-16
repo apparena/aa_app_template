@@ -115,7 +115,7 @@
                     <a href="#page/profile"><img src="https://secure.gravatar.com/avatar/<?php echo md5(strtolower($user)) ?>?s=40&amp;d=mm" alt="avatar"></a>
                 </li>
                 <li class="link-element nav-logout  <?php echo $show_logout ?>">
-                <a href="#page/profile/logout"><i class="fa fa-sign-out"></i> <?php echo __pt('logout') ?></a>
+                <a href="#page/auth/logout"><i class="fa fa-sign-out"></i> <?php echo __pt('logout') ?></a>
                 </li>
                 <?php
                 ENDIF;
@@ -160,7 +160,7 @@
         <?php
         $info = __t('fb_admin_info');
         $link1 = '<a href="#page/participate">' . __t('fb_admin_info_link1') . '</a>';
-        $link2 = '<a href="https://manager.app-arena.com/instances/' . $aa_inst_id . '/wizard" target="_blank">' . __t('fb_admin_info_link2') . '</a>';
+        $link2 = '<a href="https://manager.app-arena.com/instances/' . i_id . '/wizard" target="_blank">' . __t('fb_admin_info_link2') . '</a>';
         printf($info, $link1, $link2);
         ?>
     </div>

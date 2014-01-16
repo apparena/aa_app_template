@@ -1,6 +1,4 @@
 // @see http://jqueryvalidation.org/
-console.log('validator');
-
 $.validator.setDefaults({
     debug:        true,
     validClass:   'has-success',

@@ -27,25 +27,12 @@
     <div id="content">
 
         <!-- DEMO PART START. please remove this, before deployment -->
-        <div class="btn-group btn-group-justified">
         <?php
-        if(file_exists('modules/fangate/'))
+        if(file_exists('includes/demolinks.php'))
         {
-            echo '<a href="#page/fangate" class="btn btn-default">Fangate Demo</a>';
-        }
-        if(file_exists('modules/logging/'))
-        {
-            echo '<a href="#page/logging/demo/action" class="btn btn-default">Action-Log Demo</a>';
-            echo '<a href="#page/logging/demo/admin" class="btn btn-default">Admin-Log Demo</a>';
-            echo '<a href="#page/logging/demo/group" class="btn btn-default">Group-Log Demo</a>';
-        }
-        if (file_exists('modules/auth/'))
-        {
-            echo '<a href="#page/auth" class="btn btn-default">Login Demo</a>';
-            echo '<a href="#page/auth/modal" class="btn btn-default">Login-Modal Demo</a>';
+            include_once('includes/demolinks.php');
         }
         ?>
-        </div>
         <!-- DEMO PART END. -->
 
         <div class="content-wrapper clearfix">

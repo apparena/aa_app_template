@@ -10,7 +10,7 @@ include_once('includes/bootstrap.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title><?php __pc('general_title'); ?></title>
     <meta name="description" content="<?php __pc('general_desc'); ?>" />
-    <link rel="canonical" href="<?php echo $aa['instance']['share_url']; ?>" />
+    <link rel="canonical" href="<?php echo $aa->instance->share_url; ?>" />
 
     <link type="text/css" rel="stylesheet" href="<?php echo $css_file['name']; ?>" />
 

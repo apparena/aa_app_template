@@ -15,7 +15,7 @@ if (__c('admin_debug_mode') === '1')
     echo '<button class="show-debug btn btn-default" data-content="debug-env">Show env</button>';
 
     echo '<pre id="debug-instance">';
-    print_r($aa['instance']);
+    print_r($aa->instance);
     echo '</pre>';
 
     echo '<pre id="debug-config">';

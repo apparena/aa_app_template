@@ -76,7 +76,7 @@
         admin.on('click', function () {
             //_.debug.log('button clicked');
             window.open(
-                'modules/admin_panel/index.php?aa_inst_id=' + _.aa.instance.aa_inst_id + '&admin_key=' + _.aa.custom.admin_key,
+                'modules/admin_panel/index.php?i_id=' + _.aa.instance.i_id + '&admin_key=' + _.aa.custom.admin_key,
                 '_blank'
             );
         });

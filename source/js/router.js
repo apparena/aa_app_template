@@ -164,7 +164,7 @@ define([
             }
 
             // add instance id
-            data.aa_inst_id = _.aa.instance.i_id;
+            data.i_id = _.aa.instance.i_id;
 
             $.ajax({
                 url:      'ajax.php',
@@ -209,7 +209,7 @@ define([
             }
 
             require(['modules/logging/js/views/LoggerView'], function (Logger) {
-                var log = Logger.init();
+                var log = Logger().init();
 
                 switch (type) {
                     case 'action':

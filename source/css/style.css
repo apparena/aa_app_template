@@ -1,3 +1,7 @@
+body {
+    padding-top: 55px;
+}
+
 .env-mode {
     position: fixed;
     top: 0;
