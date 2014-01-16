@@ -14,7 +14,7 @@ define([
     };
 
     Init = function (settings) {
-        var settings = settings || {},
+        settings = settings || {},
             init = settings.init || false;
 
         if (_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
@@ -30,7 +30,7 @@ define([
     };
 
     GetInstanze = function (settings) {
-        var settings = settings || {},
+        settings = settings || {},
             id = settings.id || 1,
             attributes = settings.attributes || {};
 
