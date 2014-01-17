@@ -1,4 +1,3 @@
-/*global define: false, require: true */
 define([
     'jquery',
     'underscore',
@@ -26,35 +25,40 @@ define([
             _.bindAll(this, 'setEnv', 'homeAction', 'callAction', 'moduleAction', 'loadModule', 'goToPreviewsAction', 'goToPreviewsPage');
         },
 
-        loadModule: function (module, id, check_mobile) {
-            var that = this,
-                current_module = module;
+        loadModule: function (id) {
+            var newModules = [],
+                module = [
+                    '../' + this.appModulePath,
+                    '../' + this.modulePath
+                ];
 
-            if (typeof check_mobile === 'undefined') {
-                check_mobile = true;
+            // add mobile to module name and try to load a mobile version first
+            if (_.aa.env.device.type === 'mobile') {
+                _.each(module, function (value) {
+                    newModules.push(value + '-mobile');
+                    newModules.push(value);
+                });
+
+                module = newModules;
             }
 
-            // add mobile to module name and try to load a mibile version first
-            if (_.aa.env.device.type === 'mobile' && check_mobile !== false) {
-                module += '-mobile';
-            }
+            // unset maybe existing declarations and set a new config path
+            require.undef('CurrentModule');
+            requirejs.config({
+                paths: {
+                    CurrentModule: module
+                }
+            });
 
-            require([module], function (module) {
+            require(['CurrentModule'], function (Module) {
                 if (id !== false) {
-                    module(id);
+                    Module(id);
                 } else {
-                    module();
+                    Module();
                 }
             }, function (err) {
-                // The errback, error callback
-                // The error has a list of modules that failed
-                if (_.aa.env.device.type !== 'mobile' || check_mobile === false) {
-                    var failedModule = err.requireModules && err.requireModules[0];
-                    _.debug.error('canot loadmodule: ', failedModule);
-                } else {
-                    // if this was a mobile call, try now to load a desktop module
-                    that.loadModule(current_module, id, false);
-                }
+                var failedModule = err.requireModules && err.requireModules[0];
+                _.debug.error('canot loadmodule: ', failedModule);
             });
         },
 
@@ -78,9 +82,11 @@ define([
             }
 
             this.currentPage = module;
+            this.modulePath = 'modules/' + module + '/js/' + filename;
+            this.appModulePath = 'modules/aa_app_mod_' + module + '/js/' + filename;
 
             this.setEnv(env);
-            this.loadModule('modules/' + module + '/js/' + filename, id);
+            this.loadModule(id);
         },
 
         callAction: function (module) {
