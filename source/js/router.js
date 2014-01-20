@@ -42,8 +42,6 @@ define([
                 module = newModules;
             }
 
-            _.debug.log(module);
-
             // unset maybe existing declarations and set a new config path
             require.undef('CurrentModule');
             requirejs.config({
@@ -212,7 +210,7 @@ define([
                 data = scope;
             }
 
-            require(['modules/logging/js/views/LoggerView'], function (Logger) {
+            require(['modules/aa_app_mod_logging/js/views/LoggerView'], function (Logger) {
                 var log = Logger().init();
 
                 switch (type) {

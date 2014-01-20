@@ -103,7 +103,7 @@
             <ul class="nav navbar-nav navbar-right">
                 <?php
                 // show login and admin buttons only if auth module is installed
-                if (file_exists('modules/auth/')):
+                if (file_exists('modules/aa_app_mod_auth/')):
                 ?>
                 <li id="nav-login" class="link-element <?php echo $show_login ?>">
                     <a href="#/page/auth/modal"><i class="fa fa-sign-in"></i> <?php __pt('login'); ?></a>

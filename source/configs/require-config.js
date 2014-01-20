@@ -4,11 +4,17 @@ var require = {
     'packages': [
         {
             'name':     'lodash',
-            'location': 'vendor/lodash-amd/compat'
+            'location': 'vendor/lodash/dist',
+            'main':     'lodash.underscore'
         },
         {
             'name':     'underscore',
-            'location': 'vendor/lodash-amd/underscore'
+            'location': 'vendor/lodash/dist',
+            'main':     'lodash.underscore'
+
+            /*'location': 'vendor/lodash-amd/underscore',
+            'main': 'main'*/
+
         }
     ],
 
