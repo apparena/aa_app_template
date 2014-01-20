@@ -210,7 +210,7 @@ define([
                 data = scope;
             }
 
-            require(['modules/logging/js/views/LoggerView'], function (Logger) {
+            require(['modules/aa_app_mod_logging/js/views/LoggerView'], function (Logger) {
                 var log = Logger().init();
 
                 switch (type) {
