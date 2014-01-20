@@ -33,10 +33,8 @@ define([
     GetInstanze = function (settings) {
         settings = settings || {};
 
-        var id = settings.id || 1,
-            attributes = settings.attributes || {};
-
-        attributes.id = 'view_' + ReturnObj.namespace + id;
+        var attributes = settings.attributes || {};
+        attributes.id = settings.id || 1;
 
         _.singleton.view[ReturnObj.namespace] = new ReturnObj.code(attributes);
     };
