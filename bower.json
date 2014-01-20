@@ -10,8 +10,8 @@
         "backbone-amd":          "1.1",
         "javascript-debug":      "latest",
         "jquery":                "2.0",
-        "lodash-amd":            "2.4",
+        "lodash":                "2.4",
         "jquery.validation":     "1.11",
-        "aa_app_mod_logging":     "latest"
+        "aa_app_mod_logging":    "latest"
     }
 }
