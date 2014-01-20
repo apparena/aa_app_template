@@ -28,8 +28,8 @@ define([
         loadModule: function (id) {
             var newModules = [],
                 module = [
-                    '../' + this.appModulePath,
-                    '../' + this.modulePath
+                    this.appModulePath,
+                    this.modulePath
                 ];
 
             // add mobile to module name and try to load a mobile version first
@@ -41,6 +41,8 @@ define([
 
                 module = newModules;
             }
+
+            _.debug.log(module);
 
             // unset maybe existing declarations and set a new config path
             require.undef('CurrentModule');
@@ -82,8 +84,8 @@ define([
             }
 
             this.currentPage = module;
-            this.modulePath = 'modules/' + module + '/js/' + filename;
-            this.appModulePath = 'modules/aa_app_mod_' + module + '/js/' + filename;
+            this.modulePath = '../modules/' + module + '/js/' + filename;
+            this.appModulePath = '../modules/aa_app_mod_' + module + '/js/' + filename;
 
             this.setEnv(env);
             this.loadModule(id);
@@ -105,14 +107,10 @@ define([
         },
 
         homeAction: function () {
-            // detect mobile version and load mobile home
-            var module = 'home';
-            /*if (_.aa.env.device.type === 'mobile') {
-             module = 'home-mobile';
-             }*/
-
-            this.setEnv(module);
-            this.loadModule(module, false);
+            this.setEnv('home');
+            this.modulePath = 'home';
+            this.appModulePath = 'home';
+            this.loadModule();
         },
 
         // added a new class to body from current route and removed the last one
