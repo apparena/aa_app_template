@@ -42,8 +42,6 @@ define([
                 module = newModules;
             }
 
-            _.debug.log(module);
-
             // unset maybe existing declarations and set a new config path
             require.undef('CurrentModule');
             requirejs.config({
