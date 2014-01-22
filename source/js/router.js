@@ -26,7 +26,8 @@ define([
         },
 
         loadModule: function (id) {
-            var newModules = [],
+            var that = this,
+                newModules = [],
                 module = [
                     this.appModulePath,
                     this.modulePath
@@ -58,7 +59,7 @@ define([
                 }
             }, function (err) {
                 var failedModule = err.requireModules && err.requireModules[0];
-                _.debug.error('canot loadmodule: ', failedModule);
+                _.debug.error('canot loadmodule', that.appModulePath + '.js');
             });
         },
 
