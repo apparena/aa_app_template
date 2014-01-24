@@ -57,7 +57,7 @@ define([
     };
 
     /**
-     * Creates a new instance and stored them into Collection singleton object
+     * Creates a new instance and store them into Collection singleton object
      *
      * @module GetInstanze
      * @submodule Init

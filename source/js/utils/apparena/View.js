@@ -57,7 +57,7 @@ define([
     };
 
     /**
-     * Creates a new instance and stored them into view singleton object
+     * Creates a new instance and store them into view singleton object
      *
      * @module GetInstanze
      * @submodule Init
