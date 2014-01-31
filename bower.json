@@ -11,7 +11,6 @@
         "javascript-debug":      "latest",
         "jquery":                "2.1",
         "lodash":                "2.4",
-        "jquery.validation":     "1.11",
-        "aa_app_mod_logging":    "latest"
+        "jquery.validation":     "1.11"
     }
 }
