@@ -2,11 +2,11 @@
 /**
  * Setup your app-model access credentials here
  */
-$aa_activated        = true;
-$aa_app_id           = 0;
-$aa_app_secret       = "";
-$aa_default_locale   = "de_DE";
-$aa_default_timezone = "Europe/Berlin";
+define('APP_ID', 0);
+define('APP_SECRET', '');
+define('APP_BASIC_PATH', '/');
+define('APP_BASIC_TIMEZONE', 'Europe/Berlin');
+$aa_default_locale = "de_DE";
 
 /**
  * Setup your database access data

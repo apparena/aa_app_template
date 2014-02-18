@@ -7,26 +7,26 @@ vagrantfile-local:
         network:
             private_network: 192.168.111.222
             forwarded_port:
-                B413kQejrKxQ:
+                t4LTMYpdSuj2:
                     host: '80'
                     guest: '80'
         provider:
             virtualbox:
                 modifyvm:
-                    name: 'Ubuntu Precise 12.04 x64 - Virtualbox 4.3 (PHP 5.3 )'
                     natdnshostresolver1: on
                     memory: '1022'
                 setextradata:
                     VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root: 1
         provision:
             puppet:
-                manifests_path: puppet/manifests
+                manifests_path: puphpet/puppet
+                manifest_file: manifest.pp
                 options:
-                    - --verbose
-                    - '--hiera_config /vagrant/hiera.yaml'
+                    - '--verbose'
+                    - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            Q8SyRjN09ZnM:
+            mz5CZPAr4A6K:
                 id: vagrant-root
                 source: ./
                 target: /var/www
@@ -43,23 +43,33 @@ vagrantfile-local:
         forward_x11: false
         shell: 'bash -l'
     vagrant:
-        host: ':detect'
+        host: detect
 server:
     packages:
         - bzip2
         - wget
         - lsof
         - sudo
+        - nano
     dot_files:
         -
             bash_aliases: null
     _prevent_empty: ''
+mailcatcher:
+    install: '1'
+    settings:
+        smtp_ip: 0.0.0.0
+        smtp_port: 1025
+        http_ip: 0.0.0.0
+        http_port: '1080'
+        path: /usr/local/bin
+        log: /var/log/mailcatcher/mailcatcher.log
 apache:
     modules:
         - php
         - rewrite
     vhosts:
-        gc7LxkTvQlcv:
+        H1MXHpXlozUj:
             servername: app.dev
             serveraliases:
                 - www.app.dev
@@ -70,23 +80,35 @@ apache:
                 - 'APP_ENV_SERVER vigrant'
             override:
                 - All
-        SAzoWyma23Wp:
+        460oCaWTRrVF:
             servername: applive.dev
             serveraliases:
                 - www.applive.dev
             docroot: /var/www/dist
             port: '80'
             setenv:
-                - 'APP_ENV dev'
+                - 'APP_ENV product'
+            override:
+                - All
+        2KfyTfHoYfzU:
+            servername: applive.dev
+            serveraliases:
+                - www.applive.dev
+            docroot: /var/www/dist
+            port: '443'
+            setenv:
+                - 'APP_ENV product'
             override:
                 - All
     user: www-data
     group: www-data
     default_vhost: true
     mpm_module: prefork
+    mod_pagespeed: 0
+    mod_spdy: 0
 php:
     version: '53'
-    composer: 1
+    composer: '1'
     modules:
         php:
             - cgi
@@ -95,9 +117,11 @@ php:
             - gd
             - intl
             - mcrypt
+            - memcache
         pear: {  }
         pecl:
             - pecl_http
+            - APC
     ini:
         display_errors: On
         error_reporting: '-1'
@@ -110,24 +134,28 @@ xdebug:
         xdebug.remote_autostart: '0'
         xdebug.remote_connect_back: '1'
         xdebug.remote_enable: '1'
-        xdebug.remote_handler: 'dbgp'
+        xdebug.remote_handler: dbgp
         xdebug.remote_port: '9000'
-        xdebug.remote_host: '192.168.111.222'
-        xdebug.idekey: 'PHPSTORM'
+        xdebug.remote_host: 192.168.111.222
+        xdebug.idekey: PHPSTORM
         xdebug.profiler_enable: '0'
-        xdebug.profiler_output_name: 'xdebug-profile.%R.%t'
-        xdebug.profiler_output_dir: '/var/www/xdebug/profiles'
+        xdebug.profiler_output_name: xdebug-profile.%R.%t
+        xdebug.profiler_output_dir: /var/www/xdebug/profiles
         xdebug.profiler_enable_trigger: '1'
-        xdebug.trace_output_dir: '/var/www/xdebug/traces'
-        xdebug.trace_output_name: 'trace.%R.%t'
+        xdebug.trace_output_dir: /var/www/xdebug/traces
+        xdebug.trace_output_name: trace.%R.%t
 xhprof:
     install: '1'
-    location: /var/www/xhprof
+drush:
+    install: 0
+    settings:
+        drush.tag_branch: 6.x
 mysql:
     root_password: root
     phpmyadmin: '1'
+    adminer: '1'
     databases:
-        ACmUftKplh3z:
+        jaSv1knTxrky:
             grant:
                 - ALL
             name: app
@@ -135,4 +163,24 @@ mysql:
             user: app
             password: app
             sql_file: ''
+mongodb:
+    install: '1'
+    auth: 1
+    port: '27017'
+    databases: {  }
+beanstalkd:
+    install: 0
+    settings:
+        listenaddress: 0.0.0.0
+        listenport: '13000'
+        maxjobsize: '65535'
+        maxconnections: '1024'
+        binlogdir: /var/lib/beanstalkd/binlog
+        binlogfsync: null
+        binlogsize: '10485760'
+    beanstalk_console: 0
+    binlogdir: /var/lib/beanstalkd/binlog
+rabbitmq:
+    install: 0
+    port: '5672'
 

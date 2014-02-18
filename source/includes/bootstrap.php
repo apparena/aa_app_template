@@ -1,4 +1,70 @@
 <?php
+/**
+ * cache busting
+ */
+header("Expires: on, 01 Jan 1970 00:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+/**
+ * Setup the environment
+ */
+date_default_timezone_set('Europe/Berlin'); // Set timezone
+ini_set('session.gc_probability', 0); // Disable session expired check
+header('P3P: CP=CAO PSA OUR'); // Fix IE save cookie in iframe problem
+
+define('ROOT_PATH', str_replace('/includes', '', realpath(dirname(__FILE__)))); // Set include path
+#define('URL_PATH', str_replace(array('/includes', $_SERVER["DOCUMENT_ROOT"]), '', realpath(dirname(__FILE__)))); // Set include path
+define('_VALID_CALL', 'true');
+
+require_once ROOT_PATH . '/configs/app-config.php';
+require_once ROOT_PATH . '/libs/Slim/Slim.php';
+\Slim\Slim::registerAutoloader();
+
+$app = new \Slim\Slim(array(
+    // Application
+    'mode'                  => 'product',
+    // Debugging
+    'debug'                 => DEBUG,
+    // Logging
+    'log.writer'            => null,
+    'log.level'             => \Slim\Log::DEBUG,
+    'log.enabled'           => true,
+    // View
+    'templates.path'        => ROOT_PATH . '/templates',
+    'view'                  => '\Slim\View',
+    // Cookies
+    'cookies.encrypt'       => true,
+    'cookies.lifetime'      => '30 days',
+    'cookies.path'          => APP_BASIC_PATH,
+    'cookies.secure'        => true,
+    'cookies.httponly'      => true,
+    // Encryption
+    'cookies.secret_key'    => APP_SECRET
+));
+
+if (!empty($_SERVER['APP_ENV']))
+{
+    $app->config('mode', $_SERVER['APP_ENV']);
+}
+
+// only as example
+/*$app->configureMode('development', function () use ($app)
+{
+    $app->config(array(
+        'log.enable' => false,
+        'debug'      => true
+    ));
+});*/
+
+require_once ROOT_PATH . '/configs/routes.php';
+
+$app->run();
+
+exit();
+
 try
 {
     require_once("init.php");
@@ -76,9 +142,9 @@ if (isset($aaForJs->instance->fb_app_secret))
 }
 
 // add basic app admins
-if(isset($aaForJs->config->admin_mails))
+if (isset($aaForJs->config->admin_mails))
 {
-$aaForJs->config->admin_mails->value = $aaForJs->config->admin_mails->value . ',' . APP_ADMINS;
+    $aaForJs->config->admin_mails->value = $aaForJs->config->admin_mails->value . ',' . APP_ADMINS;
 }
 else
 {
@@ -109,4 +175,4 @@ if (!empty($_SESSION['login']['user']['mail']))
 }
 
 // generate admin key for admin button
-$aaForJs->custom = (object) array('admin_key' => md5($i_id . '_' . $aa_app_secret));
+$aaForJs->custom = (object)array('admin_key' => md5($i_id . '_' . $aa_app_secret));
