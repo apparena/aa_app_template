@@ -11,11 +11,11 @@
  * @author      "Marcus Merchel" <kontakt@marcusmerchel.de>
  * @version     1.0.0 (19.08.13 - 10:25)
  */
-namespace com\apparena\system;
+namespace Apparena\Systems;
 
 use \PDO AS PDO;
 
-class Database extends \PDO
+class Database extends PDO
 {
     const DEFAULT_PORT = '3306';
     const DEFAULT_TYPE = 'mysql';

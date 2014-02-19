@@ -14,7 +14,7 @@
  * @license     http://www.marcusmerchel.de/licence/
  * @version     1.0.0 (12.12.13 - 13:53)
  */
-namespace com\apparena\system;
+namespace Apparena\Systems;
  
 class App 
 {

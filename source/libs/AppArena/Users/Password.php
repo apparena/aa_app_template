@@ -12,7 +12,7 @@
  * @author      "Marcus Merchel" <kontakt@marcusmerchel.de>
  * @version     1.0.0 (15.08.13 - 15:18)
  */
-namespace com\apparena\utils\user\password;
+namespace Apparena\Users;
 
 class Password
 {
