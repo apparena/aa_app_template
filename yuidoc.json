@@ -1,0 +1,16 @@
+{
+    "name":        "AppArena App template",
+    "description": "Start your Backbone.js App project in 15 seconds!",
+    "version":     "1.3.0",
+    "url":         "http://appalizr.com/",
+    "options":     {
+        "linkNatives":    "true",
+        "attributesEmit": "true",
+        "outdir":         "./source/doc/app/yuidoc",
+        "paths":          [
+            "./source/js",
+            "./source/modules"
+        ],
+        "exclude":        "vendor,build,dist"
+    }
+}

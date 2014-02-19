@@ -9,6 +9,7 @@ define([
     /**
      * destroy collection objects and eventlistener
      *
+     * @class Collection
      * @module Remove
      * @requires Backbone.Collection
      * @static
@@ -59,6 +60,7 @@ define([
     /**
      * Creates a new instance and store them into Collection singleton object
      *
+     * @class Collection
      * @module GetInstanze
      * @submodule Init
      * @static
@@ -97,7 +99,8 @@ define([
      * that handles initialization and removing objects of a Backbone Collection.
      * Namespace and code must be set by the AMD module.
      *
-     * @class ReturnObj
+     * @class Collection
+     * @module ReturnObj
      * @requires namespace {String}, code {Object}
      * @type {{init: Init, code: null, namespace: string, remove: Remove, getInstance: Instance}}
      */

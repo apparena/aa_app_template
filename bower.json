@@ -1,6 +1,6 @@
 {
     "name":         "APP-Template",
-    "version":      "1.2.2",
+    "version":      "1.3.0",
     "dependencies": {
         "backbone.localStorage": "1.1",
         "font-awesome":          "4.0",
