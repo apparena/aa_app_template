@@ -1,11 +1,11 @@
 <?php
-$app->get('/', function ()
-{
-    echo "Home Page";
-});
+return array(
+    '/'            => '',
+    '/expired' => "Main:expired",
+    '/browser' => "Main:browser",
 
-$app->get('/testPage', function () use ($app)
-{
-    echo "TEST Page";
-    #$app->render('testpage.php');
-});
+    /*'/demo'        => array(
+        "get"  => "Main:test2",
+        "post" => "Main:test3"
+    )*/
+);
