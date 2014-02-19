@@ -8,8 +8,7 @@
         "attributesEmit": "true",
         "outdir":         "./source/doc/app/yuidoc",
         "paths":          [
-            "./source/js",
-            "./source/modules"
+            "./source/js"
         ],
         "exclude":        "vendor,build,dist"
     }
