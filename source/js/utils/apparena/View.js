@@ -18,6 +18,10 @@ define([
      *
      * @returns void
      */
+    /**
+     * Description
+     * @return 
+     */
     Remove = function () {
         if (!_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
             _.singleton.view[ReturnObj.namespace].stopListening().undelegateEvents().remove();
@@ -38,6 +42,11 @@ define([
      *
      * @param settings {Object} Not required - JSON string with settings for attributes and view id
      * @returns {Object}
+     */
+    /**
+     * Description
+     * @param {} settings
+     * @return CallExpression
      */
     Init = function (settings) {
         settings = settings || {};
@@ -65,6 +74,11 @@ define([
      *
      * @param settings {Object} Not required - JSON string with settings for attributes and view id
      */
+    /**
+     * Description
+     * @param {} settings
+     * @return 
+     */
     GetInstanze = function (settings) {
         settings = settings || {};
 
@@ -87,6 +101,10 @@ define([
      *  View().getInstance();
      *
      * @returns {Object}
+     */
+    /**
+     * Description
+     * @return MemberExpression
      */
     Instance = function () {
         return _.singleton.view[ReturnObj.namespace];

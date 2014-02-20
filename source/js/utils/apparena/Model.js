@@ -18,6 +18,10 @@ define([
      *
      * @returns void
      */
+    /**
+     * Description
+     * @return 
+     */
     Remove = function () {
         if (!_.isUndefined(_.singleton.model[ReturnObj.namespace])) {
             _.singleton.model[ReturnObj.namespace].stopListening();
@@ -38,6 +42,11 @@ define([
      *
      * @param settings {Object} Not required - JSON string with settings for attributes and model id
      * @returns {Object}
+     */
+    /**
+     * Description
+     * @param {} settings
+     * @return CallExpression
      */
     Init = function (settings) {
         settings = settings || {};
@@ -65,6 +74,11 @@ define([
      *
      * @param settings {Object} Not required - JSON string with settings for attributes and model id
      */
+    /**
+     * Description
+     * @param {} settings
+     * @return 
+     */
     GetInstanze = function (settings) {
         settings = settings || {};
 
@@ -87,6 +101,10 @@ define([
      *  Model().getInstance();
      *
      * @returns {Object}
+     */
+    /**
+     * Description
+     * @return MemberExpression
      */
     Instance = function () {
         return _.singleton.model[ReturnObj.namespace];

@@ -8,6 +8,13 @@ $.validator.setDefaults({
     errorElement: 'span', // contain the error msg in a span tag
     ignore:       '.ignore',
 
+    /**
+     * Description
+     * @method errorPlacement
+     * @param {} error
+     * @param {} element
+     * @return 
+     */
     errorPlacement: function (error, element) {
         // modify error object
         error.addClass('help-block');
@@ -21,14 +28,36 @@ $.validator.setDefaults({
         }
     },
 
+    /**
+     * Description
+     * @method highlight
+     * @param {} element
+     * @param {} errorClass
+     * @param {} validClass
+     * @return 
+     */
     highlight: function (element, errorClass, validClass) {
         $(element).closest('.form-group').addClass(errorClass).removeClass(validClass);
     },
 
+    /**
+     * Description
+     * @method unhighlight
+     * @param {} element
+     * @param {} errorClass
+     * @param {} validClass
+     * @return 
+     */
     unhighlight: function (element, errorClass, validClass) {
         $(element).closest('.form-group').removeClass(errorClass).addClass(validClass); // add the Bootstrap error class to the control group
     },
 
+    /**
+     * Description
+     * @method success
+     * @param {} element
+     * @return 
+     */
     success: function (element) {
         element.remove();
         this.unhighlight();

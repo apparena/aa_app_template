@@ -21,10 +21,21 @@ define([
         currentPage:   '',
         lastPage:      '',
 
+        /**
+         * Description
+         * @method initialize
+         * @return 
+         */
         initialize: function () {
             _.bindAll(this, 'setEnv', 'homeAction', 'callAction', 'moduleAction', 'loadModule', 'goToPreviewsAction', 'goToPreviewsPage');
         },
 
+        /**
+         * Description
+         * @method loadModule
+         * @param {} id
+         * @return 
+         */
         loadModule: function (id) {
             var that = this,
                 newModules = [],
@@ -63,6 +74,14 @@ define([
             });
         },
 
+        /**
+         * Description
+         * @method moduleAction
+         * @param {} module
+         * @param {} filename
+         * @param {} id
+         * @return 
+         */
         moduleAction: function (module, filename, id) {
             var env = module;
 
@@ -90,6 +109,12 @@ define([
             this.loadModule(id);
         },
 
+        /**
+         * Description
+         * @method callAction
+         * @param {} module
+         * @return 
+         */
         callAction: function (module) {
             // handle last and current action
             if (_.isEmpty(this.currentAction) === false) {
@@ -105,6 +130,11 @@ define([
             }
         },
 
+        /**
+         * Description
+         * @method homeAction
+         * @return 
+         */
         homeAction: function () {
             this.setEnv('home');
             this.modulePath = 'home';
@@ -113,6 +143,12 @@ define([
         },
 
         // added a new class to body from current route and removed the last one
+        /**
+         * Description
+         * @method setEnv
+         * @param {} envClass
+         * @return 
+         */
         setEnv:     function (envClass) {
             var body = $('body');
 
@@ -123,10 +159,21 @@ define([
             this.lastEnvClass = envClass;
         },
 
+        /**
+         * Description
+         * @method goToPreviewsAction
+         * @return 
+         */
         goToPreviewsAction: function () {
             this.redirection('call', this.lastAction);
         },
 
+        /**
+         * Description
+         * @method goToPreviewsPage
+         * @param {} trigger
+         * @return 
+         */
         goToPreviewsPage: function (trigger) {
             if (_.isEmpty(trigger)) {
                 trigger = true;
@@ -134,6 +181,14 @@ define([
             this.redirection('page', this.lastPage, trigger);
         },
 
+        /**
+         * Description
+         * @method redirection
+         * @param {} type
+         * @param {} page
+         * @param {} trigger
+         * @return 
+         */
         redirection: function (type, page, trigger) {
             var redirect = type + '/' + page;
             if (_.isEmpty(page)) {
@@ -146,10 +201,21 @@ define([
         }
     });
 
+    /**
+     * Description
+     * @return app_router
+     */
     initialize = function () {
         var app_router = new AppRouter();
 
         // Extend the View class to include a navigation method goTo
+        /**
+         * Description
+         * @method goTo
+         * @param {} loc
+         * @param {} trigger
+         * @return 
+         */
         Backbone.View.prototype.goTo = function (loc, trigger) {
             if (typeof trigger === 'undefined') {
                 trigger = true;
@@ -159,6 +225,14 @@ define([
         };
 
         // Extend the View class to make global ajax requests with jquery
+        /**
+         * Description
+         * @method ajax
+         * @param {} data
+         * @param {} async
+         * @param {} callback
+         * @return returnData
+         */
         Backbone.View.prototype.ajax = function (data, async, callback) {
             var returnData = {type: 'notReturned', data: {}};
 
@@ -175,6 +249,12 @@ define([
                 type:     'POST',
                 async:    async,
                 data:     data,
+                /**
+                 * Description
+                 * @method success
+                 * @param {} response
+                 * @return 
+                 */
                 success:  function (response) {
                     returnData.type = 'success';
                     returnData.data = response;
@@ -183,6 +263,12 @@ define([
                         callback(returnData);
                     }
                 },
+                /**
+                 * Description
+                 * @method error
+                 * @param {} response
+                 * @return 
+                 */
                 error:    function (response) {
                     returnData.type = 'error';
                     returnData.data = response;
@@ -200,6 +286,14 @@ define([
          * @param scope string log scope, defined by your own ex. [app|user]_[modulename]_[action]
          * @param data json params as json to save
          * @returns {*}
+         */
+        /**
+         * Description
+         * @method log
+         * @param {} type
+         * @param {} scope
+         * @param {} data
+         * @return ThisExpression
          */
         Backbone.View.prototype.log = function (type, scope, data) {
             if (_.isUndefined(type) === true || _.isUndefined(scope) === true || (type !== 'group' && _.isUndefined(data) === true)) {
@@ -232,6 +326,11 @@ define([
             return this;
         };
 
+        /**
+         * Description
+         * @method destroy
+         * @return 
+         */
         Backbone.View.prototype.destroy = function () {
             //COMPLETELY UNBIND THE VIEW
             this.undelegateEvents();

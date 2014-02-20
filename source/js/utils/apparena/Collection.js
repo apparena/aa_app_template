@@ -9,15 +9,12 @@ define([
     /**
      * destroy collection objects and eventlistener
      *
-     * @class Collection
-     * @module Remove
-     * @requires Backbone.Collection
      * @static
      *
      * @example
      *  Collection().remove();
      *
-     * @returns void
+     * @return void
      */
     Remove = function () {
         if (!_.isUndefined(_.singleton.collection[ReturnObj.namespace])) {
@@ -29,16 +26,14 @@ define([
     /**
      * returns an object from Instance()/singleton object
      *
-     * @module Init
-     * @requires Backbone.Collection
      * @static
      *
      * @example
      *  Collection().init({id : 123});
      *  Collection().init({attributes : {model : model.auth}});
      *
-     * @param settings {Object} Not required - JSON string with settings for attributes and Collection id
-     * @returns {Object}
+     * @param {Object} settings Not required - JSON string with settings for attributes and Collection id
+     * @return {Object} CallExpression
      */
     Init = function (settings) {
         settings = settings || {};
@@ -60,12 +55,11 @@ define([
     /**
      * Creates a new instance and store them into Collection singleton object
      *
-     * @class Collection
-     * @module GetInstanze
-     * @submodule Init
      * @static
      *
-     * @param settings {Object} Not required - JSON string with settings for attributes and Collection id
+     * @param {Object} settings Not required - JSON string with settings for attributes and Collection id
+     *
+     * @return void
      */
     GetInstanze = function (settings) {
         settings = settings || {};
@@ -79,16 +73,12 @@ define([
     /**
      * returns an instance from global singleton storage
      *
-     * @module Collection
-     * @submodule getInstance
-     * @extends Backbone.Collection
-     * @requires Backbone.Collection
      * @static
      *
      * @example
      *  Collection().getInstance();
      *
-     * @returns {Object}
+     * @return {Object} MemberExpression
      */
     Instance = function () {
         return _.singleton.collection[ReturnObj.namespace];
@@ -99,8 +89,6 @@ define([
      * that handles initialization and removing objects of a Backbone Collection.
      * Namespace and code must be set by the AMD module.
      *
-     * @class Collection
-     * @module ReturnObj
      * @requires namespace {String}, code {Object}
      * @type {{init: Init, code: null, namespace: string, remove: Remove, getInstance: Instance}}
      */
