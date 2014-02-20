@@ -27,7 +27,7 @@ Class Router
                 {
                     foreach ($path as $method => $action)
                     {
-                        $this->addRoute($route, $action . '@' . $method);
+                        $this->addRoute($route, $action . self::ACTION_SUFFIX . '@' . $method);
                     }
                 }
                 else
