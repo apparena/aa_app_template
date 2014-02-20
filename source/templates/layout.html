@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="de-DE">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>{{meta_title}}</title>
+    <meta name="description" content="{{meta_description}}" />
+    <link rel="canonical" href="{{meta_canonical}}" />
+
+    <link type="text/css" rel="stylesheet" href="{{layout_css}}" />
+
+    <!--[if gte IE 9]>
+    <link type="text/css" rel="stylesheet" href="css/ie9.css" />
+    <![endif]-->
+</head>
+<body class="{{layout_body_class}}">
+
+{{{app_navigation}}}
+
+<div class="container">
+    <header>
+        {{{app_header}}}
+    </header>
+    <div id="content">
+        <div class="content-wrapper clearfix">
+            {{{app_content}}}
+            <i class="fa {{layout_loader_class}} fa-spin startloader"></i>
+        </div>
+    </div>
+    <footer>
+        {{{app_footer}}}
+    </footer>
+    {{{app_comments_box}}}
+    {{{app_terms_box}}}
+    {{{app_branding_footer}}}
+</div>
+
+<script src="configs/require-config.js"></script>
+<script id="requirejs" data-main="js/main" src="js/vendor/requirejs/require.js"></script>
+</body>
+</html>

@@ -17,6 +17,7 @@ return array(
     'log.enabled'        => true,
     // View
     'templates.path'     => ROOT_PATH . '/templates',
+    'templates.base'     => 'layout',
     'view'               => new \Slim\Extras\Views\Mustache(),
     // Cookies
     'cookies.encrypt'    => true,

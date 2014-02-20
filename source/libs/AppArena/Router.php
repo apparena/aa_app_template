@@ -27,7 +27,7 @@ Class Router
                 {
                     foreach ($path as $method => $action)
                     {
-                        $this->addRoute($route, $action . self::ACTION_SUFFIX . '@' . $method);
+                        $this->addRoute($route, $action . '@' . $method);
                     }
                 }
                 else
@@ -67,8 +67,14 @@ Class Router
         {
             list($class, $path) = explode(':', $path);
         }
+        else
+        {
+            $class = $path;
+            $path = 'index';
+        }
 
-        $function = ($path !== '') ? $path . self::ACTION_SUFFIX : 'index' . self::ACTION_SUFFIX;
+        $function = ($path !== '') ? $path : 'index';
+        $function .= self::ACTION_SUFFIX;
 
         $func = function () use ($class, $function)
         {
