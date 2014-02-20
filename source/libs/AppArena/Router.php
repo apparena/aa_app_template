@@ -68,7 +68,7 @@ Class Router
             list($class, $path) = explode(':', $path);
         }
 
-        $function = ($path !== '') ? $path : 'index' . self::ACTION_SUFFIX;
+        $function = ($path !== '') ? $path . self::ACTION_SUFFIX : 'index' . self::ACTION_SUFFIX;
 
         $func = function () use ($class, $function)
         {
