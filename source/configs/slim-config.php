@@ -1,4 +1,5 @@
 <?php
+\Slim\Extras\Views\Mustache::$mustacheDirectory = ROOT_PATH . '/libs/Mustache';
 return array(
     // Application
     'mode'               => 'product',
@@ -11,6 +12,7 @@ return array(
     // View
     'templates.path'     => ROOT_PATH . '/templates',
     'view'               => '\Slim\View',
+    #'view'               => new \Slim\Extras\Views\Mustache(),
     // Cookies
     'cookies.encrypt'    => true,
     'cookies.lifetime'   => '30 days',
