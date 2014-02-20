@@ -11,8 +11,7 @@ return array(
     'log.enabled'        => true,
     // View
     'templates.path'     => ROOT_PATH . '/templates',
-    'view'               => '\Slim\View',
-    #'view'               => new \Slim\Extras\Views\Mustache(),
+    'view'               => new \Slim\Extras\Views\Mustache(),
     // Cookies
     'cookies.encrypt'    => true,
     'cookies.lifetime'   => '30 days',

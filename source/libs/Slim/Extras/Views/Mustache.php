@@ -56,7 +56,7 @@ class Mustache extends \Slim\View
      * @param string $template The template name specified in Slim::render()
      * @return string
      */
-    public function render($template)
+    public function render($template, $data = null, $status = null)
     {
         require_once self::$mustacheDirectory . '/Autoloader.php';
         \Mustache_Autoloader::register(dirname(self::$mustacheDirectory));

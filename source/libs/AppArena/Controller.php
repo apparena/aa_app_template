@@ -22,9 +22,9 @@ Class Controller extends \Slim\Slim
 
     public function render($name, $data = array(), $status = null)
     {
-        if (strpos($name, '.phtml') === false)
+        if (strpos($name, '.html') === false)
         {
-            $name = $name . '.phtml';
+            $name = $name . '.html';
         }
         parent::render($name, $data, $status);
     }
