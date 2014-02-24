@@ -6,35 +6,34 @@ Class Main extends \Apparena\Controller
     public function indexAction()
     {
         $this->callApi();
-        $content = $this->render("index", array("title" => 'Startseite', "name" => "Home"));
-        $this->display(array('app_content' => $content));
+        $content     = $this->render("index", array("title" => 'Startseite', "name" => "Home"));
+        $this->_data = array('app_content' => $content);
     }
 
     public function missingIdAction()
     {
         $this->config('templates.base', 'error');
-        $this->display(array(
+        $this->_data   = array(
             "title" => 'Ohhh damn!',
             "desc"  => "Your instance ID was not found in our archive. Sorry for that!"
-        ), 404);
+        );
+        $this->_status = 404;
     }
 
     public function browserAction()
     {
         $this->config('templates.base', 'browser');
-        $this->display(array());
     }
 
     public function expiredAction()
     {
         $this->config('templates.base', 'expired');
-        $this->display(array());
     }
 
     public function notFoundAction()
     {
-        $this->config('templates.base', '404');
-        $this->display(array(), 404);
+        $this->_status = 404;
+        $this->config('templates.base', $this->_status);
     }
 
     public function missingLanguageAction()

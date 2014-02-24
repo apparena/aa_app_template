@@ -6,20 +6,17 @@ require ROOT_PATH . '/libs/AppArena/Helper/aa_helper.php';
 
 Class Controller extends \Slim\Slim
 {
-    #protected $data;
-    protected $request;
+    protected $_render = true;
+    protected $_status = 302;
+    protected $_request;
+    protected $_data = array();
+    protected $_template;
 
     public function __construct()
     {
         $env           = \Slim\Environment::getInstance();
-        $this->request = new \Slim\Http\Request($env);
-
-        #require_once ROOT_PATH . '/configs/app-config.php';
-        $settings = require ROOT_PATH . '/configs/slim-config.php';
-        /*if (isset($settings['model']))
-        {
-            $this->data = $settings['model'];
-        }*/
+        $this->_request = new \Slim\Http\Request($env);
+        $settings      = require ROOT_PATH . '/configs/slim-config.php';
         parent::__construct($settings);
 
         if (!empty($_SERVER['APP_ENV']))
@@ -29,22 +26,56 @@ Class Controller extends \Slim\Slim
     }
 
     /**
-     * setup some things before we call the main method
-     * @param int $i_id API instance ID
+     * starts some slim processes to get slim functionality
+     * This thinks are not really necessary for our app
      */
-    public function before($i_id = 0)
+    public function __destruct()
+    {
+        // define an internal slim route, to disable slims error handling
+        $this->map('/:wildcard+', function ()
+        {
+            // Do nothing
+        })->via('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS');
+
+
+        // start slim to start internal functions, we need to use
+        $this->run();
+    }
+
+    /**
+     * setup some things before we call the main method
+     *
+     * @param int    $i_id API instance ID
+     * @param string $lang language settings
+     */
+    public function before($i_id = 0, $lang = APP_DEFAULT_LOCALE)
     {
         // check uri on last character. Is there no / at the end, redirect the page
-        $uri       = $this->request->getResourceUri();
+        $uri       = $this->_request->getResourceUri();
         $last      = substr($uri, -1);
         $extension = substr($uri, -4);
         if ($uri === "" || ($last !== '/' && $extension !== '.php' && $extension !== 'html'))
         {
-            $this->redirect($this->request->getResourceUri() . '/', 301);
+            $this->redirect($this->_request->getResourceUri() . '/', 301);
         }
 
         // set API instance ID
         \Apparena\App::$_i_id = $i_id;
+
+        // define language
+        \Apparena\App::setLocale($lang, $this);
+    }
+
+    /**
+     * setup some things after we call the main method
+     */
+    public function after()
+    {
+        // render automatically templates
+        if($this->_render)
+        {
+            $this->display($this->_data, $this->_status);
+        }
     }
 
     public function render($template, $data = array(), $status = null)
@@ -101,7 +132,7 @@ Class Controller extends \Slim\Slim
         $this->response->setStatus($status);
         $this->response->setBody($this->response->getMessageForCode($status));
         header("HTTP/" . $this->config('http.version') . " " . $this->response->getMessageForCode($status));
-        header("Location: " . $this->request->getRootUri() . $url);
+        header("Location: " . $this->_request->getRootUri() . $url);
         header("Connection: close");
         exit();
     }
