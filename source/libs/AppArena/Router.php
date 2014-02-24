@@ -88,8 +88,10 @@ Class Router
             $args  = func_get_args();
 
             call_user_func_array(array($class, 'before'), $args);
+            $return = call_user_func_array(array($class, $function), $args);
+            call_user_func_array(array($class, 'after'), $args);
 
-            return call_user_func_array(array($class, $function), $args);
+            return $return;
         };
 
         return $func;
