@@ -12,9 +12,9 @@
  * @author      "Marcus Merchel" <kontakt@marcusmerchel.de>
  * @version     1.0.0 (01.10.13 - 19:29)
  */
-namespace com\apparena\api;
+namespace Apparena\Api;
 
-class AA_AppManager
+class AppManager
 {
     const SERVER_URL = 'http://manager.app-arena.com/api/v1/instances/';
     const CACHE_TIME = '86400'; //24h
@@ -24,30 +24,45 @@ class AA_AppManager
     protected $_api_params = array(
         'aa_app_id'     => null,
         'aa_app_secret' => null,
-        'i_id'    => null,
+        'i_id'          => null,
         'fb_page_id'    => null,
         'locale'        => null,
     );
     protected $_config = null;
     protected $_translation = array();
     protected $_instance = null;
+    static private $_class_instance = null;
 
     /**
      * Class constructor to establish the app-manager connection
      *
      * @param array $params All facebook parameters to initialize the app-manager
      */
-    public function __construct($params)
+    private function __construct($params)
     {
         // set cache path
         $this->cache_path = ROOT_PATH . '/tmp/cache/';
 
         // set params
-        $this->setAppId($params)
-             ->setLocale($params)
-             ->setInstanceId($params)
-             ->setFbPageId($params)
+        $this->setAppId($params)->setLocale($params)->setInstanceId($params)->setFbPageId($params)
              ->setAppSecret($params);
+    }
+
+    /**
+     * get class instance (singleton instance)
+     *
+     * @param array $params All facebook parameters to initialize the app-manager
+     *
+     * @return AppManager
+     */
+    static public function init($params)
+    {
+        if (null === self::$_class_instance)
+        {
+            self::$_class_instance = new self($params);
+        }
+
+        return self::$_class_instance;
     }
 
     public function setLocale($locale)
@@ -295,4 +310,6 @@ class AA_AppManager
     {
         // void
     }
+
+    private function __clone() { }
 }

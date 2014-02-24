@@ -14,9 +14,9 @@ Class Controller extends \Slim\Slim
 
     public function __construct()
     {
-        $env           = \Slim\Environment::getInstance();
+        $env            = \Slim\Environment::getInstance();
         $this->_request = new \Slim\Http\Request($env);
-        $settings      = require ROOT_PATH . '/configs/slim-config.php';
+        $settings       = require ROOT_PATH . '/configs/slim-config.php';
         parent::__construct($settings);
 
         if (!empty($_SERVER['APP_ENV']))
@@ -36,7 +36,6 @@ Class Controller extends \Slim\Slim
         {
             // Do nothing
         })->via('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS');
-
 
         // start slim to start internal functions, we need to use
         $this->run();
@@ -72,7 +71,7 @@ Class Controller extends \Slim\Slim
     public function after()
     {
         // render automatically templates
-        if($this->_render)
+        if ($this->_render)
         {
             $this->display($this->_data, $this->_status);
         }
