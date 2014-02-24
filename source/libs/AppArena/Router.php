@@ -79,14 +79,25 @@ Class Router
         $func = function () use ($class, $function)
         {
             $class = __NAMESPACE__ . '\Controllers\\' . $class;
+            if(!is_callable(array($class, $function)))
+            {
+                exit('404 - route not found');
+            }
+
             $class = new $class();
 
             $args = func_get_args();
 
+            call_user_func_array(array($class, 'before'), $args);
             return call_user_func_array(array($class, $function), $args);
         };
 
         return $func;
+    }
+
+    private function checkUri($uri)
+    {
+
     }
 
     public function run()
@@ -95,7 +106,9 @@ Class Router
         $uri        = $this->request->getResourceUri();
         $method     = $this->request->getMethod();
 
-        foreach ($this->routes as $i => $route)
+        #$this->checkUri($uri);
+
+        foreach ($this->routes as $route)
         {
             if ($route->matches($uri))
             {
@@ -103,6 +116,7 @@ Class Router
                 {
                     call_user_func_array($route->getCallable(), array_values($route->getParams()));
                     $display404 = false;
+                    break;
                 }
             }
         }
@@ -115,7 +129,7 @@ Class Router
             }
             else
             {
-                echo '404 - route not found';
+                exit('404 - route not found');
             }
         }
     }

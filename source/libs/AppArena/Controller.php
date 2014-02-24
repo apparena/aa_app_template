@@ -7,9 +7,13 @@ require ROOT_PATH . '/libs/AppArena/Helper/aa_helper.php';
 Class Controller extends \Slim\Slim
 {
     #protected $data;
+    protected $request;
 
     public function __construct()
     {
+        $env           = \Slim\Environment::getInstance();
+        $this->request = new \Slim\Http\Request($env);
+
         #require_once ROOT_PATH . '/configs/app-config.php';
         $settings = require ROOT_PATH . '/configs/slim-config.php';
         /*if (isset($settings['model']))
@@ -22,6 +26,25 @@ Class Controller extends \Slim\Slim
         {
             parent::config('mode', $_SERVER['APP_ENV']);
         }
+    }
+
+    /**
+     * setup some things before we call the main method
+     * @param int $i_id API instance ID
+     */
+    public function before($i_id = 0)
+    {
+        // check uri on last character. Is there no / at the end, redirect the page
+        $uri       = $this->request->getResourceUri();
+        $last      = substr($uri, -1);
+        $extension = substr($uri, -4);
+        if ($uri === "" || ($last !== '/' && $extension !== '.php' && $extension !== 'html'))
+        {
+            $this->redirect($this->request->getResourceUri() . '/', 301);
+        }
+
+        // set API instance ID
+        \Apparena\App::$_i_id = $i_id;
     }
 
     public function render($template, $data = array(), $status = null)
@@ -47,6 +70,39 @@ Class Controller extends \Slim\Slim
             'meta_description' => $this->config('metatags')->meta_description,
             'meta_canonical'   => $this->config('metatags')->meta_canonical,
         ), $data);
-        echo $this->render($this->config('templates.base'), $data, $status);
+        echo $this->render($this->config('templates.base'), $settings, $status);
+    }
+
+    protected function callApi()
+    {
+        \Apparena\App::$_api = \Apparena\Api\AppManager::init(array(
+            'aa_app_id'     => APP_ID,
+            'aa_app_secret' => APP_SECRET,
+            'i_id'          => \Apparena\App::$_i_id,
+            'locale'        => \Apparena\App::$_locale
+        ));
+    }
+
+    /**
+     * Redirect (overwritten the slim standard)
+     *
+     * This method immediately redirects to a new URL. By default,
+     * this issues a 302 Found response; this is considered the default
+     * generic redirect response. You may also specify another valid
+     * 3xx status code if you want. This method will automatically set the
+     * HTTP Location header for you using the URL parameter.
+     *
+     * @param  string $url    The destination URL
+     * @param  int    $status The HTTP redirect status code (optional)
+     */
+    public function redirect($url = '/', $status = 302)
+    {
+        $this->cleanBuffer();
+        $this->response->setStatus($status);
+        $this->response->setBody($this->response->getMessageForCode($status));
+        header("HTTP/" . $this->config('http.version') . " " . $this->response->getMessageForCode($status));
+        header("Location: " . $this->request->getRootUri() . $url);
+        header("Connection: close");
+        exit();
     }
 }
