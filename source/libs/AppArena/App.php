@@ -5,11 +5,10 @@ use \PDO as PDO;
 
 class App
 {
-    private $_i_id = null;
-    private $_config = array();
-    private $_instance = array();
-    private $_locale = array();
-    private $_fb = array();
+    public static $_i_id = null;
+    public static $_api = array();
+    public static $_locale = APP_DEFAULT_LOCALE;
+    public static $_signed_request = null;
 
     public function __construct()
     {
@@ -35,5 +34,33 @@ class App
         $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 
         return $db;
+    }
+
+    public static function setLocale($locale = APP_DEFAULT_LOCALE)
+    {
+        if (!empty(self::$_signed_request['app_data']))
+        {
+            $app_data = json_decode(self::$_signed_request['app_data'], true);
+        }
+
+        if (!empty($_GET['locale']))
+        {
+            $locale  = $_GET['locale'];
+        }
+        else
+        {
+            if (!empty($app_data['locale']))
+            {
+                $locale  = $app_data['locale'];
+            }
+            else
+            {
+                if (!is_null(self::$_i_id) && !empty($_COOKIE['aa_inst_locale_' . self::$_i_id]))
+                {
+                    $locale  = $_COOKIE['aa_inst_locale_' . self::$_i_id];
+                }
+            }
+        }
+        self::$_locale = $locale;
     }
 }

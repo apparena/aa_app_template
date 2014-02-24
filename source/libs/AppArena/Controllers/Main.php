@@ -5,6 +5,7 @@ Class Main extends \Apparena\Controller
 {
     public function indexAction()
     {
+        $this->callApi();
         $content = $this->render("index", array("title" => 'Startseite', "name" => "Home"));
         $this->display(array('app_content' => $content));
     }
@@ -35,5 +36,9 @@ Class Main extends \Apparena\Controller
         $this->config('templates.base', '404');
         $this->display(array(), 404);
     }
-}
 
+    public function missingLanguageAction()
+    {
+        $this->redirect('/' . \Apparena\App::$_i_id . '/' . \Apparena\App::$_locale);
+    }
+}

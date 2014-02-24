@@ -40,6 +40,7 @@ $routes = require_once ROOT_PATH . '/configs/routes.php';
 $router->addRoutes($routes);
 $router->set404Handler("Main:notFound");
 
+$db = null;
 if (DB_ACTIVATED)
 {
     $db = \Apparena\App::getDatabase($db_user, $db_host, $db_name, $db_pass, $db_option);
