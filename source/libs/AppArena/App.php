@@ -9,22 +9,38 @@ class App
     public static $_api = array();
     public static $_locale = APP_DEFAULT_LOCALE;
     public static $_signed_request = null;
+    const COOKIE_NAME = 'aa_inst_locale_';
 
-    public function __construct()
+    private function __construct()
     {
-        // TODO: Implement __construct() method.
     }
 
+    /**
+     * AppArena class autoloader
+     *
+     * @param $className
+     */
     public static function autoload($className)
     {
         $className = str_replace(array(__NAMESPACE__ . '\\', '\\'), array('', '/'), $className);
-        $filename = ROOT_PATH . "/libs/AppArena/" . $className . ".php";
+        $filename  = ROOT_PATH . "/libs/AppArena/" . $className . ".php";
         if (file_exists($filename))
         {
             require $filename;
         }
     }
 
+    /**
+     * get database connection
+     *
+     * @param string $db_user
+     * @param string $db_host
+     * @param string $db_name
+     * @param string $db_pass
+     * @param array  $db_option
+     *
+     * @return Systems\Database
+     */
     public static function getDatabase($db_user, $db_host, $db_name, $db_pass, $db_option)
     {
         $db = new \Apparena\Systems\Database($db_user, $db_host, $db_name, $db_pass, $db_option);
@@ -36,31 +52,32 @@ class App
         return $db;
     }
 
-    public static function setLocale($locale = APP_DEFAULT_LOCALE)
+    /**
+     * define current language for API response
+     *
+     * @param string $locale
+     * @param null   $slim
+     */
+    // TODO: implement an interface to the controller structure adn check them here in $slim
+    public static function setLocale($locale = APP_DEFAULT_LOCALE, $slim = null)
     {
         if (!empty(self::$_signed_request['app_data']))
         {
             $app_data = json_decode(self::$_signed_request['app_data'], true);
         }
 
-        if (!empty($_GET['locale']))
+        $cookiename = self::COOKIE_NAME . self::$_i_id;
+        $cookie     = $slim->getCookie($cookiename);
+
+        if (!empty($app_data['locale']))
         {
-            $locale  = $_GET['locale'];
+            $locale = $app_data['locale'];
         }
-        else
+        elseif (!is_null($slim) && !is_null(self::$_i_id) && !empty($cookie))
         {
-            if (!empty($app_data['locale']))
-            {
-                $locale  = $app_data['locale'];
-            }
-            else
-            {
-                if (!is_null(self::$_i_id) && !empty($_COOKIE['aa_inst_locale_' . self::$_i_id]))
-                {
-                    $locale  = $_COOKIE['aa_inst_locale_' . self::$_i_id];
-                }
-            }
+            $locale = $cookie;
         }
+        $slim->setCookie($cookiename, $locale);
         self::$_locale = $locale;
     }
 }
