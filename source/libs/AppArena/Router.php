@@ -4,7 +4,6 @@ namespace Apparena;
 Class Router
 {
     const ACTION_SUFFIX = 'Action';
-
     protected $routes;
     protected $request;
     protected $errorHandler;
@@ -70,34 +69,30 @@ Class Router
         else
         {
             $class = $path;
-            $path = 'index';
+            $path  = 'index';
         }
 
         $function = ($path !== '') ? $path : 'index';
         $function .= self::ACTION_SUFFIX;
+        $that = $this;
 
-        $func = function () use ($class, $function)
+        $func = function () use ($class, $function, $that)
         {
             $class = __NAMESPACE__ . '\Controllers\\' . $class;
-            if(!is_callable(array($class, $function)))
+            if (!is_callable(array($class, $function)))
             {
-                exit('404 - route not found');
+                $that->call404Page();
             }
 
             $class = new $class();
-
-            $args = func_get_args();
+            $args  = func_get_args();
 
             call_user_func_array(array($class, 'before'), $args);
+
             return call_user_func_array(array($class, $function), $args);
         };
 
         return $func;
-    }
-
-    private function checkUri($uri)
-    {
-
     }
 
     public function run()
@@ -105,8 +100,6 @@ Class Router
         $display404 = true;
         $uri        = $this->request->getResourceUri();
         $method     = $this->request->getMethod();
-
-        #$this->checkUri($uri);
 
         foreach ($this->routes as $route)
         {
@@ -129,7 +122,7 @@ Class Router
             }
             else
             {
-                exit('404 - route not found');
+                $this->call404Page();
             }
         }
     }
@@ -137,5 +130,12 @@ Class Router
     public function set404Handler($path)
     {
         $this->errorHandler = $this->processCallback($path);
+    }
+
+    protected function call404Page()
+    {
+        $class = new Controllers\Main();
+        call_user_func_array(array($class, 'notFoundAction'), array());
+        exit();
     }
 }
