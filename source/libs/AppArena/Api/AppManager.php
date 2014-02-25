@@ -32,6 +32,7 @@ class AppManager
     protected $_translation = array();
     protected $_instance = null;
     static private $_class_instance = null;
+    public $isAjax = false;
 
     /**
      * Class constructor to establish the app-manager connection
@@ -170,7 +171,7 @@ class AppManager
     {
         // first on ajax calls, try to get call from cache
         $filename = self::CACHE_PREFIX . md5($scope . implode('-', $this->_api_params));
-        if (AJAX || defined('REDIRECTION') || !empty($_GET['cache']))
+        if ($this->isAjax === true || defined('REDIRECTION') || !empty($_GET['cache']))
         {
             $return = $this->getCachedFile($this->cache_path . $filename);
             if (!empty($return))
