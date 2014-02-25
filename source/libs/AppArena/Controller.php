@@ -120,8 +120,6 @@ Class Controller extends \Slim\Slim
         $instance->setLocale(\Apparena\App::$_api->getTranslation('data'));
         $instance->setData(\Apparena\App::$_api->getInstance('data'));
         $this->checkInstance($instance->getData());
-
-        __pt('home');
     }
 
     /**
