@@ -5,10 +5,11 @@ use \PDO as PDO;
 
 class App
 {
-    public static $_i_id = null;
-    public static $_api = array();
+    public static $i_id = null;
+    public static $api = array();
     public static $_locale = APP_DEFAULT_LOCALE;
-    public static $_signed_request = null;
+    protected  static $_signed_request = null;
+    protected  static $_current_date = null;
     const COOKIE_NAME = 'aa_inst_locale_';
 
     private function __construct()
@@ -66,14 +67,14 @@ class App
             $app_data = json_decode(self::$_signed_request['app_data'], true);
         }
 
-        $cookiename = self::COOKIE_NAME . self::$_i_id;
+        $cookiename = self::COOKIE_NAME . self::$i_id;
         $cookie     = $slim->getCookie($cookiename);
 
         if (!empty($app_data['locale']))
         {
             $locale = $app_data['locale'];
         }
-        elseif (!is_null($slim) && !is_null(self::$_i_id) && !empty($cookie))
+        elseif (!is_null($slim) && !is_null(self::$i_id) && !empty($cookie))
         {
             $locale = $cookie;
         }
@@ -81,8 +82,13 @@ class App
         self::$_locale = $locale;
     }
 
-    public function getCurrentTime()
+    public static function getCurrentDate()
     {
+        if(is_null(self::$_current_date))
+        {
+            self::$_current_date = new \DateTime('now', new \DateTimeZone(APP_BASIC_TIMEZONE));
+        }
 
+        return self::$_current_date;
     }
 }

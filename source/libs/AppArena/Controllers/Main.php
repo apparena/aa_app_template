@@ -38,6 +38,6 @@ Class Main extends \Apparena\Controller
 
     public function missingLanguageAction()
     {
-        $this->redirect('/' . \Apparena\App::$_i_id . '/' . \Apparena\App::$_locale);
+        $this->redirect('/' . \Apparena\App::$i_id . '/' . \Apparena\App::$_locale);
     }
 }
