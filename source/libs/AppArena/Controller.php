@@ -58,7 +58,7 @@ Class Controller extends \Slim\Slim
         }
 
         // set API instance ID
-        \Apparena\App::$_i_id = $i_id;
+        \Apparena\App::$i_id = $i_id;
 
         // define language
         \Apparena\App::setLocale($lang, $this);
@@ -98,7 +98,7 @@ Class Controller extends \Slim\Slim
             'meta_title'       => $this->config('metatags')->meta_title,
             'meta_description' => $this->config('metatags')->meta_description,
             'meta_canonical'   => $this->config('metatags')->meta_canonical,
-            'layout_css'   => $this->_request->getRootUri() . '/' . \Apparena\App::$_i_id . '/assets/css/style/',
+            'layout_css'   => $this->_request->getRootUri() . '/' . \Apparena\App::$i_id . '/assets/css/style/',
         ), $data);
         echo $this->render($this->config('templates.base'), $settings, $status);
     }
@@ -107,20 +107,26 @@ Class Controller extends \Slim\Slim
     {
         $instance = \Apparena\Api\Instance::init();
 
-        \Apparena\App::$_api = \Apparena\Api\AppManager::init(array(
+        \Apparena\App::$api = \Apparena\Api\AppManager::init(array(
             'aa_app_id'     => APP_ID,
             'aa_app_secret' => APP_SECRET,
-            'i_id'          => \Apparena\App::$_i_id,
+            'i_id'          => \Apparena\App::$i_id,
             'locale'        => \Apparena\App::$_locale
         ));
 
-        \Apparena\App::$_api->isAjax = $this->_request->isAjax();
+        \Apparena\App::$api->isAjax = $this->_request->isAjax();
 
-        $instance->setData(\Apparena\App::$_api->getInstance('data'));
-        $instance->setConfig(\Apparena\App::$_api->getConfig('data'));
-        $instance->setLocale(\Apparena\App::$_api->getTranslation('data'));
-        $instance->setData(\Apparena\App::$_api->getInstance('data'));
+        $instance->setData(\Apparena\App::$api->getInstance('data'));
+        $instance->setConfig(\Apparena\App::$api->getConfig('data'));
+        $instance->setLocale(\Apparena\App::$api->getTranslation('data'));
+        $instance->setData(\Apparena\App::$api->getInstance('data'));
         $this->checkInstance($instance->getData());
+
+        // define some basic constance's that we get over config values
+        define('GP_CLIENT_ID', __c('gp_client_id'));
+        define('GP_API_KEY', __c('gp_api_key'));
+        define('TW_CONSUMER_KEY', __c('tw_consumer_key'));
+        define('TW_CONSUMER_SECRET', __c('tw_consumer_secret'));
     }
 
     /**

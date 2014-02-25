@@ -1,8 +1,17 @@
 <?php
 namespace Apparena\Controllers;
 
+// ToDo: Add header settings with mime type and attachement
+
 Class Assets extends \Apparena\Controller
 {
+    public function before($i_id = 0, $lang = APP_DEFAULT_LOCALE)
+    {
+        parent::before($i_id, $lang);
+        $this->_render = false;
+        $this->callApi();
+    }
+
     public function cssAction($id, $filename)
     {
         switch ($filename)
@@ -11,7 +20,6 @@ Class Assets extends \Apparena\Controller
                 $this->style();
                 break;
         }
-        $this->_render = false;
     }
 
     public function jsAction($id, $filename)
@@ -33,24 +41,26 @@ Class Assets extends \Apparena\Controller
 
     protected function apimodel()
     {
+        // ToDo: Add FB stuff
+        $aa      = \Apparena\Api\Instance::init();
         $aaForJs = (object)array(
-            'locale'   => $aa->locale,
-            'config'   => $aa->config,
-            'instance' => $aa->instance,
-            'env'      => $aa->env,
+            'locale'   => $aa->getLocale(),
+            'config'   => $aa->getConfig(),
+            'instance' => $aa->getData(),
+            'env'      => new \stdClass(),
             'fb'       => false,
             'app_data' => false,
-/*            'user'     => (object)array(
-                    'ip'    => get_client_ip(),
-                    'agent' => $_SERVER['HTTP_USER_AGENT']
-                ),*/
+            /*            'user'     => (object)array(
+                                'ip'    => get_client_ip(),
+                                'agent' => $_SERVER['HTTP_USER_AGENT']
+                            ),*/
             'gp'       => (object)array(
                     'api_key'   => GP_API_KEY,
                     'client_id' => GP_CLIENT_ID
                 )
         );
 
-        #$aaForJs->env->mode = ENV_MODE;
+        $aaForJs->env->mode = $this->getMode();
 
         /*if (isset($aa->fb))
         {
@@ -73,9 +83,9 @@ Class Assets extends \Apparena\Controller
         }*/
 
         // save current time as timestamp in JS varible to handle temporary uid
-        $aaForJs->timestamp = $current_date->getTimestamp();
+        $aaForJs->timestamp = \Apparena\App::getCurrentDate();
         // create a unique id to use as temporary uid
-        $aaForJs->uid_temp = md5($i_id . uniqid() . $current_date->getTimestamp());
+        $aaForJs->uid_temp = md5(\Apparena\App::$i_id . uniqid() . \Apparena\App::getCurrentDate()->getTimestamp());
 
         // delete some important variables
         if (isset($aaForJs->instance->aa_app_secret))
@@ -97,30 +107,9 @@ Class Assets extends \Apparena\Controller
             pr('Missing app wizard config "admin_mails"');
         }
 
-        // show admin button or login form
-        $show_admin  = 'hide';
-        $show_profil = 'hide';
-        $show_login  = '';
-        $show_logout = 'hide';
-        if (!empty($_SESSION['login']['gid']) && $_SESSION['login']['gid'] === 'admin')
-        {
-            $show_admin  = '';
-            $show_profil = '';
-            $show_login  = 'hide';
-        }
-        elseif (!empty($_SESSION['login']['gid']) && $_SESSION['login']['gid'] === 'user')
-        {
-            $show_admin  = 'hide';
-            $show_login  = 'hide';
-            $show_profil = '';
-        }
-        $user = '';
-        if (!empty($_SESSION['login']['user']['mail']))
-        {
-            $user = $_SESSION['login']['user']['mail'];
-        }
-
         // generate admin key for admin button
-        $aaForJs->custom = (object)array('admin_key' => md5($i_id . '_' . $aa_app_secret));
+        $aaForJs->custom = (object)array('admin_key' => md5(\Apparena\App::$i_id . '_' . APP_SECRET));
+
+        echo json_encode($aaForJs);
     }
 }
