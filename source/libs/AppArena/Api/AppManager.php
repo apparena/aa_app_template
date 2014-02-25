@@ -4,8 +4,9 @@
  *
  * connect to app-arena.com app-manager RESTful API
  *
- * @category    api
- * @package     appmanager
+ * @category    AppArena
+ * @package     Api
+ * @subpackage  AppManager
  *
  * @see         https://wiki.app-arena.com/display/developer/API+Reference
  *
@@ -17,8 +18,8 @@ namespace Apparena\Api;
 class AppManager
 {
     const SERVER_URL = 'http://manager.app-arena.com/api/v1/instances/';
-    const CACHE_TIME = '86400'; //24h
-    const CACHE_PREFIX = 'api_';
+    #const CACHE_TIME = '86400'; //24h
+    #const CACHE_PREFIX = 'api_';
     protected $cache_path = null;
     //this params will transport each call
     protected $_api_params = array(
@@ -28,9 +29,9 @@ class AppManager
         'fb_page_id'    => null,
         'locale'        => null,
     );
-    protected $_config = null;
-    protected $_translation = array();
-    protected $_instance = null;
+    #protected $_config = null;
+    #protected $_translation = array();
+    #protected $_instance = null;
     static private $_class_instance = null;
     public $isAjax = false;
 
@@ -158,19 +159,16 @@ class AppManager
 
     public function getInstance($type = 'all')
     {
-        if ($this->_instance === null)
-        {
-            $scope           = '.json';
-            $this->_instance = $this->call($scope);
-        }
+        $scope    = '.json';
+        $instance = $this->call($scope);
 
-        return $this->defineReturn($this->_instance, $type);
+        return $this->defineReturn($instance, $type);
     }
 
     public function call($scope)
     {
         // first on ajax calls, try to get call from cache
-        $filename = self::CACHE_PREFIX . md5($scope . implode('-', $this->_api_params));
+        /*$filename = self::CACHE_PREFIX . md5($scope . implode('-', $this->_api_params));
         if ($this->isAjax === true || defined('REDIRECTION') || !empty($_GET['cache']))
         {
             $return = $this->getCachedFile($this->cache_path . $filename);
@@ -178,7 +176,7 @@ class AppManager
             {
                 return $return;
             }
-        }
+        }*/
 
         // cache is empty or not called, get resource now from API
         $return = json_decode(@file_get_contents(self::SERVER_URL . $this->getInstanceId() . $scope));
@@ -188,8 +186,8 @@ class AppManager
         }
 
         // cache result
-        $cachedfile = json_encode($return);
-        file_put_contents($this->cache_path . $filename, $cachedfile);
+        /*$cachedfile = json_encode($return);
+        file_put_contents($this->cache_path . $filename, $cachedfile);*/
 
         return $return;
     }
@@ -243,31 +241,25 @@ class AppManager
 
     public function getConfig($type = 'all')
     {
-        if ($this->_config === null)
-        {
-            $scope         = '/config.json?limit=0';
-            $this->_config = $this->call($scope);
-        }
+        $scope  = '/config.json?limit=0';
+        $config = $this->call($scope);
 
-        return $this->defineReturn($this->_config, $type);
+        return $this->defineReturn($config, $type);
     }
 
     public function getTranslation($type = 'all')
     {
         $locale = $this->getLocale();
 
-        if (empty($this->_translation[$locale]))
-        {
-            $scope                       = '/locale.json?locale=' . $this->getLocale() . '&limit=0';
-            $this->_translation[$locale] = $this->call($scope);
-        }
+        $scope       = '/locale.json?locale=' . $this->getLocale() . '&limit=0';
+        $translation = $this->call($scope);
 
-        $return = $this->defineReturn($this->_translation[$locale], $type);
+        $return = $this->defineReturn($translation, $type);
 
         if ($return !== false)
         {
             $return        = (object)$return->$locale;
-            $return->index = $this->createTranslationIndex($this->_translation[$locale]->data);
+            $return->index = $this->createTranslationIndex($translation->data);
         }
 
         return $return;
@@ -312,5 +304,8 @@ class AppManager
         // void
     }
 
+    /**
+     * disable clone function (singleton)
+     */
     private function __clone() { }
 }
