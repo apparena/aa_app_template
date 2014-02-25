@@ -104,6 +104,8 @@ Class Controller extends \Slim\Slim
 
     protected function callApi()
     {
+        $instance = \Apparena\Api\Instance::init();
+
         \Apparena\App::$_api = \Apparena\Api\AppManager::init(array(
             'aa_app_id'     => APP_ID,
             'aa_app_secret' => APP_SECRET,
@@ -113,8 +115,13 @@ Class Controller extends \Slim\Slim
 
         \Apparena\App::$_api->isAjax = $this->_request->isAjax();
 
-        $aa_instance = \Apparena\App::$_api->getInstance('data');
-        $this->checkInstance($aa_instance);
+        $instance->setData(\Apparena\App::$_api->getInstance('data'));
+        $instance->setConfig(\Apparena\App::$_api->getConfig('data'));
+        $instance->setLocale(\Apparena\App::$_api->getTranslation('data'));
+        $instance->setData(\Apparena\App::$_api->getInstance('data'));
+        $this->checkInstance($instance->getData());
+
+        __pt('home');
     }
 
     /**

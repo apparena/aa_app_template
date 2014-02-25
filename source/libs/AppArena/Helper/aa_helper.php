@@ -2,11 +2,14 @@
 /** translate functions **/
 function __t()
 {
-    global $aa;
+    #global $aa;
+
+    $instance = \Apparena\Api\Instance::init();
+    $data     = $instance->getLocale();
 
     // START version for old API version
-    $translate = json_decode(json_encode($aa->locale), true);
-    $index     = $aa->locale->index;
+    $translate = json_decode(json_encode($data), true);
+    $index     = $data->index;
 
     $args = func_get_args();
     $num  = func_num_args();
@@ -28,7 +31,7 @@ function __t()
     // END version for old API version
 
     // ToDo - version for new API version, remove all above if you activate this one! REMOVE createTranslationIndex() from AppManager class too!
-    /*$translate = $aa->locale;
+    /*$translate = $data;
     $key = $args[0];
     $text = $translate->$key->value;*/
 
@@ -63,16 +66,18 @@ function __pt()
 */
 function __c($config, $key = 'value')
 {
-    global $aa;
+    $instance = \Apparena\Api\Instance::init();
+    $data = $instance->getConfig();
 
-    if (empty($config))
+    if (empty($data))
     {
-        throw new Exception('$config is empty in config helper');
+        #throw new Exception('$config is empty in config helper');
+        return false;
     }
 
-    if (!empty($aa->config->$config->$key))
+    if (is_object($data) && !empty($data->$config->$key))
     {
-        return $aa->config->$config->$key;
+        return $data->$config->$key;
     }
 
     return false;
