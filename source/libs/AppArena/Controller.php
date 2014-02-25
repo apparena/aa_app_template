@@ -10,7 +10,6 @@ Class Controller extends \Slim\Slim
     protected $_status = 302;
     protected $_request;
     protected $_data = array();
-    protected $_template;
 
     public function __construct()
     {
@@ -111,6 +110,38 @@ Class Controller extends \Slim\Slim
             'i_id'          => \Apparena\App::$_i_id,
             'locale'        => \Apparena\App::$_locale
         ));
+
+        \Apparena\App::$_api->isAjax = $this->_request->isAjax();
+
+        $aa_instance = \Apparena\App::$_api->getInstance('data');
+        $this->checkInstance($aa_instance);
+    }
+
+    /**
+     * Check instance and redirect on errors to a special error page
+     */
+    protected function checkInstance($aa_instance)
+    {
+        $timezone                = new \DateTimeZone(APP_BASIC_TIMEZONE);
+        $current_date            = new \DateTime('now', $timezone);
+        $aa_inst_expiration_date = new \DateTime($aa_instance->expiration_date, $timezone);
+
+        if (empty($aa_instance->i_id) && $aa_instance === 'instance not activated')
+        {
+            $this->redirect('/expired/');
+        }
+        elseif ($aa_inst_expiration_date < $current_date)
+        {
+            $this->redirect('/expired/');
+        }
+        elseif (empty($aa_instance->i_id) && $aa_instance === 'instance not exist')
+        {
+            $this->redirect('/error/');
+        }
+        elseif (empty($aa_instance->i_id))
+        {
+            $this->redirect('/error/');
+        }
     }
 
     /**
