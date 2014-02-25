@@ -98,6 +98,7 @@ Class Controller extends \Slim\Slim
             'meta_title'       => $this->config('metatags')->meta_title,
             'meta_description' => $this->config('metatags')->meta_description,
             'meta_canonical'   => $this->config('metatags')->meta_canonical,
+            'layout_css'   => $this->_request->getRootUri() . '/' . \Apparena\App::$_i_id . '/assets/css/style/',
         ), $data);
         echo $this->render($this->config('templates.base'), $settings, $status);
     }

@@ -80,4 +80,9 @@ class App
         $slim->setCookie($cookiename, $locale);
         self::$_locale = $locale;
     }
+
+    public function getCurrentTime()
+    {
+
+    }
 }

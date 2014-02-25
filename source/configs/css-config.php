@@ -4,12 +4,12 @@
  * path starts from root
  */
 $css_import = array(
-    'main'                                                   => '/css/style.css',
-    '/js/vendor/bootstrap/dist/css/bootstrap.css'            => 'file',
-    '/js/vendor/font-awesome/css/font-awesome.css'           => 'file',
+    '/css/style.css'                                       => 'main',
+    '/js/vendor/bootstrap/dist/css/bootstrap.css'          => 'file',
+    '/js/vendor/font-awesome/css/font-awesome.css'         => 'file',
     '/modules/notification/css/jquery.pnotify.default.css' => 'file',
     //'css_app' => 'config',
-    'css_user'                                               => 'config',
+    'css_user'                                             => 'config',
 );
 
 // some stuf that replaces after compiling key = search, value = replace
@@ -18,3 +18,5 @@ $css_path_replacements = array(
     '../fonts/fontawesome'     => '../../js/vendor/font-awesome/fonts/fontawesome',
     '../fonts/glyphicons'      => '../../js/vendor/bootstrap/dist/fonts/glyphicons'
 );
+
+return array('import' => $css_import, 'replace' => $css_path_replacements);
