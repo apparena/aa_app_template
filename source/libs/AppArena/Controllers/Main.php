@@ -6,16 +6,37 @@ Class Main extends \Apparena\Controller
     public function indexAction()
     {
         $this->callApi();
-        $content     = $this->render("index", array("title" => 'Startseite', "name" => "Home"));
-        $this->_data = array('app_content' => $content);
+        $this->_data = array(
+            'app_navigation' => $this->render('sections/navigation'),
+            'app_header'     => __c('header_custom'),
+            'app_footer'     => __c('footer_custom'),
+            'app_terms_box'  => $this->render('sections/terms_box', array('link' => __t('footer_terms', '<a href="#/page/app/terms">' . __t('terms') . '</a>'))),
+            'app_content'    => $this->render('pages/index'),
+        );
+
+        if (__c('show_comments') === '1')
+        {
+            $this->_data['app_comments_box'] = $this->render('sections/comments_box', array(
+                'title'           => __c('fb_comments_title'),
+                'href'            => \Apparena\Api\Instance::init()->getData()->share_url,
+                'comments_amount' => __c('fb_comments_amount'),
+            ));
+        }
+
+        if (__c('branding_activated') === '1')
+        {
+            $this->_data['app_branding_footer'] = $this->render('sections/branding_box', array(
+                'content' => __c('branding_footer'),
+            ));
+        }
     }
 
     public function missingIdAction()
     {
         $this->config('templates.base', 'error');
         $this->_data   = array(
-            "title" => 'Ohhh damn!',
-            "desc"  => "Your instance ID was not found in our archive. Sorry for that!"
+            'title' => 'Ohhh damn!',
+            'desc'  => 'Your instance ID was not found in our archive. Sorry for that!'
         );
         $this->_status = 404;
     }
