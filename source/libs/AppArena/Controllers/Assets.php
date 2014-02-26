@@ -58,7 +58,7 @@ Class Assets extends \Apparena\Controller
             'locale'   => $aa->getLocale(),
             'config'   => $aa->getConfig(),
             'instance' => $aa->getData(),
-            'env'      => new \stdClass(),
+            'env'      => $this->environment,
             'fb'       => false,
             'app_data' => false,
             /*            'user'     => (object)array(
