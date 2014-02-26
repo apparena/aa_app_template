@@ -116,11 +116,16 @@ Class Controller extends \Slim\Slim
 
         \Apparena\App::$api->isAjax = $this->_request->isAjax();
 
+        // fill instance class and get data by api
         $instance->setData(\Apparena\App::$api->getInstance('data'));
         $instance->setConfig(\Apparena\App::$api->getConfig('data'));
         $instance->setLocale(\Apparena\App::$api->getTranslation('data'));
         $instance->setData(\Apparena\App::$api->getInstance('data'));
         $this->checkInstance($instance->getData());
+
+        // add additionals
+        $instance->addData(array('page_tab_url' => $instance->getData()->fb_page_url . "?sk=app_" . $instance->getData()->fb_app_id));
+        $instance->addData(array('share_url' => $instance->getData()->fb_canvas_url . "share.php?i_id=" . \Apparena\App::$i_id));
 
         // define some basic constance's that we get over config values
         define('GP_CLIENT_ID', __c('gp_client_id'));

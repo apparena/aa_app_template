@@ -73,6 +73,14 @@ class Instance
     }
 
     /**
+     * @param array $data
+     */
+    public function addData(array $data)
+    {
+        $this->_data = (object) array_merge((array)$this->_data, $data);
+    }
+
+    /**
      * @return mixed
      */
     public function getData()

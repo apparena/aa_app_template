@@ -36,7 +36,6 @@ Class Assets extends \Apparena\Controller
     protected function style()
     {
         $css = new \Apparena\Helper\Css();
-        #echo $css->getCompiled();
 
         $res                              = $this->response();
         $res['Content-Description']       = 'File Transfer';
