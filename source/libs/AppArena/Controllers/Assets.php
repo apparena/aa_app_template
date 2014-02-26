@@ -36,7 +36,18 @@ Class Assets extends \Apparena\Controller
     protected function style()
     {
         $css = new \Apparena\Helper\Css();
-        echo $css->getCompiled();
+        #echo $css->getCompiled();
+
+        $res                              = $this->response();
+        $res['Content-Description']       = 'File Transfer';
+        $res['Content-Type']              = 'text/css';
+        $res['Content-Disposition']       = 'attachment; filename=style.css';
+        $res['Content-Transfer-Encoding'] = 'binary';
+        $res['Expires']                   = '0';
+        $res['Cache-Control']             = 'must-revalidate';
+        $res['Pragma']                    = 'public';
+
+        $this->response->write($css->getCompiled());
     }
 
     protected function apimodel()
@@ -110,6 +121,15 @@ Class Assets extends \Apparena\Controller
         // generate admin key for admin button
         $aaForJs->custom = (object)array('admin_key' => md5(\Apparena\App::$i_id . '_' . APP_SECRET));
 
-        echo json_encode($aaForJs);
+        $res                              = $this->response();
+        $res['Content-Description']       = 'File Transfer';
+        $res['Content-Type']              = 'application/json';
+        $res['Content-Disposition']       = 'attachment; filename=api.json';
+        $res['Content-Transfer-Encoding'] = 'binary';
+        $res['Expires']                   = '0';
+        $res['Cache-Control']             = 'must-revalidate';
+        $res['Pragma']                    = 'public';
+
+        $this->response->write(json_encode($aaForJs));
     }
 }
