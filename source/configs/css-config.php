@@ -12,11 +12,11 @@ $css_import = array(
     'css_user'                                             => 'config',
 );
 
-// some stuf that replaces after compiling key = search, value = replace
+// some stuff that replaces after compiling key = search, value = replace
 $css_path_replacements = array(
     '{{app_base_color.value}}' => __c('app_base_color'),
-    '../fonts/fontawesome'     => '../../js/vendor/font-awesome/fonts/fontawesome',
-    '../fonts/glyphicons'      => '../../js/vendor/bootstrap/dist/fonts/glyphicons'
+    '../fonts/fontawesome'     => $base_path . '/js/vendor/font-awesome/fonts/fontawesome',
+    '../fonts/glyphicons'      => $base_path . '/js/vendor/bootstrap/dist/fonts/glyphicons'
 );
 
 return array('import' => $css_import, 'replace' => $css_path_replacements);

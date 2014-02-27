@@ -35,7 +35,8 @@ class Css
      */
     public function __construct()
     {
-        $config = require_once ROOT_PATH . '/configs/css-config.php';
+        $base_path = \Slim\Slim::getInstance()->environment()->offsetGet('SCRIPT_NAME');
+        $config    = require_once ROOT_PATH . '/configs/css-config.php';
 
         $this->add($config['import']);
         $this->_config = $config;
@@ -75,6 +76,7 @@ class Css
          * Block comments are / !* ... * / (without spaces)
          */
         $less->setPreserveComments(false);
+
         // compile $_data
         return $less->compile($this->_data);
     }
