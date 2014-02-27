@@ -327,17 +327,17 @@ Class Controller extends \Slim\Slim
                     $language_elements[] = array(
                         'flag' => $this->render('sections/nav_language_element', array(
                                 'url'   => $instance->data->share_url . '&page=' . $instance->env->base . '&' . $param_name . '=' . $param_value,
-                                'class' => \Apparena\App::$_locale,
-                                'name'  => __t('lang_' . \Apparena\App::$_locale),
+                                'class' => $locale,
+                                'name'  => __t('lang_' . $locale),
                             ))
                     );
                 }
             }
 
-            // ToDo: we need $device!
             $navigation['language'] = $this->render('sections/nav_language', array(
-                'name'     => ('$device' === 'mobile') ? __t('language') : '',
-                'position' => ('$device' !== 'mobile') ? 'pull-right' : '',
+                'name'     => ($instance->env->device->type === 'mobile') ? __t('language') : '',
+                'position' => ($instance->env->device->type !== 'mobile') ? 'pull-right' : '',
+                'locale' => \Apparena\App::$_locale,
                 'flags'    => $language_elements,
             ));
         }

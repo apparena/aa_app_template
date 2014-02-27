@@ -28,7 +28,7 @@ body {
 online sprite generator: http://de.spritegen.website-performance.org/
 */
 .flag-sprite {
-    background: url(../../img/flag-sprite-01.png) no-repeat top left;
+    background: url(../../../../img/flag-sprite-01.png) no-repeat top left;
     display: inline-block;
     vertical-align: middle;
 }
