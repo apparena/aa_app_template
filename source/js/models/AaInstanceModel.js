@@ -24,7 +24,7 @@ define([
             _.bindAll(this, 'extendUnderscore');
             this.on('sync', this.extendUnderscore, this);
             var body = $('body');
-            this.url = body.data('base-path') + '/' + body.data('instance') + '/' + body.data('lang') + '/assets/js/api/';
+            this.url = body.data('base-path') + '/' + body.data('instance') + '/' + body.data('locale') + '/assets/js/api/';
         },
 
         extendUnderscore: function () {
