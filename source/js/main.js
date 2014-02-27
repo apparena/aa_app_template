@@ -2,7 +2,7 @@
     'use strict';
 
     require.config({
-        baseUrl: 'js/'
+        baseUrl: '../../js/'
     });
 
     require([
@@ -11,20 +11,20 @@
         'aa_helper',
         'debug',
         'router',
+        'models/AaInstanceModel',
         // libs with no object declaration
         'bootstrap'
-    ], function ($, _, AaHelper, Debug, Router) {
-        var admin = $('.nav-admin'), nav;
+    ], function ($, _, AaHelper, Debug, Router, AaInstanceModel) {
+        var admin = $('.nav-admin'),
+            aa, nav, aaInstanceModel;
 
         // extend underscore with our aa object, so that it is accessible everywhere where the _ underscore object is known.
         _.extend(_, {
-            aa:        aa,                // the $aa var in JS
             sprintf:   AaHelper.sprintf,  // aa helper sprintf like in php but inly for %s
             c:         AaHelper.__c,      // aa helper like in PHP
             t:         AaHelper.__t,      // aa helper like in PHP
             debug:     Debug,             // browser safty console.log version
             uid:       0,                 // user id
-            uid_temp:  aa.uid_temp,       // temporary user id, maybe for logging module
             gid:       0,                 // group ID
             singleton: {                  // storage for initialized backbone objects to init them only one time and destroy them later easier
                 view:       {},
@@ -33,9 +33,14 @@
             }
         });
 
-        aa = null;
-        // remove json php output from DOM
-        $('#tempcontainer').remove();
+        aaInstanceModel = AaInstanceModel.init();
+        aaInstanceModel.on('sync', function(){
+            // make some other stuff global
+            _.extend(_, {
+                router: Router.initialize()
+            });
+        });
+        aaInstanceModel.fetch();
 
         // show and hide debug output
         $('.show-debug').on('click', function () {
@@ -79,11 +84,6 @@
                 'modules/admin_panel/index.php?i_id=' + _.aa.instance.i_id + '&admin_key=' + _.aa.custom.admin_key,
                 '_blank'
             );
-        });
-
-        // make router functions global
-        _.extend(_, {
-            router: Router.initialize()
         });
     });
 }());
