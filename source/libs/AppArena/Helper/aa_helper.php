@@ -206,35 +206,6 @@ function getBrowser()
     );
 }
 
-/**
- * get client's ip
- */
-function get_client_ip()
-{
-    // Get client ip address
-    $client_ip = '';
-    if (isset($_SERVER["REMOTE_ADDR"]))
-    {
-        $client_ip = $_SERVER["REMOTE_ADDR"];
-    }
-    else
-    {
-        if (isset($_SERVER["HTTP_X_FORWARDED_FOR"]))
-        {
-            $client_ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
-        }
-        else
-        {
-            if (isset($_SERVER["HTTP_CLIENT_IP"]))
-            {
-                $client_ip = $_SERVER["HTTP_CLIENT_IP"];
-            }
-        }
-    }
-
-    return $client_ip;
-}
-
 //escape $_GET, $_POST, $_REQUIRE $_COOKIE ()
 if (!function_exists('global_escape'))
 {
@@ -300,26 +271,6 @@ if (!function_exists('escape'))
             $value = htmlspecialchars($value);
         }
         $value = trim($value);
-
-        return $value;
-    }
-}
-
-if (!function_exists('sql_escape'))
-{
-    function sql_escape($value, $specialchars = true)
-    {
-        $value = escape($value, $specialchars);
-
-        if (function_exists('mysql_real_escape_string'))
-        {
-            $value = mysql_real_escape_string($value);
-        }
-        else
-        {
-            //use old addslashes
-            $value = addslashes($value);
-        }
 
         return $value;
     }
@@ -417,63 +368,5 @@ if (!function_exists('is_serialized'))
     function is_serialized($str)
     {
         return ($str == serialize(false) || @unserialize($str) !== false);
-    }
-}
-
-if (!function_exists('hrd'))
-{
-    function hrd($target = '/', $code = 301, $msg = '')
-    {
-        header("HTTP/1.1 " . $code . " Moved Permanently");
-        header("Location: " . $target);
-        header("Connection: close");
-        exit($msg);
-    }
-}
-
-if (!function_exists('isSSL'))
-{
-    function isSSL()
-    {
-        if (!empty($_SERVER['HTTPS']))
-        {
-            return true;
-        }
-
-        if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
-        {
-            return true;
-        }
-
-        return false;
-    }
-}
-
-if (!function_exists('_clearvar'))
-{
-    //clears an array or string
-    function _clearvar($var)
-    {
-        $result = array();
-        if (is_array($var))
-        {
-            foreach ($var AS $k => $v)
-            {
-                if (is_string($v))
-                {
-                    $result[$k] = htmlentities(strip_tags($v));
-                }
-                elseif (is_array($v))
-                {
-                    $result[$k] = _clearvar($v);
-                }
-                else
-                {
-                    $result[$k] = htmlentities(strip_tags($v));
-                }
-            }
-        }
-
-        return $result;
     }
 }
