@@ -6,6 +6,7 @@ Class Main extends \Apparena\Controller
     public function indexAction()
     {
         $this->callApi();
+        $this->_data = array('app_content' => $this->render('pages/index'),);
         $this->addBasicLayoutData();
     }
 
