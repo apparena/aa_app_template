@@ -22,7 +22,7 @@ Class Assets extends \Apparena\Controller
         }
     }
 
-    public function jsAction($id, $filename)
+    public function jsAction($id, $lang, $filename)
     {
         switch ($filename)
         {
