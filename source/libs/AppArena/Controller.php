@@ -350,6 +350,7 @@ Class Controller extends \Slim\Slim
             'app_terms_box'  => $this->render('sections/terms_box', array('link' => __t('footer_terms', '<a href="#/page/app/terms">' . __t('terms') . '</a>'))),
             'app_i_id'       => \Apparena\App::$i_id,
             'app_base_path'  => $this->environment()->offsetGet('SCRIPT_NAME'),
+            'app_locale'     => \Apparena\App::$_locale,
         ));
 
         if (__c('show_comments') === '1')
