@@ -54,9 +54,9 @@ Class Assets extends \Apparena\Controller
         // ToDo: Add FB stuff
         $aa      = \Apparena\Api\Instance::init();
         $aaForJs = (object)array(
-            'locale'   => $aa->getLocale(),
-            'config'   => $aa->getConfig(),
-            'instance' => $aa->getData(),
+            'locale'   => $aa->locale,
+            'config'   => $aa->config,
+            'instance' => $aa->data,
             'env'      => $this->environment,
             'fb'       => false,
             'app_data' => false,
@@ -69,8 +69,6 @@ Class Assets extends \Apparena\Controller
                     'client_id' => GP_CLIENT_ID
                 )
         );
-
-        $aaForJs->env->mode = $this->getMode();
 
         /*if (isset($aa->fb))
         {

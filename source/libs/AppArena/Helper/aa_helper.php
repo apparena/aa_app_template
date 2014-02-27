@@ -5,7 +5,7 @@ function __t()
     #global $aa;
 
     $instance = \Apparena\Api\Instance::init();
-    $data     = $instance->getLocale();
+    $data     = $instance->locale;
 
     // START version for old API version
     $translate = json_decode(json_encode($data), true);
@@ -67,7 +67,7 @@ function __pt()
 function __c($config, $key = 'value')
 {
     $instance = \Apparena\Api\Instance::init();
-    $data = $instance->getConfig();
+    $data = $instance->config;
 
     if (empty($data))
     {
