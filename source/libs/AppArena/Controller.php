@@ -210,7 +210,7 @@ Class Controller extends \Slim\Slim
 
     protected function addBasicLayoutData()
     {
-        $instance = \Apparena\Api\Instance::init();
+        $instance    = \Apparena\Api\Instance::init();
         $custom_tabs = explode(',', __c('navigation_pagetab_selector'));
         $links       = array();
         $links[]     = array(
@@ -308,19 +308,22 @@ Class Controller extends \Slim\Slim
                         $param_name  = 'app_data';
                         $param_value = urlencode('{"locale":"' . $locale . '"}');
                     }
-                    array_push($language_elements, $this->render('sections/nav_language_element', array(
-                        'url'   => $instance->data->share_url . '&page=' . $instance->env->base . '&' . $param_name . '=' . $param_value,
-                        'class' => \Apparena\App::$_locale,
-                        'name'  => __t('lang_' . \Apparena\App::$_locale),
-                    )));
+
+                    $language_elements[] = array(
+                        'flag' => $this->render('sections/nav_language_element', array(
+                                'url'   => $instance->data->share_url . '&page=' . $instance->env->base . '&' . $param_name . '=' . $param_value,
+                                'class' => \Apparena\App::$_locale,
+                                'name'  => __t('lang_' . \Apparena\App::$_locale),
+                            ))
+                    );
                 }
             }
 
             // ToDo: we need $device!
             $navigation['language'] = $this->render('sections/nav_language', array(
-                'name'      => ('$device' === 'mobile') ? __t('language') : '',
-                'position'  => ('$device' !== 'mobile') ? 'pull-right' : '',
-                'languages' => $language_elements,
+                'name'     => ('$device' === 'mobile') ? __t('language') : '',
+                'position' => ('$device' !== 'mobile') ? 'pull-right' : '',
+                'flags'    => $language_elements,
             ));
         }
 
