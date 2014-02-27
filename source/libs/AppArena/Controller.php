@@ -155,6 +155,21 @@ Class Controller extends \Slim\Slim
             }
         }
 
+        include_once ROOT_PATH . '/libs/Mobile_Detect.php';
+        $detector                    = new \Mobile_Detect;
+        $instance->env->device       = new \stdClass();
+        $instance->env->device->type = "desktop";
+        if ($detector->isMobile())
+        {
+            $instance->env->device->type = 'mobile';
+        }
+        if ($detector->isTablet())
+        {
+            $instance->env->device->type = 'tablet';
+        }
+        // Add browser info to the env
+        #$instance->env->browser = getBrowser();
+
         return $instance;
     }
 
@@ -328,11 +343,13 @@ Class Controller extends \Slim\Slim
         }
 
         $this->_data = array_merge($this->_data, array(
+            'url_path'       => $this->environment()->offsetGet('SCRIPT_NAME'),
             'app_navigation' => $this->render('sections/navigation', $navigation),
             'app_header'     => __c('header_custom'),
             'app_footer'     => __c('footer_custom'),
             'app_terms_box'  => $this->render('sections/terms_box', array('link' => __t('footer_terms', '<a href="#/page/app/terms">' . __t('terms') . '</a>'))),
-            'app_content'    => $this->render('pages/index'),
+            'app_i_id'       => \Apparena\App::$i_id,
+            'app_base_path'  => $this->environment()->offsetGet('SCRIPT_NAME'),
         ));
 
         if (__c('show_comments') === '1')
