@@ -9,7 +9,7 @@ define([
     Model.namespace = 'authPasswordLost';
 
     Model.code = Backbone.Model.extend({
-        url:      '/aa_app_template/source/5091/assets/js/api/',
+        url:      $('body').data('url-path') + 'assets/js/api/',
         defaults: {
             config:   {},
             locale:   {},
@@ -23,8 +23,6 @@ define([
         initialize: function () {
             _.bindAll(this, 'extendUnderscore');
             this.on('sync', this.extendUnderscore, this);
-            var body = $('body');
-            this.url = body.data('base-path') + '/' + body.data('instance') + '/' + body.data('locale') + '/assets/js/api/';
         },
 
         extendUnderscore: function () {

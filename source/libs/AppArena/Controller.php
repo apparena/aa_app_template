@@ -95,9 +95,9 @@ Class Controller extends \Slim\Slim
     public function display($data = array(), $status = null)
     {
         $settings = array_merge(array(
-            'meta_title'       => $this->config('metatags')->meta_title,
-            'meta_description' => $this->config('metatags')->meta_description,
-            'meta_canonical'   => $this->config('metatags')->meta_canonical,
+            'meta_title'       => __c('general_title'),
+            'meta_description' => __c('general_desc'),
+            'meta_canonical'   => $this->_request->getScheme() . '://' . $this->_request->getHost() . $this->_request->getPath(),
             'layout_css'       => $this->_request->getRootUri() . '/' . \Apparena\App::$i_id . '/assets/css/style/',
         ), $data);
         echo $this->render($this->config('templates.base'), $settings, $status);
@@ -337,20 +337,21 @@ Class Controller extends \Slim\Slim
             $navigation['language'] = $this->render('sections/nav_language', array(
                 'name'     => ($instance->env->device->type === 'mobile') ? __t('language') : '',
                 'position' => ($instance->env->device->type !== 'mobile') ? 'pull-right' : '',
-                'locale' => \Apparena\App::$_locale,
+                'locale'   => \Apparena\App::$_locale,
                 'flags'    => $language_elements,
             ));
         }
 
         $this->_data = array_merge($this->_data, array(
-            'url_path'       => $this->environment()->offsetGet('SCRIPT_NAME'),
-            'app_navigation' => $this->render('sections/navigation', $navigation),
-            'app_header'     => __c('header_custom'),
-            'app_footer'     => __c('footer_custom'),
-            'app_terms_box'  => $this->render('sections/terms_box', array('link' => __t('footer_terms', '<a href="#/page/app/terms">' . __t('terms') . '</a>'))),
-            'app_i_id'       => \Apparena\App::$i_id,
-            'app_base_path'  => $this->environment()->offsetGet('SCRIPT_NAME'),
-            'app_locale'     => \Apparena\App::$_locale,
+            'url_path'          => $this->environment()->offsetGet('SCRIPT_NAME'),
+            'app_navigation'    => $this->render('sections/navigation', $navigation),
+            'app_header'        => __c('header_custom'),
+            'app_footer'        => __c('footer_custom'),
+            'app_terms_box'     => $this->render('sections/terms_box', array('link' => __t('footer_terms', '<a href="#/page/app/terms">' . __t('terms') . '</a>'))),
+            'app_i_id'          => \Apparena\App::$i_id,
+            'app_base_path'     => $this->environment()->offsetGet('SCRIPT_NAME'),
+            'app_url_path'      => $this->_request->getPath(),
+            'layout_body_class' => '',
         ));
 
         if (__c('show_comments') === '1')
@@ -368,5 +369,24 @@ Class Controller extends \Slim\Slim
                 'content' => __c('branding_footer'),
             ));
         }
+
+        // set global body classes
+        // set device type
+        if (!empty($instance->env->device->type))
+        {
+            $this->_data['layout_body_class'] .= ' ' . strtolower($instance->env->device->type);
+        }
+        // set env base
+        if (!empty($instance->env->base))
+        {
+            $this->_data['layout_body_class'] .= ' ' . strtolower($instance->env->base);
+        }
+        // set browser
+        if (!empty($instance->env->browser))
+        {
+            $this->_data['layout_body_class'] .= ' ' . strtolower($instance->env->browser->name);
+            $this->_data['layout_body_class'] .= ' ' . strtolower($instance->env->browser->platform);
+        }
+        $this->_data['layout_body_class'] = trim($this->_data['layout_body_class']);
     }
 }
