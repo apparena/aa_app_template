@@ -22,10 +22,4 @@ return array(
     'cookies.httponly'   => true,
     // Encryption
     'cookies.secret_key' => APP_SECRET,
-    // page metatags
-    'metatags'           => (Object)array(
-            'meta_title'       => __c('general_title'),
-            'meta_description' => __c('general_desc'),
-            'meta_canonical'   => '',
-        ),
 );
