@@ -114,32 +114,10 @@ Class Controller extends \Slim\Slim
             'locale'        => \Apparena\App::$locale
         ));
 
-        \Apparena\App::$api->isAjax = $this->_request->isAjax();
-        $cache     = \Apparena\Helper\Cache::init('api');
-        $cachename = \Apparena\App::$api->hash;
-        if ($cache->check($cachename))
-        {
-            // cache exist, get data from them
-            $cachedata        = $cache->get($cachename);
-            $instance->data   = $cachedata->data;
-            $instance->config = $cachedata->config;
-            $instance->locale = $cachedata->locale;
-        }
-        else
-        {
-            // cache not exist, create data
-            // fill instance class and get data by api
-            $instance->data   = \Apparena\App::$api->getInstance('data');
-            $instance->config = \Apparena\App::$api->getConfig('data');
-            $instance->locale = \Apparena\App::$api->getTranslation('data');
-
-            // cache data
-            $cache->add($cachename, array(
-                'data'   => $instance->data,
-                'config' => $instance->config,
-                'locale' => $instance->locale
-            ));
-        }
+        // fill instance class and get data by api
+        $instance->data   = \Apparena\App::$api->getInstance('data');
+        $instance->config = \Apparena\App::$api->getConfig('data');
+        $instance->locale = \Apparena\App::$api->getTranslation('data');
 
         $instance = $this->defineInstanceEnv($instance);
         $this->checkInstance($instance->data);

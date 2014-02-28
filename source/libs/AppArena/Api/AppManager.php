@@ -18,10 +18,6 @@ namespace Apparena\Api;
 class AppManager
 {
     const SERVER_URL = 'http://manager.app-arena.com/api/v1/instances/';
-    #const CACHE_TIME = '86400'; //24h
-    #const CACHE_PREFIX = 'api_';
-    #protected $cache_path = null;
-
     //this params will transport each call
     protected $_api_params = array(
         'aa_app_id'     => null,
@@ -30,12 +26,7 @@ class AppManager
         'fb_page_id'    => null,
         'locale'        => null,
     );
-    #protected $_config = null;
-    #protected $_translation = array();
-    #protected $_instance = null;
     static private $_class_instance = null;
-    public $isAjax = false;
-    public $hash;
 
     /**
      * Class constructor to establish the app-manager connection
@@ -89,12 +80,6 @@ class AppManager
         {
             $this->_api_params[$key] = $param;
         }
-        $this->setHash();
-    }
-
-    protected function setHash()
-    {
-        $this->hash = md5(implode(' ', $this->_api_params));
     }
 
     protected function isArray($array, $key)
@@ -175,27 +160,27 @@ class AppManager
 
     public function call($scope)
     {
-        // first on ajax calls, try to get call from cache
-        /*$filename = self::CACHE_PREFIX . md5($scope . implode('-', $this->_api_params));
-        if ($this->isAjax === true || defined('REDIRECTION') || !empty($_GET['cache']))
+        $cache = \Apparena\Helper\Cache::init('api');
+        $cachename = md5($scope);
+        if ($cache->check($cachename))
         {
-            $return = $this->getCachedFile($this->cache_path . $filename);
-            if (!empty($return))
-            {
-                return $return;
-            }
-        }*/
-
-        // cache is empty or not called, get resource now from API
-        $return = json_decode(@file_get_contents(self::SERVER_URL . $this->getInstanceId() . $scope));
-        if ($return === null)
-        {
-            throw new \Exception('API Call error: "' . self::SERVER_URL . $this->getInstanceId() . $scope . '"');
+            // cache exist, get data from them
+            $cachedata = $cache->get($cachename);
+            $return    = $cachedata[0];
         }
+        else
+        {
+            // cache not exist, get data from api
+            $return = json_decode(@file_get_contents(self::SERVER_URL . $this->getInstanceId() . $scope));
 
-        // cache result
-        /*$cachedfile = json_encode($return);
-        file_put_contents($this->cache_path . $filename, $cachedfile);*/
+            if ($return === null)
+            {
+                throw new \Exception('API Call error: "' . self::SERVER_URL . $this->getInstanceId() . $scope . '"');
+            }
+
+            // cache data
+            $cache->add($cachename, array($return));
+        }
 
         return $return;
     }
@@ -214,28 +199,6 @@ class AppManager
 
         return $data->$return_type;
     }
-
-    /**
-     * get call return from cache
-     *
-     * @param      $filename
-     * @param bool $timecheck
-     *
-     * @return bool|mixed
-     */
-    /*protected function getCachedFile($filename, $timecheck = true)
-    {
-        if (file_exists($filename) && ($timecheck === false || (time() - filemtime($filename)) < self::CACHE_TIME))
-        {
-            // get cached file
-            $cachedfile = file_get_contents($filename);
-
-            // return as stdClass object
-            return json_decode($cachedfile);
-        }
-
-        return false;
-    }*/
 
     public function getInstanceId()
     {
