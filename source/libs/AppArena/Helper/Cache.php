@@ -29,8 +29,8 @@ class Cache
      */
     private function __construct()
     {
-        $this->_path   = ROOT_PATH . '/tmp/cache/';
-        $this->_type   = 'file';
+        $this->_path = ROOT_PATH . '/tmp/cache/';
+        $this->_type = 'file';
     }
 
     /**
@@ -64,6 +64,7 @@ class Cache
         {
             return true;
         }
+
         return false;
     }
 
@@ -125,6 +126,7 @@ class Cache
                 $value = $this->getFileCache();
                 break;
         }
+
         return $this->decodeValue($value);
     }
 

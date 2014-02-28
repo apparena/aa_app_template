@@ -116,11 +116,12 @@ Class Controller extends \Slim\Slim
 
         \Apparena\App::$api->isAjax = $this->_request->isAjax();
 
-        $cache = \Apparena\Helper\Cache::init('api');
-        if ($cache->check(\Apparena\App::$api->hash))
+        $cache     = \Apparena\Helper\Cache::init('api');
+        $cachename = \Apparena\App::$api->hash;
+        if ($cache->check($cachename))
         {
             // cache exist, get data from them
-            $cachedata = $cache->get(\Apparena\App::$api->hash);
+            $cachedata        = $cache->get($cachename);
             $instance->data   = $cachedata->data;
             $instance->config = $cachedata->config;
             $instance->locale = $cachedata->locale;
@@ -134,14 +135,14 @@ Class Controller extends \Slim\Slim
             $instance->locale = \Apparena\App::$api->getTranslation('data');
 
             // cache data
-            $cache->add(\Apparena\App::$api->hash, array(
+            $cache->add($cachename, array(
                 'data'   => $instance->data,
                 'config' => $instance->config,
                 'locale' => $instance->locale
             ));
         }
 
-        $instance         = $this->defineInstanceEnv($instance);
+        $instance = $this->defineInstanceEnv($instance);
         $this->checkInstance($instance->data);
 
         // add additionals

@@ -60,24 +60,40 @@ class Css
 
     public function getCompiled()
     {
-        $this->_data = '';
-        $this->addGroupData('main')->addGroupData('file')->addGroupData('config')->replacePaths();
+        $cache     = \Apparena\Helper\Cache::init('css');
+        $cachename = md5('style');
+        if ($cache->check($cachename))
+        {
+            // cache exist, get data from them
+            $cachedata = $cache->get($cachename);
 
-        // init lessphp compiler
-        require_once ROOT_PATH . '/libs/lessc.inc.php';
-        $less = new \lessc;
-        // compress type
-        $less->setFormatter("compressed");
-        /**
-         * remove block comments with false,
-         * otherwise true to let comment blocks stay and put them to the top
-         * (for licence informations and so on)
-         * Block comments are / !* ... * / (without spaces)
-         */
-        $less->setPreserveComments(false);
+            return $cachedata[0];
+        }
+        else
+        {
+            // cache not exist, create data
+            $this->_data = '';
+            $this->addGroupData('main')->addGroupData('file')->addGroupData('config')->replacePaths();
 
-        // compile $_data
-        return $less->compile($this->_data);
+            // init lessphp compiler
+            require_once ROOT_PATH . '/libs/lessc.inc.php';
+            $less = new \lessc;
+            // compress type
+            $less->setFormatter("compressed");
+            /**
+             * remove block comments with false,
+             * otherwise true to let comment blocks stay and put them to the top
+             * (for licence informations and so on)
+             * Block comments are / !* ... * / (without spaces)
+             */
+            $less->setPreserveComments(false);
+
+            // compile $_data
+            $return = $less->compile($this->_data);
+            $cache->add($cachename, array($return));
+
+            return $return;
+        }
     }
 
     protected function addGroupData($group)
