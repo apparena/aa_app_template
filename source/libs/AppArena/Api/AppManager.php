@@ -20,7 +20,8 @@ class AppManager
     const SERVER_URL = 'http://manager.app-arena.com/api/v1/instances/';
     #const CACHE_TIME = '86400'; //24h
     #const CACHE_PREFIX = 'api_';
-    protected $cache_path = null;
+    #protected $cache_path = null;
+
     //this params will transport each call
     protected $_api_params = array(
         'aa_app_id'     => null,
@@ -34,6 +35,7 @@ class AppManager
     #protected $_instance = null;
     static private $_class_instance = null;
     public $isAjax = false;
+    public $hash;
 
     /**
      * Class constructor to establish the app-manager connection
@@ -87,6 +89,12 @@ class AppManager
         {
             $this->_api_params[$key] = $param;
         }
+        $this->setHash();
+    }
+
+    protected function setHash()
+    {
+        $this->hash = md5(implode(' ', $this->_api_params));
     }
 
     protected function isArray($array, $key)
@@ -215,7 +223,7 @@ class AppManager
      *
      * @return bool|mixed
      */
-    protected function getCachedFile($filename, $timecheck = true)
+    /*protected function getCachedFile($filename, $timecheck = true)
     {
         if (file_exists($filename) && ($timecheck === false || (time() - filemtime($filename)) < self::CACHE_TIME))
         {
@@ -227,7 +235,7 @@ class AppManager
         }
 
         return false;
-    }
+    }*/
 
     public function getInstanceId()
     {
