@@ -1,4 +1,9 @@
 <?php
+/**
+ * define all routes for slim here
+ * the router checks all routes from the top to the bottom
+ * if a route matches, the rest are ignored
+ */
 return array(
     '/'                                 => array(
         'get'    => 'Main:missingId',
@@ -9,6 +14,8 @@ return array(
     '/expired/'                         => 'Main:expired',
     '/browser/'                         => 'Main:browser',
     '/error/'                           => 'Main:notFound',
+    '/cache/'                           => 'Cache',
+    '/:i_id/cache/'                     => 'Cache:instance',
     '/:i_id/assets/css/:filename/'      => 'Assets:css',
     '/:i_id/:lang/assets/js/:filename/' => 'Assets:js',
     '/:i_id/'                           => 'Main:missingLanguage',

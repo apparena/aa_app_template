@@ -54,7 +54,11 @@ class Cache
 
     public function setPrefix($prefix)
     {
-        $this->_prefix = $prefix;
+        if (!empty($prefix))
+        {
+            $prefix = '_' . $prefix;
+        }
+        $this->_prefix = \Apparena\App::$i_id . $prefix;
     }
 
     public function check($name)
@@ -70,11 +74,7 @@ class Cache
 
     protected function setName($name)
     {
-        $this->_name = md5($name);
-        if (!empty($this->_prefix))
-        {
-            $this->_name = $this->_prefix . '_' . md5($name);
-        }
+        $this->_name = $this->_prefix . '_' . md5($name);
 
         return $this;
     }
@@ -146,6 +146,32 @@ class Cache
 
     protected function apcCache()
     {
+    }
+
+    public function clean($id)
+    {
+        $recursiveIterator = new \RecursiveDirectoryIterator($this->_path);
+        foreach ($recursiveIterator as $element)
+        {
+            if ($element->getFilename() !== '.' && $element->getFilename() !== '..' && $element->getFilename() !== 'void')
+            {
+                if ($id !== 'all')
+                {
+                    // clean only the instance cache
+                    $id_length = strlen((string)$id);
+                    if(substr($element->getFilename(), 0, $id_length) === $id)
+                    {
+                        unlink($element->getPath() . '/' . $element->getFilename());
+                        continue;
+                    }
+                }
+                else
+                {
+                    // clean the hole cache
+                    unlink($element->getPath() . '/' . $element->getFilename());
+                }
+            }
+        }
     }
 
     /**

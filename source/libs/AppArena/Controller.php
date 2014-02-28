@@ -115,7 +115,6 @@ Class Controller extends \Slim\Slim
         ));
 
         \Apparena\App::$api->isAjax = $this->_request->isAjax();
-
         $cache     = \Apparena\Helper\Cache::init('api');
         $cachename = \Apparena\App::$api->hash;
         if ($cache->check($cachename))
