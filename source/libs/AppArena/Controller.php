@@ -123,8 +123,8 @@ Class Controller extends \Slim\Slim
         $this->checkInstance($instance->data);
 
         // add additionals
-        $instance->addData(array('page_tab_url' => $instance->data->fb_page_url . "?sk=app_" . $instance->data->fb_app_id));
-        $instance->addData(array('share_url' => $instance->data->fb_canvas_url . "share.php?i_id=" . \Apparena\App::$i_id));
+        $instance->addData(array('page_tab_url' => $instance->data->fb_page_url . '?sk=app_' . $instance->data->fb_app_id));
+        $instance->addData(array('share_url' => $instance->data->fb_canvas_url . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/share/'));
 
         // define some basic constance's that we get over config values
         define('GP_CLIENT_ID', __c('gp_client_id'));
@@ -315,17 +315,15 @@ Class Controller extends \Slim\Slim
             {
                 if (\Apparena\App::$locale !== $locale)
                 {
-                    $param_name  = 'locale';
-                    $param_value = $locale;
+                    $params  = '';
                     if ($instance->env->base !== 'website')
                     {
-                        $param_name  = 'app_data';
-                        $param_value = urlencode('{"locale":"' . $locale . '"}');
+                        $params = '?app_data=' . urlencode('{"locale":"' . $locale . '"}');
                     }
 
                     $language_elements[] = array(
                         'flag' => $this->render('sections/nav_language_element', array(
-                                'url'   => $instance->data->share_url . '&page=' . $instance->env->base . '&' . $param_name . '=' . $param_value,
+                                'url'   => str_replace(\Apparena\App::$locale, $locale, $instance->data->share_url) . $instance->env->base . '/' . $params,
                                 'class' => $locale,
                                 'name'  => __t('lang_' . $locale),
                             ))
