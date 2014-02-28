@@ -8,6 +8,7 @@ return array(
     ),
     '/expired/'                         => 'Main:expired',
     '/browser/'                         => 'Main:browser',
+    '/error/'                           => 'Main:notFound',
     '/:i_id/assets/css/:filename/'      => 'Assets:css',
     '/:i_id/:lang/assets/js/:filename/' => 'Assets:js',
     '/:i_id/'                           => 'Main:missingLanguage',

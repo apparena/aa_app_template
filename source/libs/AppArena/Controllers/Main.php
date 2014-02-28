@@ -12,7 +12,7 @@ Class Main extends \Apparena\Controller
 
     public function missingIdAction()
     {
-        $this->config('templates.base', 'error');
+        $this->config('templates.base', 'pages/error');
         $this->_data   = array(
             'title' => 'Ohhh damn!',
             'desc'  => 'Your instance ID was not found in our archive. Sorry for that!'
