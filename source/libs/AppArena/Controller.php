@@ -111,15 +111,36 @@ Class Controller extends \Slim\Slim
             'aa_app_id'     => APP_ID,
             'aa_app_secret' => APP_SECRET,
             'i_id'          => \Apparena\App::$i_id,
-            'locale'        => \Apparena\App::$_locale
+            'locale'        => \Apparena\App::$locale
         ));
 
         \Apparena\App::$api->isAjax = $this->_request->isAjax();
 
-        // fill instance class and get data by api
-        $instance->data   = \Apparena\App::$api->getInstance('data');
-        $instance->config = \Apparena\App::$api->getConfig('data');
-        $instance->locale = \Apparena\App::$api->getTranslation('data');
+        $cache = \Apparena\Helper\Cache::init('api');
+        if ($cache->check(\Apparena\App::$api->hash))
+        {
+            // cache exist, get data from them
+            $cachedata = $cache->get(\Apparena\App::$api->hash);
+            $instance->data   = $cachedata->data;
+            $instance->config = $cachedata->config;
+            $instance->locale = $cachedata->locale;
+        }
+        else
+        {
+            // cache not exist, create data
+            // fill instance class and get data by api
+            $instance->data   = \Apparena\App::$api->getInstance('data');
+            $instance->config = \Apparena\App::$api->getConfig('data');
+            $instance->locale = \Apparena\App::$api->getTranslation('data');
+
+            // cache data
+            $cache->add(\Apparena\App::$api->hash, array(
+                'data'   => $instance->data,
+                'config' => $instance->config,
+                'locale' => $instance->locale
+            ));
+        }
+
         $instance         = $this->defineInstanceEnv($instance);
         $this->checkInstance($instance->data);
 
@@ -314,7 +335,7 @@ Class Controller extends \Slim\Slim
             $language_elements = array();
             foreach ($languages AS $locale)
             {
-                if (\Apparena\App::$_locale !== $locale)
+                if (\Apparena\App::$locale !== $locale)
                 {
                     $param_name  = 'locale';
                     $param_value = $locale;
@@ -337,7 +358,7 @@ Class Controller extends \Slim\Slim
             $navigation['language'] = $this->render('sections/nav_language', array(
                 'name'     => ($instance->env->device->type === 'mobile') ? __t('language') : '',
                 'position' => ($instance->env->device->type !== 'mobile') ? 'pull-right' : '',
-                'locale'   => \Apparena\App::$_locale,
+                'locale'   => \Apparena\App::$locale,
                 'flags'    => $language_elements,
             ));
         }
