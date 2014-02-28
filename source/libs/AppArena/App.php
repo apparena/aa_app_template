@@ -7,7 +7,7 @@ class App
 {
     public static $i_id = null;
     public static $api = array();
-    public static $_locale = APP_DEFAULT_LOCALE;
+    public static $locale = APP_DEFAULT_LOCALE;
     protected  static $_signed_request = null;
     protected  static $_current_date = null;
     const COOKIE_NAME = 'aa_inst_locale_';
@@ -79,7 +79,7 @@ class App
             $locale = $cookie;
         }
         $slim->setCookie($cookiename, $locale);
-        self::$_locale = $locale;
+        self::$locale = $locale;
     }
 
     public static function getCurrentDate()

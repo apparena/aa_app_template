@@ -2,16 +2,15 @@
 /**
  * Css
  *
- * CLASSDESCRIPTION
+ * handles css sources and compiling
  *
- * @category    CATEGORY NAME
- * @package     PACKAGE NAME
- * @subpackage  PACKAGE NAME
+ * @category    AppArena
+ * @package     Helper
+ * @subpackage  Css
+ *
+ * @see         http://www.appalizr.com/
  *
  * @author      "Marcus Merchel" <kontakt@marcusmerchel.de>
- * @copyright   Copyright (c) 2009-2014 Marcus Merchel (http://www.marcusmerchel.de/)
- * @link        http://www.marcusmerchel.de/
- * @license     http://www.marcusmerchel.de/licence/
  * @version     1.0.0 (25.02.14 - 13:42)
  */
 namespace Apparena\Helper;
