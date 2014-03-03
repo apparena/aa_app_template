@@ -133,6 +133,7 @@ Class Controller extends \Slim\Slim
 
         $instance = $this->defineInstanceEnv($instance);
         $this->checkInstance($instance->data);
+        $this->checkBrowserSupport($instance->env);
 
         // add additionals
         $instance->addData(array('page_tab_url' => $instance->data->fb_page_url . '?sk=app_' . $instance->data->fb_app_id));
@@ -179,7 +180,7 @@ Class Controller extends \Slim\Slim
             $instance->env->device->type = 'tablet';
         }
         // Add browser info to the env
-        #$instance->env->browser = getBrowser();
+        $instance->env->browser = getBrowser();
 
         return $instance;
     }
@@ -208,6 +209,48 @@ Class Controller extends \Slim\Slim
         elseif (empty($aa_instance->i_id))
         {
             $this->redirect('/error/');
+        }
+    }
+
+    /**
+     * check browser version and redirect on old browser
+     */
+    protected function checkBrowserSupport($env)
+    {
+        $browser        = strtolower($env->browser->name);
+        $version        = strtolower($env->browser->version);
+        $device         = strtolower($env->device->type);
+        $check_settings = require_once ROOT_PATH . '/configs/browser-config.php';
+
+        $checkBrowser = function($device) use($check_settings, $browser, $version) {
+            // if no settings exist for this browser, return true
+            if (!is_array($check_settings[$device]) || empty($check_settings[$device][$browser]))
+            {
+                return true;
+            }
+
+            if(is_array($check_settings[$device]) && !empty($check_settings[$device][$browser]))
+            {
+                $check_settings = $check_settings[$device];
+                if($check_settings[$browser]['operator'] === '>' && $check_settings[$browser]['version'] > $version)
+                {
+                    return true;
+                }
+                elseif($check_settings[$browser]['operator'] === '<' && $check_settings[$browser]['version'] < $version)
+                {
+                    return true;
+                }
+                elseif($check_settings[$browser]['version'] == $version)
+                {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        if (!$this->request->isAjax() && __c('activate_browser_detection') === '1' && ($checkBrowser('all') === false || $checkBrowser($device) === false))
+        {
+            $this->redirect('/browser/');
         }
     }
 
