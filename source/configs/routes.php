@@ -18,6 +18,7 @@ return array(
     '/:i_id/cache/'                     => 'Cache:instance',
     '/:i_id/assets/css/:filename/'      => 'Assets:css',
     '/:i_id/:lang/assets/js/:filename/' => 'Assets:js',
+    '/:i_id/:lang/share/:base/'         => 'Share',
     '/:i_id/'                           => 'Main:missingLanguage',
     '/:i_id/:lang/'                     => 'Main',
 );

@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# {{{fb_app_namespace}}}: http://ogp.me/ns/fb/{{{fb_app_namespace}}}#">
+    <meta charset="UTF-8">
+    <!-- Google+ Meta Data -->
+    <title>{{share_title}}</title>
+    <meta name="description" content="{{share_description}}" />
+    <link rel="canonical" href="{{fb_share_url}}" />
+    <link rel="image_src" href="{{share_image}}" />
+
+    <!-- Facebook Meta Data -->
+    <meta property="fb:app_id" content="{{fb_app_id}}" />
+    <meta property="og:title" content="{{share_title}}" />
+    <meta property="og:type" content="{{og_type}}" />
+    <meta property="og:url" content="{{fb_share_url}}" />
+    <meta property="og:image" content="{{share_image}}" />
+    <meta property="og:site_name" content="{{share_title}}" />
+    <meta property="og:description" content="{{share_description}}" />
+    <!--meta property="og:i_id" content="{{i_id}}" /-->
+</head>
+
+<body>
+<!-- Share image for Google+ -->
+<img src="{{share_image}}" alt="" title="" />
+
+<script type="text/javascript">
+    //top.location = "{{redirect_url}}";
+</script>
+</body>
+</html>
