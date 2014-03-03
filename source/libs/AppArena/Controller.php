@@ -48,6 +48,8 @@ Class Controller extends \Slim\Slim
      */
     public function before($i_id = 0, $lang = APP_DEFAULT_LOCALE)
     {
+        #$this->setParams(func_get_args());
+
         // check uri on last character. Is there no / at the end, redirect the page
         $uri       = $this->_request->getResourceUri();
         $last      = substr($uri, -1);
@@ -63,6 +65,16 @@ Class Controller extends \Slim\Slim
         // define language
         \Apparena\App::setLocale($lang, $this);
     }
+
+    /*protected function setParams($params)
+    {
+        $this->_params = $params;
+    }
+
+    protected function getParams()
+    {
+        return $this->_params;
+    }*/
 
     /**
      * setup some things after we call the main method
@@ -315,7 +327,7 @@ Class Controller extends \Slim\Slim
             {
                 if (\Apparena\App::$locale !== $locale)
                 {
-                    $params  = '';
+                    $params = '';
                     if ($instance->env->base !== 'website')
                     {
                         $params = '?app_data=' . urlencode('{"locale":"' . $locale . '"}');

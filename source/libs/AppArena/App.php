@@ -8,8 +8,8 @@ class App
     public static $i_id = null;
     public static $api = array();
     public static $locale = APP_DEFAULT_LOCALE;
-    protected  static $_signed_request = null;
-    protected  static $_current_date = null;
+    protected static $_signed_request = null;
+    protected static $_current_date = null;
     const COOKIE_NAME = 'aa_inst_locale_';
 
     private function __construct()
@@ -60,8 +60,14 @@ class App
      * @param null   $slim
      */
     // TODO: implement an interface to the controller structure adn check them here in $slim
-    public static function setLocale($locale = APP_DEFAULT_LOCALE, $slim = null)
+    public static function setLocale($locale, $slim = null)
     {
+        if (self::isValidLocale($locale) === false)
+        {
+            $locale = APP_DEFAULT_LOCALE;
+        }
+
+        $app_data = '';
         if (!empty(self::$_signed_request['app_data']))
         {
             $app_data = json_decode(self::$_signed_request['app_data'], true);
@@ -74,17 +80,36 @@ class App
         {
             $locale = $app_data['locale'];
         }
-        elseif (!is_null($slim) && !is_null(self::$i_id) && !empty($cookie))
+        elseif (!is_null($slim) && !is_null(self::$i_id) && self::isValidLocale($locale) === false && !empty($cookie))
         {
             $locale = $cookie;
         }
+
         $slim->setCookie($cookiename, $locale);
         self::$locale = $locale;
     }
 
+    /**
+     * check location style to detect a location
+     *
+     * @param $locale
+     *
+     * @return bool
+     */
+    protected static function isValidLocale($locale)
+    {
+        $locale = explode('_', $locale);
+        if (is_array($locale) && count($locale) === 2 && strlen($locale[0]) === 2 && strlen($locale[1]) === 2)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public static function getCurrentDate()
     {
-        if(is_null(self::$_current_date))
+        if (is_null(self::$_current_date))
         {
             self::$_current_date = new \DateTime('now', new \DateTimeZone(APP_BASIC_TIMEZONE));
         }

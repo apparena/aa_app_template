@@ -59,7 +59,7 @@ Class Share extends \Apparena\Controller
     {
         if (!empty($extention))
         {
-            if (strpos($uri, '?') === false)
+            if (trpos($uri, '?') === false)
             {
                 $uri .= '?';
             }
