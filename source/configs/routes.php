@@ -7,7 +7,7 @@
 return array(
     '/'                                 => array(
         'get'    => 'Main:missingId',
-        'post'   => 'Ajax:missingId',
+        'post'   => 'Main:missingId',
         'put'    => 'Ajax:missingId',
         'delete' => 'Ajax:missingId',
     ),
