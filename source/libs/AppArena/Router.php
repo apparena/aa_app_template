@@ -134,7 +134,7 @@ Class Router
         $this->errorHandler = $this->processCallback($path);
     }
 
-    protected function call404Page()
+    public function call404Page()
     {
         $class = new Controllers\Main();
         call_user_func_array(array($class, 'notFoundAction'), array());
