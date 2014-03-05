@@ -10,6 +10,7 @@ Class Controller extends \Slim\Slim
     protected $_status = 302;
     protected $_request;
     protected $_data = array();
+    protected $_sign_request = null;
 
     public function __construct()
     {
@@ -115,21 +116,26 @@ Class Controller extends \Slim\Slim
         echo $this->render($this->config('templates.base'), $settings, $status);
     }
 
-    protected function callApi()
+    protected function defineApi()
     {
-        $instance = \Apparena\Api\Instance::init();
-
         \Apparena\App::$api = \Apparena\Api\AppManager::init(array(
             'aa_app_id'     => APP_ID,
             'aa_app_secret' => APP_SECRET,
             'i_id'          => \Apparena\App::$i_id,
             'locale'        => \Apparena\App::$locale
         ));
+    }
+
+    protected function callApi()
+    {
+        $this->defineApi();
+        $instance = \Apparena\Api\Instance::init();
+        $api      = \Apparena\App::$api;
 
         // fill instance class and get data by api
-        $instance->data   = \Apparena\App::$api->getInstance('data');
-        $instance->config = \Apparena\App::$api->getConfig('data');
-        $instance->locale = \Apparena\App::$api->getTranslation('data');
+        $instance->data   = $api->getInstance('data');
+        $instance->config = $api->getConfig('data');
+        $instance->locale = $api->getTranslation('data');
 
         $instance = $this->defineInstanceEnv($instance);
         $this->checkInstance($instance->data);
@@ -222,29 +228,31 @@ Class Controller extends \Slim\Slim
         $device         = strtolower($env->device->type);
         $check_settings = require_once ROOT_PATH . '/configs/browser-config.php';
 
-        $checkBrowser = function($device) use($check_settings, $browser, $version) {
+        $checkBrowser = function ($device) use ($check_settings, $browser, $version)
+        {
             // if no settings exist for this browser, return true
             if (!is_array($check_settings[$device]) || empty($check_settings[$device][$browser]))
             {
                 return true;
             }
 
-            if(is_array($check_settings[$device]) && !empty($check_settings[$device][$browser]))
+            if (is_array($check_settings[$device]) && !empty($check_settings[$device][$browser]))
             {
                 $check_settings = $check_settings[$device];
-                if($check_settings[$browser]['operator'] === '>' && $check_settings[$browser]['version'] > $version)
+                if ($check_settings[$browser]['operator'] === '>' && $check_settings[$browser]['version'] > $version)
                 {
                     return true;
                 }
-                elseif($check_settings[$browser]['operator'] === '<' && $check_settings[$browser]['version'] < $version)
+                elseif ($check_settings[$browser]['operator'] === '<' && $check_settings[$browser]['version'] < $version)
                 {
                     return true;
                 }
-                elseif($check_settings[$browser]['version'] == $version)
+                elseif ($check_settings[$browser]['version'] == $version)
                 {
                     return true;
                 }
             }
+
             return false;
         };
 
@@ -277,6 +285,9 @@ Class Controller extends \Slim\Slim
         exit();
     }
 
+    /**
+     * define basic variables and settings for layout rendering
+     */
     protected function addBasicLayoutData()
     {
         $instance    = \Apparena\Api\Instance::init();
@@ -440,5 +451,26 @@ Class Controller extends \Slim\Slim
             $this->_data['layout_body_class'] .= ' ' . strtolower($instance->env->browser->platform);
         }
         $this->_data['layout_body_class'] = trim($this->_data['layout_body_class']);
+    }
+
+    /**
+     * check facebook sign request
+     * @return bool
+     */
+    protected function isFacebook()
+    {
+        $signed_request = $this->request->params('signed_request');
+        // check signed_request
+        if (!empty($signed_request))
+        {
+            $this->_sign_request = \Apparena\Helper\Facebook::parse_signed_request($signed_request);
+
+            if (!is_null($this->_sign_request))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

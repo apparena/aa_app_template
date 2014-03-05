@@ -17,7 +17,8 @@ namespace Apparena\Api;
 
 class AppManager
 {
-    const SERVER_URL = 'http://manager.app-arena.com/api/v1/instances/';
+    const SERVER_URL_INSTANCE    = 'https://manager.app-arena.com/api/v1/instances/';
+    const SERVER_URL_ENVIRONMENT = 'https://manager.app-arena.com/api/v1/env/';
     //this params will transport each call
     protected $_api_params = array(
         'aa_app_id'     => null,
@@ -128,10 +129,10 @@ class AppManager
 
     public function getFbPageId()
     {
-        if ($this->_api_params['fb_page_id'] === null)
+        /*if ($this->_api_params['fb_page_id'] === null)
         {
             throw new \Exception('Facebook Page ID is not defined');
-        }
+        }*/
 
         return $this->_api_params['fb_page_id'];
     }
@@ -158,10 +159,23 @@ class AppManager
         return $this->defineReturn($instance, $type);
     }
 
+    public function getInstanceFromFacebook($type = 'all')
+    {
+        $scope    = 'fb/pages/' . $this->getFbPageId() . '/instances.json?m_id=' . $this->getAppId() . '&is_active=1';
+        $instance = $this->call($scope);
+
+        return $this->defineReturn($instance, $type);
+    }
+
     public function call($scope)
     {
-        $cache = \Apparena\Helper\Cache::init('api');
-        $cachename = md5($scope);
+        $url = self::SERVER_URL_ENVIRONMENT;
+        if (is_null($this->getFbPageId()))
+        {
+            $url = self::SERVER_URL_INSTANCE . $this->getInstanceId();
+        }
+        $cache     = \Apparena\Helper\Cache::init('api');
+        $cachename = md5($url . $scope);
         if ($cache->check($cachename))
         {
             // cache exist, get data from them
@@ -171,11 +185,11 @@ class AppManager
         else
         {
             // cache not exist, get data from api
-            $return = json_decode(@file_get_contents(self::SERVER_URL . $this->getInstanceId() . $scope));
+            $return = json_decode(@file_get_contents($url . $scope));
 
             if ($return === null)
             {
-                throw new \Exception('API Call error: "' . self::SERVER_URL . $this->getInstanceId() . $scope . '"');
+                throw new \Exception('API Call error: "' . $url . $scope . '"');
             }
 
             // cache data
@@ -197,7 +211,7 @@ class AppManager
             return $data;
         }
 
-        return $data->$return_type;
+        return (object)$data->$return_type;
     }
 
     public function getInstanceId()
