@@ -34,7 +34,10 @@ class Css
      */
     public function __construct()
     {
-        $base_path = \Slim\Slim::getInstance()->environment()->offsetGet('SCRIPT_NAME');
+        #$base_path = \Slim\Slim::getInstance()->environment()->offsetGet('SCRIPT_NAME');
+        $env       = \Slim\Environment::getInstance();
+        $request   = new \Slim\Http\Request($env);
+        $base_path = $request->getRootUri();
         $config    = require_once ROOT_PATH . '/configs/css-config.php';
 
         $this->add($config['import']);
