@@ -137,19 +137,54 @@ Class Controller extends \Slim\Slim
         $instance->config = $api->getConfig('data');
         $instance->locale = $api->getTranslation('data');
 
-        $instance = $this->defineInstanceEnv($instance);
-        $this->checkInstance($instance->data);
-        $this->checkBrowserSupport($instance->env);
-
         // add additionals
         $instance->addData(array('page_tab_url' => $instance->data->fb_page_url . '?sk=app_' . $instance->data->fb_app_id));
         $instance->addData(array('share_url' => $instance->data->fb_canvas_url . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/share/'));
+
+        $instance = $this->defineInstanceEnv($instance);
+
+        if ($this->isFacebook())
+        {
+            $instance = $this->defineInstanceFb($instance);
+        }
+
+        $this->checkInstance($instance->data);
+        $this->checkBrowserSupport($instance->env);
 
         // define some basic constance's that we get over config values
         define('GP_CLIENT_ID', __c('gp_client_id'));
         define('GP_API_KEY', __c('gp_api_key'));
         define('TW_CONSUMER_KEY', __c('tw_consumer_key'));
         define('TW_CONSUMER_SECRET', __c('tw_consumer_secret'));
+    }
+
+    protected function defineInstanceFb($instance)
+    {
+        $fb_data = array(
+            "is_fb_user_admin" => \Apparena\Helper\Facebook::is_fb_user_admin(),
+            "is_fb_user_fan"   => \Apparena\Helper\Facebook::is_fb_user_fan(),
+            "signed_request"   => $this->_sign_request,
+        );
+        if (isset($this->_sign_request->page))
+        {
+            $fb_data['page'] = $this->_sign_request->page;
+        }
+        if (isset($this->_sign_request->user))
+        {
+            $fb_data['user'] = $this->_sign_request->user;
+        }
+        if (isset($this->_sign_request->user_id))
+        {
+            $fb_data['fb_user_id'] = $this->_sign_request->user_id;
+        }
+        $instance->facebook = new \stdClass();
+        foreach ($fb_data as $key => $value)
+        {
+            #$fb[$key] = $value;
+            $instance->facebook->$key = $value;
+        }
+
+        return $instance;
     }
 
     protected function defineInstanceEnv($instance)
@@ -159,9 +194,9 @@ Class Controller extends \Slim\Slim
         $instance->env->base_url = $instance->data->fb_canvas_url . "?i_id=" . \Apparena\App::$i_id;
         $instance->env->base     = 'website';
 
-        if (isset($_REQUEST['signed_request']))
+        if ($this->isFacebook())
         {
-            if (isset($fb_signed_request['page']))
+            if (isset($this->_sign_request->page))
             {
                 $instance->env->base_url = $instance->data->page_tab_url;
                 $instance->env->base     = 'page';
@@ -381,15 +416,9 @@ Class Controller extends \Slim\Slim
             {
                 if (\Apparena\App::$locale !== $locale)
                 {
-                    $params = '';
-                    if ($instance->env->base !== 'website')
-                    {
-                        $params = '?app_data=' . urlencode('{"locale":"' . $locale . '"}');
-                    }
-
                     $language_elements[] = array(
                         'flag' => $this->render('sections/nav_language_element', array(
-                                'url'   => str_replace(\Apparena\App::$locale, $locale, $instance->data->share_url) . $instance->env->base . '/' . $params,
+                                'url'   => str_replace(\Apparena\App::$locale, $locale, $instance->data->share_url) . $instance->env->base . '/',
                                 'class' => $locale,
                                 'name'  => __t('lang_' . $locale),
                             ))
@@ -463,8 +492,9 @@ Class Controller extends \Slim\Slim
         // check signed_request
         if (!empty($signed_request))
         {
-            $this->_sign_request = \Apparena\Helper\Facebook::parse_signed_request($signed_request);
-
+            $this->_sign_request               = \Apparena\Helper\Facebook::parse_signed_request($signed_request);
+            $this->_sign_request->sign_request = $signed_request;
+            \Apparena\App::$_signed_request    = $this->_sign_request;
             if (!is_null($this->_sign_request))
             {
                 return true;

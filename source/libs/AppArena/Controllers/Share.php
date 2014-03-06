@@ -8,40 +8,61 @@ namespace Apparena\Controllers;
 
 Class Share extends \Apparena\Controller
 {
-    public function indexAction()
+    public function indexAction($i_id, $lang, $base)
     {
         $this->callApi();
         $instance = \Apparena\Api\Instance::init();
 
         // basic variables
         $redirect_url = $instance->data->page_tab_url;
-        $og_type      = 'website';
         $fb_share_url = $instance->data->share_url;
 
         // variable modifications
         // redirect only desktops to facebook
         if (__c('app_using_on') === 'website'
             || ($instance->env->device->type !== 'desktop' && __c('app_using_on') !== 'facebook')
-            || (!empty($_GET['page']) && $_GET['page'] === 'website')
+            || (!empty($base) && $base === 'website')
         )
         {
             $redirect_url = $instance->data->fb_canvas_url . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/';
         }
 
         // Check if app_data exists and concatinate it to the sharing url
-        if (isset($_GET['app_data']))
+        if ($base !== 'website')
         {
-            $fb_share_url = $this->addToUri($fb_share_url, 'app_data=' . urlencode($_GET['app_data']));
-            $redirect_url = $this->addToUri($redirect_url, 'app_data=' . urlencode($_GET['app_data']));
+            $params = $this->_request->params();
+            if (is_array($params))
+            {
+                // unset unneeded keys
+                unset($params['signed_request']);
+                unset($params['app_data']);
+                unset($params['locale']);
+                // add all params for share url as GET aparams
+                foreach ($params AS $key => $value)
+                {
+                    $fb_share_url = $this->addToUri($fb_share_url, $key . '=' . $value);
+                }
+            }
+            else
+            {
+                $params = array();
+            }
+            // add language param to use is into app_data param for facebook
+            $params = array_merge($params, array('locale' => \Apparena\App::$locale));
+            // add all params as json data to facebook url
+            $redirect_url = $this->addToUri($redirect_url, 'app_data=' . urlencode(json_encode($params)));
         }
 
-        if (!empty($_GET['og-object']))
+        $og_object = $this->_request->get('og-object');
+        $og_type   = 'website';
+        if (!empty($og_object))
         {
-            $og_type      = $instance->data->fb_app_namespace . ':' . $_GET['og-object'];
-            $fb_share_url = $this->addToUri($fb_share_url, 'og-object=' . urlencode($_GET['og-object']));
+            $og_type      = $instance->data->fb_app_namespace . ':' . $og_object;
+            $fb_share_url = $this->addToUri($fb_share_url, 'og-object=' . urlencode($og_object));
         }
 
         $this->config('templates.base', 'share');
+
         $this->_data = array(
             'i_id'              => \Apparena\App::$i_id,
             'fb_app_namespace'  => $instance->data->fb_app_namespace,
@@ -59,13 +80,13 @@ Class Share extends \Apparena\Controller
     {
         if (!empty($extention))
         {
-            if (trpos($uri, '?') === false)
+            if (strpos($uri, '?') === false)
             {
                 $uri .= '?';
             }
             else
             {
-                $uri .= '?';
+                $uri .= '&';
             }
         }
 

@@ -8,7 +8,7 @@ class App
     public static $i_id = null;
     public static $api = array();
     public static $locale = APP_DEFAULT_LOCALE;
-    protected static $_signed_request = null;
+    public static $_signed_request = null;
     protected static $_current_date = null;
     const COOKIE_NAME = 'aa_inst_locale_';
 
@@ -68,9 +68,9 @@ class App
         }
 
         $app_data = '';
-        if (!empty(self::$_signed_request['app_data']))
+        if (!empty(self::$_signed_request->app_data))
         {
-            $app_data = json_decode(self::$_signed_request['app_data'], true);
+            $app_data = json_decode(self::$_signed_request->app_data, true);
         }
 
         $cookiename = self::COOKIE_NAME . self::$i_id;

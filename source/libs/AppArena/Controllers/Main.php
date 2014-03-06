@@ -14,41 +14,21 @@ Class Main extends \Apparena\Controller
     {
         if ($this->isFacebook())
         {
-            /*$fb_data = array(
-                "is_fb_user_admin" => \Apparena\Helper\Facebook::is_fb_user_admin(),
-                "is_fb_user_fan"   => \Apparena\Helper\Facebook::is_fb_user_fan(),
-                "signed_request"   => $this->_sign_request,
-            );
-            if (isset($this->_sign_request->page))
-            {
-                $fb_data['page'] = $this->_sign_request->page;
-            }
-            if (isset($this->_sign_request->user))
-            {
-                $fb_data['user'] = $this->_sign_request->user;
-            }
-            if (isset($this->_sign_request->user_id))
-            {
-                $fb_data['fb_user_id'] = $this->_sign_request->user_id;
-            }
-            $fb = array();+
-            foreach ($fb_data as $key => $value)
-            {
-                $fb[$key] = $value;
-            }*/
-
             $this->defineApi();
             \Apparena\App::$api->setFbPageId($this->_sign_request->page->id);
-            $instance = (array) \Apparena\App::$api->getInstanceFromFacebook('data');
-            if(!empty($instance[0]))
+            $instance = (array)\Apparena\App::$api->getInstanceFromFacebook('data');
+
+            if (!empty($instance[0]))
             {
                 $instance = $instance[0];
             }
 
+            \Apparena\App::setLocale($instance->locale, $this);
+
             // redirect
             if ($instance->activate === '1')
             {
-                $this->redirect('/' . $instance->i_id . '/' . $instance->locale . '/', 301);
+                $this->redirect('/' . $instance->i_id . '/' . \Apparena\App::$locale . '/?signed_request=' . $this->_sign_request->sign_request, 301);
             }
             else
             {
