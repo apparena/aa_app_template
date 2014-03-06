@@ -22,7 +22,7 @@ function __t()
     $hash = md5($args[0]);
 
     // if translation not exist, return key
-    if(empty($index->$hash))
+    if (empty($index->$hash))
     {
         return $args[0];
     }
@@ -67,7 +67,7 @@ function __pt()
 function __c($config, $key = 'value')
 {
     $instance = \Apparena\Api\Instance::init();
-    $data = $instance->config;
+    $data     = $instance->config;
 
     if (empty($data))
     {
@@ -281,12 +281,11 @@ if (!function_exists('pr'))
     function pr()
     {
         $args = func_get_args();
-        //$num  = func_num_args();
+        $num  = func_num_args();
 
-        if (is_array($args[0]))
+        if ($num > 1 && $args[1] !== true)
         {
-
-            foreach ($args[0] AS $var)
+            foreach ($args AS $var)
             {
                 echo '<pre>';
                 print_r($var);
@@ -299,9 +298,10 @@ if (!function_exists('pr'))
             print_r($args[0]);
             echo '</pre>';
         }
-        if (!empty($args[1]))
+
+        if ($num === 2 && $args[1] === true)
         {
-            exit($args[1]);
+            exit();
         }
 
         return true;
@@ -313,12 +313,11 @@ if (!function_exists('vd'))
     function vd()
     {
         $args = func_get_args();
-        //$num  = func_num_args();
+        $num  = func_num_args();
 
-        if (is_array($args[0]))
+        if ($num > 1 && $args[1] !== true)
         {
-
-            foreach ($args[0] AS $var)
+            foreach ($args AS $var)
             {
                 echo '<pre>';
                 var_dump($var);
@@ -331,9 +330,10 @@ if (!function_exists('vd'))
             var_dump($args[0]);
             echo '</pre>';
         }
-        if (!empty($args[1]))
+
+        if ($num === 2 && $args[1] === true)
         {
-            exit($args[1]);
+            exit();
         }
 
         return true;
