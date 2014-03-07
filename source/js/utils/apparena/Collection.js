@@ -5,7 +5,7 @@ define([
     'use strict';
 
     var Init, Remove, Instance, ReturnObj, GetInstanze;
-    
+
     /**
      * destroy collection objects and eventlistener
      *
@@ -37,15 +37,18 @@ define([
      */
     Init = function (settings) {
         settings = settings || {};
+        var attributes = settings.attributes || {},
+            init = settings.init || false;
 
-        var init = settings.init || false;
+        attributes.id = settings.id || 1;
+        ReturnObj.namespace = ReturnObj.namespace + attributes.id;
 
         if (_.isUndefined(_.singleton.collection[ReturnObj.namespace])) {
-            GetInstanze(settings);
+            GetInstanze(attributes);
         } else {
             if (init === true) {
                 Remove();
-                GetInstanze(settings);
+                GetInstanze(attributes);
             }
         }
 
@@ -57,16 +60,11 @@ define([
      *
      * @static
      *
-     * @param {Object} settings Not required - JSON string with settings for attributes and Collection id
+     * @param {Object} attributes Not required - JSON string with settings for attributes and Collection id
      *
      * @return void
      */
-    GetInstanze = function (settings) {
-        settings = settings || {};
-
-        var attributes = settings.attributes || {};
-        attributes.id = settings.id || 1;
-
+    GetInstanze = function (attributes) {
         _.singleton.collection[ReturnObj.namespace] = new ReturnObj.code(attributes);
     };
 
@@ -89,7 +87,7 @@ define([
      * that handles initialization and removing objects of a Backbone Collection.
      * Namespace and code must be set by the AMD module.
      *
-     * @requires namespace {String}, code {Object}
+     * @requires {String} namespace, {Object} code
      * @type {{init: Init, code: null, namespace: string, remove: Remove, getInstance: Instance}}
      */
     ReturnObj = {

@@ -18,10 +18,6 @@ define([
      *
      * @returns void
      */
-    /**
-     * Description
-     * @return 
-     */
     Remove = function () {
         if (!_.isUndefined(_.singleton.model[ReturnObj.namespace])) {
             _.singleton.model[ReturnObj.namespace].stopListening();
@@ -40,25 +36,23 @@ define([
      *  Model().init({id : 123});
      *  Model().init({attributes : {model : model.auth}});
      *
-     * @param settings {Object} Not required - JSON string with settings for attributes and model id
+     * @param {Object} settings Not required - JSON string with settings for attributes and model id
      * @returns {Object}
-     */
-    /**
-     * Description
-     * @param {} settings
-     * @return CallExpression
      */
     Init = function (settings) {
         settings = settings || {};
+        var attributes = settings.attributes || {},
+            init = settings.init || false;
 
-        var init = settings.init || false;
+        attributes.id = settings.id || 1;
+        ReturnObj.namespace = ReturnObj.namespace + attributes.id;
 
         if (_.isUndefined(_.singleton.model[ReturnObj.namespace])) {
-            GetInstanze(settings);
+            GetInstanze(attributes);
         } else {
             if (init === true) {
                 Remove();
-                GetInstanze(settings);
+                GetInstanze(attributes);
             }
         }
 
@@ -72,19 +66,9 @@ define([
      * @submodule Init
      * @static
      *
-     * @param settings {Object} Not required - JSON string with settings for attributes and model id
+     * @param {Object} attributes Not required - JSON string with settings for attributes and model id
      */
-    /**
-     * Description
-     * @param {} settings
-     * @return 
-     */
-    GetInstanze = function (settings) {
-        settings = settings || {};
-
-        var attributes = settings.attributes || {};
-        attributes.id = settings.id || 1;
-
+    GetInstanze = function (attributes) {
         _.singleton.model[ReturnObj.namespace] = new ReturnObj.code(attributes);
     };
 
@@ -102,10 +86,6 @@ define([
      *
      * @returns {Object}
      */
-    /**
-     * Description
-     * @return MemberExpression
-     */
     Instance = function () {
         return _.singleton.model[ReturnObj.namespace];
     };
@@ -116,7 +96,7 @@ define([
      * Namespace and code must be set by the AMD module.
      *
      * @class ReturnObj
-     * @requires namespace {String}, code {Object}
+     * @requires {String} namespace, {Object} code
      * @type {{init: Init, code: null, namespace: string, remove: Remove, getInstance: Instance}}
      */
     ReturnObj = {
