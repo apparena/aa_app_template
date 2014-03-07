@@ -24,7 +24,7 @@ define([
         /**
          * Description
          * @method initialize
-         * @return 
+         * @return
          */
         initialize: function () {
             _.bindAll(this, 'setEnv', 'homeAction', 'callAction', 'moduleAction', 'loadModule', 'goToPreviewsAction', 'goToPreviewsPage');
@@ -34,7 +34,7 @@ define([
          * Description
          * @method loadModule
          * @param {} id
-         * @return 
+         * @return
          */
         loadModule: function (id) {
             var that = this,
@@ -80,7 +80,7 @@ define([
          * @param {} module
          * @param {} filename
          * @param {} id
-         * @return 
+         * @return
          */
         moduleAction: function (module, filename, id) {
             var env = module;
@@ -113,7 +113,7 @@ define([
          * Description
          * @method callAction
          * @param {} module
-         * @return 
+         * @return
          */
         callAction: function (module) {
             // handle last and current action
@@ -133,7 +133,7 @@ define([
         /**
          * Description
          * @method homeAction
-         * @return 
+         * @return
          */
         homeAction: function () {
             this.setEnv('home');
@@ -142,14 +142,13 @@ define([
             this.loadModule();
         },
 
-        // added a new class to body from current route and removed the last one
         /**
-         * Description
+         * added a new class to body from current route and removed the last one
          * @method setEnv
          * @param {} envClass
-         * @return 
+         * @return
          */
-        setEnv:     function (envClass) {
+        setEnv: function (envClass) {
             var body = $('body');
 
             if (typeof this.lastEnvClass !== 'undefined') {
@@ -162,7 +161,7 @@ define([
         /**
          * Description
          * @method goToPreviewsAction
-         * @return 
+         * @return
          */
         goToPreviewsAction: function () {
             this.redirection('call', this.lastAction);
@@ -172,7 +171,7 @@ define([
          * Description
          * @method goToPreviewsPage
          * @param {} trigger
-         * @return 
+         * @return
          */
         goToPreviewsPage: function (trigger) {
             if (_.isEmpty(trigger)) {
@@ -187,7 +186,7 @@ define([
          * @param {} type
          * @param {} page
          * @param {} trigger
-         * @return 
+         * @return
          */
         redirection: function (type, page, trigger) {
             var redirect = type + '/' + page;
@@ -214,7 +213,7 @@ define([
          * @method goTo
          * @param {} loc
          * @param {} trigger
-         * @return 
+         * @return
          */
         Backbone.View.prototype.goTo = function (loc, trigger) {
             if (typeof trigger === 'undefined') {
@@ -228,9 +227,9 @@ define([
         /**
          * Description
          * @method ajax
-         * @param {} data
-         * @param {} async
-         * @param {} callback
+         * @param {Object} data
+         * @param {Boolean} async
+         * @param {Function} callback
          * @return returnData
          */
         Backbone.View.prototype.ajax = function (data, async, callback) {
@@ -244,17 +243,11 @@ define([
             data.i_id = _.aa.instance.i_id;
 
             $.ajax({
-                url:      'ajax.php',
+                url:      _.aa.instance.fb_canvas_url + 'ajax.php',
                 dataType: 'json',
                 type:     'POST',
                 async:    async,
                 data:     data,
-                /**
-                 * Description
-                 * @method success
-                 * @param {} response
-                 * @return 
-                 */
                 success:  function (response) {
                     returnData.type = 'success';
                     returnData.data = response;
@@ -263,12 +256,6 @@ define([
                         callback(returnData);
                     }
                 },
-                /**
-                 * Description
-                 * @method error
-                 * @param {} response
-                 * @return 
-                 */
                 error:    function (response) {
                     returnData.type = 'error';
                     returnData.data = response;
@@ -286,14 +273,6 @@ define([
          * @param scope string log scope, defined by your own ex. [app|user]_[modulename]_[action]
          * @param data json params as json to save
          * @returns {*}
-         */
-        /**
-         * Description
-         * @method log
-         * @param {} type
-         * @param {} scope
-         * @param {} data
-         * @return ThisExpression
          */
         Backbone.View.prototype.log = function (type, scope, data) {
             if (_.isUndefined(type) === true || _.isUndefined(scope) === true || (type !== 'group' && _.isUndefined(data) === true)) {
@@ -329,7 +308,7 @@ define([
         /**
          * Description
          * @method destroy
-         * @return 
+         * @return
          */
         Backbone.View.prototype.destroy = function () {
             //COMPLETELY UNBIND THE VIEW

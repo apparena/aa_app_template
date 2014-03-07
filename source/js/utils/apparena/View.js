@@ -90,7 +90,6 @@ define([
      * @returns {Object}
      */
     Instance = function () {
-        _.debug.log('Instance', ReturnObj.namespace);
         return _.singleton.view[ReturnObj.namespace];
     };
 
