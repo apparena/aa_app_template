@@ -11,6 +11,7 @@ return array(
         'put'    => 'Ajax:missingId',
         'delete' => 'Ajax:missingId',
     ),
+    '/ajax/'                            => 'Ajax:index@post',
     '/expired/'                         => 'Main:expired',
     '/browser/'                         => 'Main:browser',
     '/error/'                           => 'Main:notFound',

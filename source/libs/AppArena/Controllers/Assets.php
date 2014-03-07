@@ -1,6 +1,8 @@
 <?php
 namespace Apparena\Controllers;
 
+// ToDo: Add header settings with mime type and attachement
+
 Class Assets extends \Apparena\Controller
 {
     public function before($i_id = 0, $lang = APP_DEFAULT_LOCALE)
@@ -59,8 +61,8 @@ Class Assets extends \Apparena\Controller
             'fb'       => false,
             'app_data' => false,
             'user'     => (object)array(
-                    'ip'    => get_client_ip(),
-                    'agent' => $_SERVER['HTTP_USER_AGENT']
+                    'ip'    => $this->request()->getIp(),
+                    'agent' => $this->request()->getUserAgent()
                 ),
             'gp'       => (object)array(
                     'api_key'   => GP_API_KEY,
