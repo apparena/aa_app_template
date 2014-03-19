@@ -74,9 +74,10 @@ define(['underscore'], function (_) {
          * @return {XML|*|string|void}
          */
         'sprintf': function () {
-            var key = 1;
-            return arguments[0].replace(/%((%)|s)/g, function (response) {
-                return response[2] || arguments[key++]
+            var key = 1,
+                args = arguments;
+            return args[0].replace(/%((%)|s)/g, function (response) {
+                return response[2] || args[key]
             });
         }
     };

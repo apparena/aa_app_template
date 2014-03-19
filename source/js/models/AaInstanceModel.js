@@ -6,7 +6,7 @@ define([
 ], function (Model, Backbone, _, $) {
     'use strict';
 
-    Model.namespace = 'authPasswordLost';
+    Model.namespace = 'aaInstanceModel';
 
     Model.code = Backbone.Model.extend({
         url:      $('body').data('url-path') + 'assets/js/api/',

@@ -19,7 +19,6 @@ define([
      * @returns void
      */
     Remove = function () {
-        _.debug.log('remove', ReturnObj.namespace);
         if (!_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
             _.singleton.view[ReturnObj.namespace].stopListening().undelegateEvents().remove();
             delete _.singleton.view[ReturnObj.namespace];
