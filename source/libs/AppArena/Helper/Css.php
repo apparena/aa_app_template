@@ -34,14 +34,43 @@ class Css
      */
     public function __construct()
     {
-        #$base_path = \Slim\Slim::getInstance()->environment()->offsetGet('SCRIPT_NAME');
-        $env       = \Slim\Environment::getInstance();
-        $request   = new \Slim\Http\Request($env);
-        $base_path = $request->getRootUri();
-        $config    = require_once ROOT_PATH . '/configs/css-config.php';
-
+        $config = $this->getConfigs();
         $this->add($config['import']);
         $this->_config = $config;
+    }
+
+    protected function getConfigs()
+    {
+        $env               = \Slim\Environment::getInstance();
+        $request           = new \Slim\Http\Request($env);
+        $base_path         = $request->getRootUri();
+        $return            = require_once ROOT_PATH . '/configs/css-config.php';
+        $path              = ROOT_PATH . '/modules/';
+        $recursiveIterator = new \RecursiveDirectoryIterator($path);
+
+        foreach ($recursiveIterator as $element)
+        {
+            $file = $element->getPathName() . '/configs/css-config.php';
+            if ($element->isDir() && file_exists($file) && $element->getFilename() !== '.' && $element->getFilename() !== '..')
+            {
+                // include file
+                $result = require_once $file;
+
+                // merge array key import
+                if (isset($result['import']) && is_array($result['import']))
+                {
+                    $return['import'] = array_merge($return['import'], $result['import']);
+                }
+
+                // merge array key replace
+                if (isset($result['replace']) && is_array($result['replace']))
+                {
+                    $return['replace'] = array_merge($return['replace'], $result['replace']);
+                }
+            }
+        }
+
+        return $return;
     }
 
     public function add($file, $type = null)
@@ -74,6 +103,7 @@ class Css
         }
         else
         {
+            set_time_limit('5200');
             // cache not exist, create data
             $this->_data = '';
             $this->addGroupData('main')->addGroupData('file')->addGroupData('config')->replacePaths();
