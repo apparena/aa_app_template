@@ -1,8 +1,6 @@
 <?php
 namespace Apparena\Controllers;
 
-// ToDo: Add header settings with mime type and attachement
-
 Class Assets extends \Apparena\Controller
 {
     public function before($i_id = 0, $lang = APP_DEFAULT_LOCALE)
