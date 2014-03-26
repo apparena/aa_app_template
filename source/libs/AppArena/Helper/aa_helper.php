@@ -38,7 +38,7 @@ function __t()
     if ($num > 1)
     {
         unset($args[0]);
-        $param = '"' . implode('","', $args) . '"';
+        $param = implode('","', $args);
         $text  = sprintf($text, $param);
     }
 
@@ -75,7 +75,7 @@ function __c($config, $key = 'value')
         return false;
     }
 
-    if (is_object($data) && !empty($data->$config->$key))
+    if (is_object($data) && isset($data->$config->$key) && $data->$config->$key !== '')
     {
         return $data->$config->$key;
     }
