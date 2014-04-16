@@ -5,14 +5,16 @@ return array(
     // Application
     'mode'               => 'product',
     // Debugging
-    'debug'              => DEBUG,
+    //'debug'              => DEBUG,
+    'debug'              => false,
     // Logging
     'log.writer'         => null,
     'log.level'          => \Slim\Log::DEBUG,
-    'log.enabled'        => true,
+    'log.enabled'        => false,
     // View
     'templates.path'     => ROOT_PATH . '/templates',
     'templates.base'     => 'layout',
+    'templates.small'    => 'layout_small',
     'view'               => new \Slim\Extras\Views\Mustache(),
     // Cookies
     'cookies.encrypt'    => true,
