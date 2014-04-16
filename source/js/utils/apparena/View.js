@@ -20,7 +20,7 @@ define([
      */
     Remove = function () {
         if (!_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
-            _.singleton.view[ReturnObj.namespace].stopListening().undelegateEvents().remove();
+            _.singleton.view[ReturnObj.namespace].stopListening().undelegateEvents()/*.remove()*/;
             delete _.singleton.view[ReturnObj.namespace];
         }
     };
