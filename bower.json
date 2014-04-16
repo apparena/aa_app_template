@@ -11,7 +11,7 @@
         "javascript-debug":      "latest",
         "jquery":                "2.1",
         "lodash":                "2.4",
-        "jquery.validation":     "1.12",
+        "jquery.validation":     "1.11",
         "hashids":               "0.3"
     }
 }
