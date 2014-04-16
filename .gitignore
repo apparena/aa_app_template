@@ -26,10 +26,11 @@ source/configs/app-config.php
 build/node_modules/
 build/build_own.sh
 dist/
-source/tmp/cache/css*
-source/tmp/cache/api*
-source/tmp/cache/pd*
+source/tmp/cache/*_css_*
+source/tmp/cache/*_api_*
+source/tmp/cache/*_pd_*
 source/tmp/export/*.csv
+ssh/**/*
 atlassian-ide-plugin.xml
 
 # Packages #
