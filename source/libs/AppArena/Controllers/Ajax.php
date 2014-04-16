@@ -16,7 +16,7 @@ Class Ajax extends \Apparena\Controller
         if ($this->request()->isAjax() === false)
         {
             // Request has not been made by Ajax.
-            $this->redirect('/error/', 403);
+            $this->redirect('/'. $i_id .'/' . $lang . '/error/', 403);
         }
 
         // disable template rendering
@@ -55,6 +55,10 @@ Class Ajax extends \Apparena\Controller
         global $db;
 
         $post = $this->request()->post();
+
+        \Apparena\App::$i_id   = $post['i_id'];
+        \Apparena\App::$locale = APP_DEFAULT_LOCALE;
+        $this->callApi();
 
         try
         {

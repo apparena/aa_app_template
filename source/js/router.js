@@ -16,7 +16,7 @@ define([
             'mod/:module/:filename':      'moduleAction',
             'mod/:module/:filename/*id':  'moduleAction',
             'call/*module':               'callAction',
-            // depricated
+            // deprecated
             'page/:module':               'moduleAction',
             'page/:module/:filename':     'moduleAction',
             'page/:module/:filename/*id': 'moduleAction'
@@ -51,14 +51,14 @@ define([
              ]*/;
 
             // add mobile to module name and try to load a mobile version first
-            if (_.aa.env.device.type === 'mobile') {
-                _.each(this.module, function (value) {
-                    newModules.push(value + '-mobile');
-                    newModules.push(value);
-                });
+            /*if (_.aa.env.device.type === 'mobile') {
+             _.each(this.module, function (value) {
+             newModules.push(value + '-mobile');
+             newModules.push(value);
+             });
 
-                this.module = newModules;
-            }
+             this.module = newModules;
+             }*/
 
             // unset maybe existing declarations and set a new config path
             require.undef('CurrentModule');
@@ -93,6 +93,9 @@ define([
             module = module || false;
             id = id || false;
 
+            //_.debug.log('moduleAction', module);
+            //_.debug.log(this.lastPage, this.lastAction, this.currentPage);
+
             var env = module;
 
             if (module === false) {
@@ -124,7 +127,7 @@ define([
                     filename
                 ];
             }
-
+            //_.debug.log(this.lastPage, this.lastAction, this.currentPage);
             this.setEnv(env);
             this.loadModule(id);
         },
@@ -150,6 +153,8 @@ define([
          * @return
          */
         callAction: function (module) {
+            //_.debug.log('callAction', module);
+
             // handle last and current action
             if (_.isEmpty(this.currentAction) === false) {
                 this.lastAction = this.currentAction;
@@ -211,10 +216,10 @@ define([
          * @return
          */
         goToPreviewsPage: function (trigger) {
-            if (_.isEmpty(trigger)) {
-                trigger = true;
-            }
-            this.redirection('page', this.lastPage, trigger);
+            trigger = trigger || true;
+            //_.debug.log('this.lastPage', this.lastPage, this.lastAction, this.currentPage);
+            // todo we need a dynamic type param as first param!
+            this.redirection('mod', this.lastPage, trigger);
         },
 
         /**
@@ -227,12 +232,10 @@ define([
          */
         redirection: function (type, page, trigger) {
             var redirect = type + '/' + page;
-            if (_.isEmpty(page)) {
+            if (page === '/') {
                 redirect = '';
             }
-            if (_.isEmpty(trigger)) {
-                trigger = true;
-            }
+            trigger = trigger || true;
             _.router.navigate(redirect, {trigger: trigger});
         }
     });
@@ -260,6 +263,7 @@ define([
         /**
          * Extend the View class to make global ajax requests with jquery
          * @method ajax
+         * @deprecated
          * @param {Object} data
          * @param {Boolean} async
          * @param {Function} callback

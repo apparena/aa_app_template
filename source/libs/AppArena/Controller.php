@@ -7,7 +7,7 @@ require ROOT_PATH . '/libs/AppArena/Helper/aa_helper.php';
 Class Controller extends \Slim\Slim
 {
     protected $_render = true;
-    protected $_status = 302;
+    protected $_status = 200;
     protected $_request;
     protected $_data = array();
     protected $_sign_request = null;
@@ -32,7 +32,7 @@ Class Controller extends \Slim\Slim
     public function __destruct()
     {
         // define an internal slim route, to disable slims error handling
-        $this->map('/:wildcard+', function ()
+        $this->map('/(:wildcard+)', function ()
         {
             // Do nothing
         })->via('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS');
@@ -49,8 +49,6 @@ Class Controller extends \Slim\Slim
      */
     public function before($i_id = 0, $lang = APP_DEFAULT_LOCALE)
     {
-        #$this->setParams(func_get_args());
-
         // check uri on last character. Is there no / at the end, redirect the page
         $uri       = $this->_request->getResourceUri();
         $last      = substr($uri, -1);
@@ -67,16 +65,6 @@ Class Controller extends \Slim\Slim
         \Apparena\App::setLocale($lang, $this);
     }
 
-    /*protected function setParams($params)
-    {
-        $this->_params = $params;
-    }
-
-    protected function getParams()
-    {
-        return $this->_params;
-    }*/
-
     /**
      * setup some things after we call the main method
      */
@@ -89,6 +77,13 @@ Class Controller extends \Slim\Slim
         }
     }
 
+    /**
+     * render and return a template with data
+     *
+     * @param string   $template template path
+     * @param array    $data     template data as array
+     * @param null|int $status   http header status
+     */
     public function render($template, $data = array(), $status = null)
     {
         if (strpos($template, '.html') === false)
@@ -105,6 +100,12 @@ Class Controller extends \Slim\Slim
         return $this->view->fetch($template, $data);
     }
 
+    /**
+     * display rendered data with layout template
+     *
+     * @param array $data   template data as array
+     * @param null  $status http header status
+     */
     public function display($data = array(), $status = null)
     {
         $settings = array_merge(array(
@@ -116,6 +117,9 @@ Class Controller extends \Slim\Slim
         echo $this->render($this->config('templates.base'), $settings, $status);
     }
 
+    /**
+     * define API settings and initialization
+     */
     protected function defineApi()
     {
         \Apparena\App::$api = \Apparena\Api\AppManager::init(array(
@@ -126,6 +130,9 @@ Class Controller extends \Slim\Slim
         ));
     }
 
+    /**
+     * call appmanager api and get all instance information
+     */
     protected function callApi()
     {
         $this->defineApi();
@@ -148,7 +155,10 @@ Class Controller extends \Slim\Slim
             $instance = $this->defineInstanceFb($instance);
         }
 
-        $this->checkInstance($instance->data);
+        if (!defined('CHECKINSTANCE'))
+        {
+            $this->checkInstance($instance->data);
+        }
         $this->checkBrowserSupport($instance->env);
 
         // define some basic constance's that we get over config values
@@ -158,6 +168,13 @@ Class Controller extends \Slim\Slim
         define('TW_CONSUMER_SECRET', __c('tw_consumer_secret'));
     }
 
+    /**
+     * define instance by facebook information
+     *
+     * @param object $instance instance object
+     *
+     * @return mixed
+     */
     protected function defineInstanceFb($instance)
     {
         $fb_data = array(
@@ -187,11 +204,18 @@ Class Controller extends \Slim\Slim
         return $instance;
     }
 
+    /**
+     * define environment information in instance object
+     *
+     * @param  object $instance instance object
+     *
+     * @return mixed
+     */
     protected function defineInstanceEnv($instance)
     {
         $instance->env           = $this->environment;
         $instance->env->mode     = $this->getMode();
-        $instance->env->base_url = $instance->data->fb_canvas_url . "?i_id=" . \Apparena\App::$i_id;
+        $instance->env->base_url = $instance->data->fb_canvas_url . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/';
         $instance->env->base     = 'website';
 
         if ($this->isFacebook())
@@ -203,7 +227,7 @@ Class Controller extends \Slim\Slim
             }
             else
             {
-                $instance->env->base_url = "https://apps.facebook.com/" . $instance->data->fb_app_url . "/?i_id=" . \Apparena\App::$i_id;
+                $instance->env->base_url = "https://apps.facebook.com/" . $instance->data->fb_app_namespace . "/?i_id=" . \Apparena\App::$i_id;
                 $instance->env->base     = 'canvas';
             }
         }
@@ -228,6 +252,9 @@ Class Controller extends \Slim\Slim
 
     /**
      * Check instance and redirect on errors to a special error page
+     *
+     *
+     * @param object $aa_instance instance object
      */
     protected function checkInstance($aa_instance)
     {
@@ -237,11 +264,15 @@ Class Controller extends \Slim\Slim
 
         if (empty($aa_instance->i_id) && $aa_instance === 'instance not activated')
         {
-            $this->redirect('/expired/');
+            $this->redirect('/' . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/expired/');
         }
         elseif ($aa_inst_expiration_date < $current_date)
         {
-            $this->redirect('/expired/');
+            $this->redirect('/' . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/expired/');
+        }
+        elseif ($aa_instance->active === '0')
+        {
+            $this->redirect('/' . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/expired/');
         }
         elseif (empty($aa_instance->i_id) && $aa_instance === 'instance not exist')
         {
@@ -255,6 +286,8 @@ Class Controller extends \Slim\Slim
 
     /**
      * check browser version and redirect on old browser
+     *
+     * @param object $env environment information
      */
     protected function checkBrowserSupport($env)
     {
@@ -293,7 +326,7 @@ Class Controller extends \Slim\Slim
 
         if (!$this->request->isAjax() && __c('activate_browser_detection') === '1' && ($checkBrowser('all') === false || $checkBrowser($device) === false))
         {
-            $this->redirect('/browser/');
+            $this->redirect('/' . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/browser/');
         }
     }
 
@@ -360,7 +393,7 @@ Class Controller extends \Slim\Slim
                 if ($identifier === 'imprint' || $identifier === '' || $identifier === 'privacy' || $identifier === 'terms')
                 {
                     $links[] = array(
-                        'url'   => '#/page/app/' . $identifier,
+                        'url'   => '#/mod/app/' . $identifier,
                         'class' => 'app-' . $identifier,
                         'text'  => __t($identifier)
                     );
@@ -372,16 +405,16 @@ Class Controller extends \Slim\Slim
         if (__c('greetingcard_activated') === '1')
         {
             $links[] = array(
-                'url'   => '#/page/greetingcards',
+                'url'   => '#/mod/greetingcards',
                 'class' => 'greetingcards',
                 'text'  => __t('tab-greetingcards')
             );
         }
         // add profile
-        if (__c('greetingcard_activated') === '1')
+        if (__c('profile_activated') === '1')
         {
             $links[] = array(
-                'url'   => '#/page/profile',
+                'url'   => '#/mod/profile',
                 'class' => 'nav-profile',
                 'text'  => __t('profile')
             );
@@ -439,7 +472,7 @@ Class Controller extends \Slim\Slim
             'app_navigation'    => $this->render('sections/navigation', $navigation),
             'app_header'        => __c('header_custom'),
             'app_footer'        => __c('footer_custom'),
-            'app_terms_box'     => $this->render('sections/terms_box', array('link' => __t('footer_terms', '<a href="#/page/app/terms">' . __t('terms') . '</a>'))),
+            'app_terms_box'     => $this->render('sections/terms_box', array('link' => __t('footer_terms', '<a href="#/mod/app/terms">' . __t('terms') . '</a>'))),
             'app_i_id'          => \Apparena\App::$i_id,
             'app_base_path'     => $this->environment()->offsetGet('SCRIPT_NAME'),
             'app_url_path'      => $this->_request->getPath(),
@@ -492,11 +525,17 @@ Class Controller extends \Slim\Slim
         // check signed_request
         if (!empty($signed_request))
         {
-            $this->_sign_request               = \Apparena\Helper\Facebook::parse_signed_request($signed_request);
-            $this->_sign_request->sign_request = $signed_request;
-            \Apparena\App::$_signed_request    = $this->_sign_request;
+            $this->_sign_request = \Apparena\Helper\Facebook::parse_signed_request($signed_request);
             if (!is_null($this->_sign_request))
             {
+                $this->_sign_request->sign_request = $signed_request;
+                \Apparena\App::$_signed_request    = $this->_sign_request;
+
+                if (!empty($this->_sign_request->app_data))
+                {
+                    \Apparena\App::$_app_data = json_decode($this->_sign_request->app_data);
+                }
+
                 return true;
             }
         }

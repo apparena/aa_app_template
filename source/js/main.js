@@ -12,11 +12,12 @@
         'debug',
         'router',
         'models/AaInstanceModel',
+        'views/BasicLogView',
         // libs with no object declaration
         'bootstrap'
-    ], function ($, _, AaHelper, Debug, Router, AaInstanceModel) {
+    ], function ($, _, AaHelper, Debug, Router, AaInstanceModel, BasicLogView) {
         var admin = $('.nav-admin'),
-            aa, nav, aaInstanceModel;
+            nav, aaInstanceModel, QueryString;
 
         // extend underscore with our aa object, so that it is accessible everywhere where the _ underscore object is known.
         _.extend(_, {
@@ -26,6 +27,7 @@
             debug:     Debug,             // browser safty console.log version
             uid:       0,                 // user id
             gid:       0,                 // group ID
+            fangate:   null,              // show fangate only, if this is null
             singleton: {                  // storage for initialized backbone objects to init them only one time and destroy them later easier
                 view:       {},
                 model:      {},
@@ -33,32 +35,56 @@
             }
         });
 
+        QueryString = function () {
+            // This function is anonymous, is executed immediately and
+            // the return value is assigned to QueryString!
+            var query_string = {},
+                query = window.location.search.substring(1),
+                vars = query.split('&'),
+                i = 0,
+                pair, arr;
+            for (i; i < vars.length; i++) {
+                pair = vars[i].split('=');
+                // If first entry with this name
+                if (typeof query_string[pair[0]] === 'undefined') {
+                    query_string[pair[0]] = pair[1];
+                    // If second entry with this name
+                } else if (typeof query_string[pair[0]] === 'string') {
+                    arr = [query_string[pair[0]], pair[1]];
+                    query_string[pair[0]] = arr;
+                    // If third or later entry with this name
+                } else {
+                    query_string[pair[0]].push(pair[1]);
+                }
+            }
+
+            return query_string;
+        }();
+
         aaInstanceModel = AaInstanceModel.init();
-        aaInstanceModel.on('sync', function(){
+        aaInstanceModel.on('sync', function () {
             // make some other stuff global
             _.extend(_, {
                 router: Router.initialize()
             });
+
+            // log some device information
+            BasicLogView().init();
+
+            // get url params and store them in _.aa.params
+            _.aa.params = QueryString;
+
+            // check login status (autologin)
+            require(['modules/aa_app_mod_auth/js/views/LoginView'], function (LoginView) {
+                LoginView().init().handleNavigation();
+            });
         });
+
+        // check facebook request params
+        if (!_.isUndefined(QueryString.signed_request)) {
+            aaInstanceModel.addUrlParam('?signed_request=' + QueryString.signed_request);
+        }
         aaInstanceModel.fetch();
-
-        // show and hide debug output
-        $('.show-debug').on('click', function () {
-            var that = $(this),
-                element = that.attr('data-content'),
-                debug = $('#' + element);
-            if (debug.css('display') === 'block') {
-                debug.hide();
-            } else {
-                debug.show();
-            }
-
-            if (that.hasClass('btn-success')) {
-                that.removeClass('btn-success').addClass('btn-default');
-            } else {
-                that.removeClass('btn-default').addClass('btn-success');
-            }
-        });
 
         // navigation active handler
         nav = $('#main-navigation').find('.navbar-collapse');
@@ -79,9 +105,8 @@
 
         // add click event to admin button
         admin.on('click', function () {
-            //_.debug.log('button clicked');
             window.open(
-                'modules/admin_panel/index.php?i_id=' + _.aa.instance.i_id + '&admin_key=' + _.aa.custom.admin_key,
+                'admin/?admin_key=' + _.aa.custom.admin_key,
                 '_blank'
             );
         });

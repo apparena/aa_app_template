@@ -9,6 +9,7 @@ class App
     public static $api = array();
     public static $locale = APP_DEFAULT_LOCALE;
     public static $_signed_request = null;
+    public static $_app_data = null;
     protected static $_current_date = null;
     const COOKIE_NAME = 'aa_inst_locale_';
 

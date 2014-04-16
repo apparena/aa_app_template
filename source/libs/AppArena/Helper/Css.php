@@ -103,7 +103,8 @@ class Css
         }
         else
         {
-            set_time_limit('5200');
+            #set_time_limit(0);
+            ini_set('max_execution_time', 5200);
             // cache not exist, create data
             $this->_data = '';
             $this->addGroupData('main')->addGroupData('file')->addGroupData('config')->replacePaths();
@@ -135,7 +136,14 @@ class Css
         {
             if ($group === 'config')
             {
-                $this->_data .= __c($file);
+                if(__c($file) === false && __c($file, 'src') !== false)
+                {
+                    $this->_data .= file_get_contents(__c($file, 'src'));
+                }
+                else
+                {
+                    $this->_data .= __c($file);
+                }
             }
             elseif (file_exists(ROOT_PATH . $file))
             {

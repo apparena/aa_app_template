@@ -6,7 +6,7 @@ date_default_timezone_set('Europe/Berlin'); // Set timezone
 ini_set('session.gc_probability', 0); // Disable session expired check
 header('P3P: CP=CAO PSA OUR'); // Fix IE save cookie in iframe problem
 
-define('ROOT_PATH', str_replace('/includes', '', realpath(dirname(__FILE__)))); // Set include path
+define('ROOT_PATH', realpath(dirname(__FILE__))); // Set include path
 define('DS', DIRECTORY_SEPARATOR);
 
 /**

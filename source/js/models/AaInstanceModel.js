@@ -21,8 +21,12 @@ define([
         },
 
         initialize: function () {
-            _.bindAll(this, 'extendUnderscore');
+            _.bindAll(this, 'extendUnderscore', 'addUrlParam');
             this.on('sync', this.extendUnderscore, this);
+        },
+
+        addUrlParam: function (param) {
+            this.url = this.url + param;
         },
 
         extendUnderscore: function () {

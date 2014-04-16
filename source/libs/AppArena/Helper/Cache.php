@@ -153,7 +153,7 @@ class Cache
         $recursiveIterator = new \RecursiveDirectoryIterator($this->_path);
         foreach ($recursiveIterator as $element)
         {
-            if ($element->getFilename() !== '.' && $element->getFilename() !== '..' && $element->getFilename() !== 'void')
+            if ($element->getFilename() !== '.' && $element->getFilename() !== '..' && $element->getFilename() !== 'void.txt')
             {
                 if ($id !== 'all')
                 {

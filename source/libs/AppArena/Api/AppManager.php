@@ -176,7 +176,7 @@ class AppManager
         }
         $cache     = \Apparena\Helper\Cache::init('api');
         $cachename = md5($url . $scope);
-        if ($cache->check($cachename))
+        if ($scope !== '.json' && $cache->check($cachename))
         {
             // cache exist, get data from them
             $cachedata = $cache->get($cachename);

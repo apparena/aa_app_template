@@ -14,12 +14,11 @@ var require = {
 
             /*'location': 'vendor/lodash-amd/underscore',
              'main': 'main'*/
-
         }
     ],
 
     paths: {
-        'jquery':                  'vendor/jquery/jquery',
+        'jquery':                  'vendor/jquery/dist/jquery',
         'backbone':                'vendor/backbone-amd/backbone',
         'bootstrap':               'vendor/bootstrap/dist/js/bootstrap',
 
@@ -28,7 +27,7 @@ var require = {
         'localstorage':            'vendor/backbone.localStorage/backbone.localStorage',
         'aa_helper':               'utils/apparena/helper',
         'debug':                   'vendor/javascript-debug/ba-debug',
-        'jquery.validation':       'vendor/jquery.validation/jquery.validate',
+        'jquery.validation':       'vendor/jquery.validation/dist/jquery.validate',
         'jquery.serialize_object': 'utils/jquery/serialize-object',
         'jquery.validator_config': 'utils/jquery/validator-config',
         'jMD5':                    'utils/jquery/jquery.md5',

@@ -58,6 +58,7 @@ Class Assets extends \Apparena\Controller
             'env'      => $this->environment,
             'fb'       => false,
             'app_data' => false,
+            'params'   => false,
             'user'     => (object)array(
                     'ip'    => $this->request()->getIp(),
                     'agent' => $this->request()->getUserAgent()
@@ -67,6 +68,11 @@ Class Assets extends \Apparena\Controller
                     'client_id' => GP_CLIENT_ID
                 )
         );
+
+        if($this->isFacebook())
+        {
+            $aaForJs->app_data = \Apparena\App::$_app_data;
+        }
 
         /*if (isset($aa->fb))
         {
