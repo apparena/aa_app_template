@@ -280,7 +280,7 @@ define([
             data.i_id = _.aa.instance.i_id;
 
             $.ajax({
-                url:      _.aa.instance.fb_canvas_url + 'ajax/',
+                url:      _.aa.instance.base_url + 'ajax/',
                 dataType: 'json',
                 type:     'POST',
                 async:    async,

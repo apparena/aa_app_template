@@ -145,8 +145,12 @@ Class Controller extends \Slim\Slim
         $instance->locale = $api->getTranslation('data');
 
         // add additionals
-        $instance->addData(array('page_tab_url' => $instance->data->fb_page_url . '?sk=app_' . $instance->data->fb_app_id));
-        $instance->addData(array('share_url' => $instance->data->fb_canvas_url . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/share/'));
+        $instance->addData(array(
+            'page_tab_url' => $instance->data->fb_page_url . '?sk=app_' . $instance->data->fb_app_id,
+            'share_url'    => $instance->data->fb_canvas_url . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/share/',
+            'base_url'     => $this->_request->getScheme() . '://' . $this->_request->getHost() . $this->_request->getRootUri() . '/',
+            'root_url'     => $this->_request->getScheme() . '://' . $this->_request->getHost()
+        ));
 
         $instance = $this->defineInstanceEnv($instance);
 
