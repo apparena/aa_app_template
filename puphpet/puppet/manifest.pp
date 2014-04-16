@@ -6,7 +6,10 @@ if $server_values == undef {
 
 # Ensure the time is accurate, reducing the possibilities of apt repositories
 # failing for invalid certificates
-include '::ntp'
+class { 'ntp': }
+
+include 'puphpet'
+include 'puphpet::params'
 
 Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
 group { 'puppet':   ensure => present }
@@ -130,7 +133,7 @@ case $::operatingsystem {
 
     add_dotdeb { 'packages.dotdeb.org': release => $lsbdistcodename }
 
-    if is_hash($php_values) {
+   if hash_key_equals($php_values, 'install', 1) {
       # Debian Squeeze 6.0 can do PHP 5.3 (default) and 5.4
       if $lsbdistcodename == 'squeeze' and $php_values['version'] == '54' {
         add_dotdeb { 'packages.dotdeb.org-php54': release => 'squeeze-php54' }
@@ -158,7 +161,7 @@ case $::operatingsystem {
 
     apt::ppa { 'ppa:pdoes/ppa': require => Apt::Key['4CBEDD5A'] }
 
-    if is_hash($php_values) {
+    if hash_key_equals($php_values, 'install', 1) {
       # Ubuntu Lucid 10.04, Precise 12.04, Quantal 12.10 and Raring 13.04 can do PHP 5.3 (default <= 12.10) and 5.4 (default <= 13.04)
       if $lsbdistcodename in ['lucid', 'precise', 'quantal', 'raring'] and $php_values['version'] == '54' {
         if $lsbdistcodename == 'lucid' {
@@ -177,7 +180,7 @@ case $::operatingsystem {
     }
   }
   'redhat', 'centos': {
-    if is_hash($php_values) {
+    if hash_key_equals($php_values, 'install', 1) {
       if $php_values['version'] == '54' {
         class { 'yum::repo::remi': }
       }
@@ -212,32 +215,23 @@ if $mailcatcher_values == undef {
   $mailcatcher_values = hiera('mailcatcher', false)
 }
 
-if $mailcatcher_values['install'] != undef and $mailcatcher_values['install'] == 1 {
-  $mailcatcher_path       = $mailcatcher_values['settings']['path']
-  $mailcatcher_smtp_ip    = $mailcatcher_values['settings']['smtp_ip']
-  $mailcatcher_smtp_port  = $mailcatcher_values['settings']['smtp_port']
-  $mailcatcher_http_ip    = $mailcatcher_values['settings']['http_ip']
-  $mailcatcher_http_port  = $mailcatcher_values['settings']['http_port']
-  $mailcatcher_log        = $mailcatcher_values['settings']['log']
+if hash_key_equals($mailcatcher_values, 'install', 1) {
+  create_resources('class', { 'mailcatcher' => $mailcatcher_values['settings'] })
 
-  class { 'mailcatcher':
-    mailcatcher_path => $mailcatcher_path,
-    smtp_ip          => $mailcatcher_smtp_ip,
-    smtp_port        => $mailcatcher_smtp_port,
-    http_ip          => $mailcatcher_http_ip,
-    http_port        => $mailcatcher_http_port,
-  }
-
-  if $::osfamily == 'redhat' and ! defined(Iptables::Allow["tcp/${mailcatcher_smtp_port}"]) {
-    iptables::allow { "tcp/${mailcatcher_smtp_port}":
-      port     => $mailcatcher_smtp_port,
+  if $::osfamily == 'redhat'
+    and ! defined(Iptables::Allow["tcp/${mailcatcher_values['settings']['smtp_port']}"])
+  {
+    iptables::allow { "tcp/${mailcatcher_values['settings']['smtp_port']}":
+      port     => $mailcatcher_values['settings']['smtp_port'],
       protocol => 'tcp'
     }
   }
 
-  if $::osfamily == 'redhat' and ! defined(Iptables::Allow["tcp/${mailcatcher_http_port}"]) {
-    iptables::allow { "tcp/${mailcatcher_http_port}":
-      port     => $mailcatcher_http_port,
+  if $::osfamily == 'redhat'
+    and ! defined(Iptables::Allow["tcp/${mailcatcher_values['settings']['http_port']}"])
+  {
+    iptables::allow { "tcp/${mailcatcher_values['settings']['http_port']}":
+      port     => $mailcatcher_values['settings']['http_port'],
       protocol => 'tcp'
     }
   }
@@ -249,13 +243,13 @@ if $mailcatcher_values['install'] != undef and $mailcatcher_values['install'] ==
   }
 
   $supervisord_mailcatcher_options = sort(join_keys_to_values({
-    ' --smtp-ip'   => $mailcatcher_smtp_ip,
-    ' --smtp-port' => $mailcatcher_smtp_port,
-    ' --http-ip'   => $mailcatcher_http_ip,
-    ' --http-port' => $mailcatcher_http_port
+    ' --smtp-ip'   => $mailcatcher_values['settings']['smtp_ip'],
+    ' --smtp-port' => $mailcatcher_values['settings']['smtp_port'],
+    ' --http-ip'   => $mailcatcher_values['settings']['http_ip'],
+    ' --http-port' => $mailcatcher_values['settings']['http_port']
   }, ' '))
 
-  $supervisord_mailcatcher_cmd = "mailcatcher ${supervisord_mailcatcher_options} -f  >> ${mailcatcher_log}"
+  $supervisord_mailcatcher_cmd = "mailcatcher ${supervisord_mailcatcher_options} -f  >> ${mailcatcher_values['settings']['log']}"
 
   supervisord::program { 'mailcatcher':
     command     => $supervisord_mailcatcher_cmd,
@@ -264,7 +258,7 @@ if $mailcatcher_values['install'] != undef and $mailcatcher_values['install'] ==
     autostart   => true,
     autorestart => true,
     environment => {
-      'PATH' => "/bin:/sbin:/usr/bin:/usr/sbin:${mailcatcher_path}"
+      'PATH' => "/bin:/sbin:/usr/bin:/usr/sbin:${mailcatcher_values['settings']['path']}"
     },
     require => Package['mailcatcher']
   }
@@ -274,252 +268,273 @@ if $mailcatcher_values['install'] != undef and $mailcatcher_values['install'] ==
 
 if $yaml_values == undef {
   $yaml_values = loadyaml('/vagrant/puphpet/config.yaml')
-}
-
-if $apache_values == undef {
+} if $apache_values == undef {
   $apache_values = $yaml_values['apache']
+} if $php_values == undef {
+  $php_values = hiera('php', false)
+} if $hhvm_values == undef {
+  $hhvm_values = hiera('hhvm', false)
 }
 
-include puphpet::params
+if hash_key_equals($apache_values, 'install', 1) {
+  include puphpet::params
+  include apache::params
 
-$webroot_location = $puphpet::params::apache_webroot_location
+  $webroot_location = $puphpet::params::apache_webroot_location
 
-exec { "exec mkdir -p ${webroot_location}":
-  command => "mkdir -p ${webroot_location}",
-  creates => $webroot_location,
-}
-
-if ! defined(File[$webroot_location]) {
-  file { $webroot_location:
-    ensure  => directory,
-    group   => 'www-data',
-    mode    => 0775,
-    require => [
-      Exec["exec mkdir -p ${webroot_location}"],
-      Group['www-data']
-    ]
+  exec { "exec mkdir -p ${webroot_location}":
+    command => "mkdir -p ${webroot_location}",
+    creates => $webroot_location,
   }
-}
 
-class { 'apache':
-  user          => $apache_values['user'],
-  group         => $apache_values['group'],
-  default_vhost => $apache_values['default_vhost'],
-  mpm_module    => $apache_values['mpm_module'],
-  manage_user   => false,
-  manage_group  => false
-}
-
-if $::osfamily == 'debian' {
-  case $apache_values['mpm_module'] {
-    'prefork': { ensure_packages( ['apache2-mpm-prefork'] ) }
-    'worker':  { ensure_packages( ['apache2-mpm-worker'] ) }
-    'event':   { ensure_packages( ['apache2-mpm-event'] ) }
-  }
-} elsif $::osfamily == 'redhat' and ! defined(Iptables::Allow['tcp/80']) {
-  iptables::allow { 'tcp/80':
-    port     => '80',
-    protocol => 'tcp'
-  }
-}
-
-if has_key($apache_values, 'mod_pagespeed') and $apache_values['mod_pagespeed'] == 1 {
-  class { 'puphpet::apache::modpagespeed': }
-}
-
-if has_key($apache_values, 'mod_spdy') and $apache_values['mod_spdy'] == 1 {
-  class { 'puphpet::apache::modspdy': }
-}
-
-if count($apache_values['vhosts']) > 0 {
-  each( $apache_values['vhosts'] ) |$key, $vhost| {
-    exec { "exec mkdir -p ${vhost['docroot']} @ key ${key}":
-      command => "mkdir -p ${vhost['docroot']}",
-      creates => $vhost['docroot'],
+  if ! defined(File[$webroot_location]) {
+    file { $webroot_location:
+      ensure  => directory,
+      group   => 'www-data',
+      mode    => 0775,
+      require => [
+        Exec["exec mkdir -p ${webroot_location}"],
+        Group['www-data']
+      ]
     }
+  }
 
-    if ! defined(File[$vhost['docroot']]) {
-      file { $vhost['docroot']:
-        ensure  => directory,
-        require => Exec["exec mkdir -p ${vhost['docroot']} @ key ${key}"]
+  if hash_key_equals($hhvm_values, 'install', 1) {
+    $mpm_module           = 'worker'
+    $disallowed_modules   = ['php']
+    $apache_conf_template = 'puphpet/apache/hhvm-httpd.conf.erb'
+    $apache_php_package   = 'hhvm'
+  } elsif hash_key_equals($php_values, 'install', 1) {
+    $mpm_module           = 'prefork'
+    $disallowed_modules   = []
+    $apache_conf_template = $apache::params::conf_template
+    $apache_php_package   = 'php'
+  } else {
+    $mpm_module           = 'prefork'
+    $disallowed_modules   = []
+    $apache_conf_template = $apache::params::conf_template
+    $apache_php_package   = ''
+  }
+
+  $apache_settings = merge($apache_values['settings'], {
+    'mpm_module'    => $mpm_module,
+    'conf_template' => $apache_conf_template,
+    'sendfile'      => $apache_values['settings']['sendfile'] ? { 0 => 'Off', 1 => 'On', default => 'Off' },
+  })
+
+  create_resources('class', { 'apache' => $apache_settings })
+
+  if $::osfamily == 'redhat' and ! defined(Iptables::Allow['tcp/80']) {
+    iptables::allow { 'tcp/80':
+      port     => '80',
+      protocol => 'tcp'
+    }
+  }
+
+  if hash_key_equals($apache_values, 'mod_pagespeed', 1) {
+    class { 'puphpet::apache::modpagespeed': }
+  }
+
+  if hash_key_equals($apache_values, 'mod_spdy', 1) {
+    class { 'puphpet::apache::modspdy':
+      php_package => $apache_php_package
+    }
+  }
+
+  if count($apache_values['vhosts']) > 0 {
+    each( $apache_values['vhosts'] ) |$key, $vhost| {
+      exec { "exec mkdir -p ${vhost['docroot']} @ key ${key}":
+        command => "mkdir -p ${vhost['docroot']}",
+        creates => $vhost['docroot'],
+      }
+
+      if ! defined(File[$vhost['docroot']]) {
+        file { $vhost['docroot']:
+          ensure  => directory,
+          require => Exec["exec mkdir -p ${vhost['docroot']} @ key ${key}"]
+        }
       }
     }
   }
-}
 
-create_resources(apache::vhost, $apache_values['vhosts'])
+  create_resources(apache::vhost, $apache_values['vhosts'])
 
-define apache_mod {
-  if ! defined(Class["apache::mod::${name}"]) {
-    class { "apache::mod::${name}": }
+  if count($apache_values['modules']) > 0 {
+    apache_mod { $apache_values['modules']: }
   }
 }
 
-if count($apache_values['modules']) > 0 {
-  apache_mod { $apache_values['modules']: }
+define apache_mod {
+  if ! defined(Class["apache::mod::${name}"]) and !($name in $disallowed_modules) {
+    class { "apache::mod::${name}": }
+  }
 }
 
 ## Begin PHP manifest
 
 if $php_values == undef {
   $php_values = hiera('php', false)
-}
-
-if $apache_values == undef {
+} if $apache_values == undef {
   $apache_values = hiera('apache', false)
-}
-
-if $nginx_values == undef {
+} if $nginx_values == undef {
   $nginx_values = hiera('nginx', false)
 }
 
-Class['Php'] -> Class['Php::Devel'] -> Php::Module <| |> -> Php::Pear::Module <| |> -> Php::Pecl::Module <| |>
+if hash_key_equals($php_values, 'install', 1) {
+  Class['Php'] -> Class['Php::Devel'] -> Php::Module <| |> -> Php::Pear::Module <| |> -> Php::Pecl::Module <| |>
 
-if $php_prefix == undef {
-  $php_prefix = $::operatingsystem ? {
-    /(?i:Ubuntu|Debian|Mint|SLES|OpenSuSE)/ => 'php5-',
-    default                                 => 'php-',
+  if $php_prefix == undef {
+    $php_prefix = $::operatingsystem ? {
+      /(?i:Ubuntu|Debian|Mint|SLES|OpenSuSE)/ => 'php5-',
+      default                                 => 'php-',
+    }
   }
-}
 
-if $php_fpm_ini == undef {
-  $php_fpm_ini = $::operatingsystem ? {
-    /(?i:Ubuntu|Debian|Mint|SLES|OpenSuSE)/ => '/etc/php5/fpm/php.ini',
-    default                                 => '/etc/php.ini',
+  if $php_fpm_ini == undef {
+    $php_fpm_ini = $::operatingsystem ? {
+      /(?i:Ubuntu|Debian|Mint|SLES|OpenSuSE)/ => '/etc/php5/fpm/php.ini',
+      default                                 => '/etc/php.ini',
+    }
   }
-}
 
-if is_hash($apache_values) {
-  include apache::params
+  if hash_key_equals($apache_values, 'install', 1) {
+    include apache::params
 
-  if has_key($apache_values, 'mod_spdy') and $apache_values['mod_spdy'] == 1 {
-    $php_webserver_service_ini = 'cgi'
+    if has_key($apache_values, 'mod_spdy') and $apache_values['mod_spdy'] == 1 {
+      $php_webserver_service_ini = 'cgi'
+    } else {
+      $php_webserver_service_ini = 'httpd'
+    }
+
+    $php_webserver_service = 'httpd'
+    $php_webserver_user    = $apache::params::user
+    $php_webserver_restart = true
+
+    class { 'php':
+      service => $php_webserver_service
+    }
+  } elsif hash_key_equals($nginx_values, 'install', 1) {
+    include nginx::params
+
+    $php_webserver_service     = "${php_prefix}fpm"
+    $php_webserver_service_ini = $php_webserver_service
+    $php_webserver_user        = $nginx::params::nx_daemon_user
+    $php_webserver_restart     = true
+
+    class { 'php':
+      package             => $php_webserver_service,
+      service             => $php_webserver_service,
+      service_autorestart => false,
+      config_file         => $php_fpm_ini,
+    }
+
+    service { $php_webserver_service:
+      ensure     => running,
+      enable     => true,
+      hasrestart => true,
+      hasstatus  => true,
+      require    => Package[$php_webserver_service]
+    }
   } else {
-    $php_webserver_service_ini = 'httpd'
+    $php_webserver_service     = undef
+    $php_webserver_service_ini = undef
+    $php_webserver_restart     = false
+
+    class { 'php':
+      package             => "${php_prefix}cli",
+      service             => $php_webserver_service,
+      service_autorestart => false,
+    }
   }
 
-  $php_webserver_service = 'httpd'
-  $php_webserver_user    = $apache::params::user
-  $php_webserver_restart = true
+  class { 'php::devel': }
 
-  class { 'php':
-    service => $php_webserver_service
+  if count($php_values['modules']['php']) > 0 {
+    php_mod { $php_values['modules']['php']:; }
   }
-} elsif is_hash($nginx_values) {
-  include nginx::params
-
-  $php_webserver_service     = "${php_prefix}fpm"
-  $php_webserver_service_ini = $php_webserver_service
-  $php_webserver_user        = $nginx::params::nx_daemon_user
-  $php_webserver_restart     = true
-
-  class { 'php':
-    package             => $php_webserver_service,
-    service             => $php_webserver_service,
-    service_autorestart => false,
-    config_file         => $php_fpm_ini,
+  if count($php_values['modules']['pear']) > 0 {
+    php_pear_mod { $php_values['modules']['pear']:; }
   }
-
-  service { $php_webserver_service:
-    ensure     => running,
-    enable     => true,
-    hasrestart => true,
-    hasstatus  => true,
-    require    => Package[$php_webserver_service]
+  if count($php_values['modules']['pecl']) > 0 {
+    php_pecl_mod { $php_values['modules']['pecl']:; }
   }
-} else {
-  $php_webserver_service     = undef
-  $php_webserver_service_ini = undef
-  $php_webserver_restart     = false
-
-  class { 'php':
-    package             => "${php_prefix}cli",
-    service             => $php_webserver_service,
-    service_autorestart => false,
-  }
-}
-
-class { 'php::devel': }
-
-if count($php_values['modules']['php']) > 0 {
-  php_mod { $php_values['modules']['php']:; }
-}
-if count($php_values['modules']['pear']) > 0 {
-  php_pear_mod { $php_values['modules']['pear']:; }
-}
-if count($php_values['modules']['pecl']) > 0 {
-  php_pecl_mod { $php_values['modules']['pecl']:; }
-}
-if count($php_values['ini']) > 0 {
-  each( $php_values['ini'] ) |$key, $value| {
-    if is_array($value) {
-      each( $php_values['ini'][$key] ) |$innerkey, $innervalue| {
-        puphpet::ini { "${key}_${innerkey}":
-          entry       => "CUSTOM_${innerkey}/${key}",
-          value       => $innervalue,
+  if count($php_values['ini']) > 0 {
+    each( $php_values['ini'] ) |$key, $value| {
+      if is_array($value) {
+        each( $php_values['ini'][$key] ) |$innerkey, $innervalue| {
+          puphpet::ini { "${key}_${innerkey}":
+            entry       => "CUSTOM_${innerkey}/${key}",
+            value       => $innervalue,
+            php_version => $php_values['version'],
+            webserver   => $php_webserver_service_ini
+          }
+        }
+      } else {
+        puphpet::ini { $key:
+          entry       => "CUSTOM/${key}",
+          value       => $value,
           php_version => $php_values['version'],
           webserver   => $php_webserver_service_ini
         }
       }
-    } else {
-      puphpet::ini { $key:
-        entry       => "CUSTOM/${key}",
-        value       => $value,
-        php_version => $php_values['version'],
-        webserver   => $php_webserver_service_ini
+    }
+
+    if $php_values['ini']['session.save_path'] != undef {
+      exec {"mkdir -p ${php_values['ini']['session.save_path']}":
+        onlyif  => "test ! -d ${php_values['ini']['session.save_path']}",
+      }
+
+      file { $php_values['ini']['session.save_path']:
+        ensure  => directory,
+        group   => 'www-data',
+        mode    => 0775,
+        require => Exec["mkdir -p ${php_values['ini']['session.save_path']}"]
       }
     }
   }
 
-  if $php_values['ini']['session.save_path'] != undef {
-    exec {"mkdir -p ${php_values['ini']['session.save_path']}":
-      onlyif  => "test ! -d ${php_values['ini']['session.save_path']}",
-    }
+  puphpet::ini { $key:
+    entry       => 'CUSTOM/date.timezone',
+    value       => $php_values['timezone'],
+    php_version => $php_values['version'],
+    webserver   => $php_webserver_service_ini
+  }
 
-    file { $php_values['ini']['session.save_path']:
-      ensure  => directory,
-      group   => 'www-data',
-      mode    => 0775,
-      require => Exec["mkdir -p ${php_values['ini']['session.save_path']}"]
+  if hash_key_equals($php_values, 'composer', 1) {
+    class { 'composer':
+      target_dir      => '/usr/local/bin',
+      composer_file   => 'composer',
+      download_method => 'curl',
+      logoutput       => false,
+      tmp_path        => '/tmp',
+      php_package     => "${php::params::module_prefix}cli",
+      curl_package    => 'curl',
+      suhosin_enabled => false,
     }
   }
-}
-
-puphpet::ini { $key:
-  entry       => 'CUSTOM/date.timezone',
-  value       => $php_values['timezone'],
-  php_version => $php_values['version'],
-  webserver   => $php_webserver_service_ini
 }
 
 define php_mod {
-  php::module { $name:
-    service_autorestart => $php_webserver_restart,
+  if ! defined(Php::Module[$name]) {
+    php::module { $name:
+      service_autorestart => $php_webserver_restart,
+    }
   }
 }
 define php_pear_mod {
-  php::pear::module { $name:
-    use_package         => false,
-    service_autorestart => $php_webserver_restart,
+  if ! defined(Php::Pear::Module[$name]) {
+    php::pear::module { $name:
+      use_package         => false,
+      service_autorestart => $php_webserver_restart,
+    }
   }
 }
 define php_pecl_mod {
-  php::pecl::module { $name:
-    use_package         => false,
-    service_autorestart => $php_webserver_restart,
-  }
-}
-
-if $php_values['composer'] == 1 {
-  class { 'composer':
-    target_dir      => '/usr/local/bin',
-    composer_file   => 'composer',
-    download_method => 'curl',
-    logoutput       => false,
-    tmp_path        => '/tmp',
-    php_package     => "${php::params::module_prefix}cli",
-    curl_package    => 'curl',
-    suhosin_enabled => false,
+  if ! defined(Php::Pecl::Module[$name]) {
+    php::pecl::module { $name:
+      use_package         => false,
+      service_autorestart => $php_webserver_restart,
+    }
   }
 }
 
@@ -527,17 +542,25 @@ if $php_values['composer'] == 1 {
 
 if $xdebug_values == undef {
   $xdebug_values = hiera('xdebug', false)
+} if $php_values == undef {
+  $php_values = hiera('php', false)
+} if $apache_values == undef {
+  $apache_values = hiera('apache', false)
+} if $nginx_values == undef {
+  $nginx_values = hiera('nginx', false)
 }
 
-if is_hash($apache_values) {
+if hash_key_equals($apache_values, 'install', 1) {
   $xdebug_webserver_service = 'httpd'
-} elsif is_hash($nginx_values) {
+} elsif hash_key_equals($nginx_values, 'install', 1) {
   $xdebug_webserver_service = 'nginx'
 } else {
   $xdebug_webserver_service = undef
 }
 
-if $xdebug_values['install'] != undef and $xdebug_values['install'] == 1 {
+if hash_key_equals($xdebug_values, 'install', 1)
+  and hash_key_equals($php_values, 'install', 1)
+{
   class { 'puphpet::xdebug':
     webserver => $xdebug_webserver_service
   }
@@ -554,152 +577,109 @@ if $xdebug_values['install'] != undef and $xdebug_values['install'] == 1 {
   }
 }
 
-## Begin Xhprof manifest
-
-if $xhprof_values == undef {
-  $xhprof_values = hiera('xhprof', false)
-}
-
-if $apache_values == undef {
-  $apache_values = hiera('apache', false)
-}
-
-if $nginx_values == undef {
-  $nginx_values = hiera('nginx', false)
-}
-
-if is_hash($apache_values) or is_hash($nginx_values) {
-  $xhprof_webserver_restart = true
-} else  {
-  $xhprof_webserver_restart = false
-}
-
-if is_hash($xhprof_values) and $xhprof_values['install'] == 1 {
-  if $::operatingsystem == 'ubuntu' {
-    apt::key { '8D0DC64F':
-      key_server => 'hkp://keyserver.ubuntu.com:80'
-    }
-
-    apt::ppa { 'ppa:brianmercer/php5-xhprof': require => Apt::Key['8D0DC64F'] }
-  }
-
-  $xhprof_package = $puphpet::params::xhprof_package
-
-  if is_hash($apache_values) {
-    $xhprof_webroot_location = $puphpet::params::apache_webroot_location
-    $xhprof_webserver_service = Service['httpd']
-  } elsif is_hash($nginx_values) {
-    $xhprof_webroot_location = $puphpet::params::nginx_webroot_location
-    $xhprof_webserver_service = Service['nginx']
-  } else {
-    $xhprof_webroot_location = $xhprof_values['location']
-    $xhprof_webserver_service = undef
-  }
-
-  if defined(Package[$xhprof_package]) == false {
-    package { $xhprof_package:
-      ensure  => installed,
-      require => Package['php'],
-      notify  => $xhprof_webserver_service,
-    }
-  }
-
-  ensure_packages( ['graphviz'] )
-
-  exec { 'delete-xhprof-path-if-not-git-repo':
-    command => "rm -rf ${xhprofPath}",
-    onlyif  => "test ! -d ${xhprofPath}/.git"
-  }
-
-  vcsrepo { "${xhprof_webroot_location}/xhprof":
-    ensure   => present,
-    provider => git,
-    source   => 'https://github.com/facebook/xhprof.git',
-    require  => Exec['delete-xhprof-path-if-not-git-repo']
-  }
-
-  file { "${xhprofPath}/xhprof_html":
-    ensure  => directory,
-    mode    => 0775,
-    require => Vcsrepo["${xhprof_webroot_location}/xhprof"]
-  }
-
-  composer::exec { 'xhprof-composer-run':
-    cmd     => 'install',
-    cwd     => "${xhprof_webroot_location}/xhprof",
-    require => [
-      Class['composer'],
-      File["${xhprofPath}/xhprof_html"]
-    ]
-  }
-}
-
 ## Begin Drush manifest
 
 if $drush_values == undef {
   $drush_values = hiera('drush', false)
 }
 
-if $drush_values['install'] != undef and $drush_values['install'] == 1 {
+if hash_key_equals($drush_values, 'install', 1) {
   if ($drush_values['settings']['drush.tag_branch'] != undef) {
     $drush_tag_branch = $drush_values['settings']['drush.tag_branch']
   } else {
     $drush_tag_branch = ''
   }
 
-  ## @see https://drupal.org/node/2165015
   include drush::git::drush
-
-  ## class { 'drush::git::drush':
-  ##   git_branch => $drush_tag_branch,
-  ##   update     => true,
-  ## }
 }
-
-## End Drush manifest
 
 ## Begin MySQL manifest
 
 if $mysql_values == undef {
   $mysql_values = hiera('mysql', false)
-}
-
-if $php_values == undef {
+} if $php_values == undef {
   $php_values = hiera('php', false)
-}
-
-if $apache_values == undef {
+} if $apache_values == undef {
   $apache_values = hiera('apache', false)
-}
-
-if $nginx_values == undef {
+} if $nginx_values == undef {
   $nginx_values = hiera('nginx', false)
 }
 
-if is_hash($apache_values) or is_hash($nginx_values) {
-  $mysql_webserver_restart = true
-} else {
-  $mysql_webserver_restart = false
-}
-
-if $mysql_values['root_password'] {
-  class { 'mysql::server':
-    root_password => $mysql_values['root_password'],
+if hash_key_equals($mysql_values, 'install', 1) {
+  if hash_key_equals($apache_values, 'install', 1) or hash_key_equals($nginx_values, 'install', 1) {
+    $mysql_webserver_restart = true
+  } else {
+    $mysql_webserver_restart = false
   }
 
-  if is_hash($mysql_values['databases']) and count($mysql_values['databases']) > 0 {
-    create_resources(mysql_db, $mysql_values['databases'])
+  if hash_key_equals($php_values, 'install', 1) {
+    $mysql_php_installed = true
+    $mysql_php_package   = 'php'
+  } elsif hash_key_equals($hhvm_values, 'install', 1) {
+    $mysql_php_installed = true
+    $mysql_php_package   = 'hhvm'
+  } else {
+    $mysql_php_installed = false
   }
 
-  if is_hash($php_values) {
-    if $::osfamily == 'redhat' and $php_values['version'] == '53' and ! defined(Php::Module['mysql']) {
-      php::module { 'mysql':
-        service_autorestart => $mysql_webserver_restart,
+  if $mysql_values['root_password'] {
+    class { 'mysql::server':
+      root_password => $mysql_values['root_password'],
+    }
+
+    if is_hash($mysql_values['databases']) and count($mysql_values['databases']) > 0 {
+      create_resources(mysql_db, $mysql_values['databases'])
+    }
+
+    if $mysql_php_installed and $mysql_php_package == 'php' {
+      if $::osfamily == 'redhat' and $php_values['version'] == '53' {
+        $mysql_php_module = 'mysql'
+      } elsif $lsbdistcodename == 'lucid' or $lsbdistcodename == 'squeeze' {
+        $mysql_php_module = 'mysql'
+      } else {
+        $mysql_php_module = 'mysqlnd'
       }
-    } elsif ! defined(Php::Module['mysqlnd']) {
-      php::module { 'mysqlnd':
-        service_autorestart => $mysql_webserver_restart,
+
+      if ! defined(Php::Module[$mysql_php_module]) {
+        php::module { $mysql_php_module:
+          service_autorestart => $mysql_webserver_restart,
+        }
       }
+    }
+  }
+
+  if hash_key_equals($mysql_values, 'phpmyadmin', 1) and $mysql_php_installed {
+    if hash_key_equals($apache_values, 'install', 1) {
+      $mysql_pma_webroot_location = $puphpet::params::apache_webroot_location
+    } elsif hash_key_equals($nginx_values, 'install', 1) {
+      $mysql_pma_webroot_location = $puphpet::params::nginx_webroot_location
+
+      mysql_nginx_default_conf { 'override_default_conf':
+        webroot => $mysql_pma_webroot_location
+      }
+    } else {
+      $mysql_pma_webroot_location = '/var/www'
+    }
+
+    class { 'puphpet::phpmyadmin':
+      dbms             => 'mysql::server',
+      webroot_location => $mysql_pma_webroot_location,
+    }
+  }
+
+  if hash_key_equals($mysql_values, 'adminer', 1) and $mysql_php_installed {
+    if hash_key_equals($apache_values, 'install', 1) {
+      $mysql_adminer_webroot_location = $puphpet::params::apache_webroot_location
+    } elsif hash_key_equals($nginx_values, 'install', 1) {
+      $mysql_adminer_webroot_location = $puphpet::params::nginx_webroot_location
+    } else {
+      $mysql_adminer_webroot_location = $puphpet::params::apache_webroot_location
+    }
+
+    class { 'puphpet::adminer':
+      location    => "${mysql_adminer_webroot_location}/adminer",
+      owner       => 'www-data',
+      php_package => $mysql_php_package
     }
   }
 }
@@ -724,64 +704,246 @@ define mysql_db (
   }
 }
 
-if has_key($mysql_values, 'phpmyadmin') and $mysql_values['phpmyadmin'] == 1 and is_hash($php_values) {
-  if $::osfamily == 'debian' {
-    if $::operatingsystem == 'ubuntu' {
-      apt::key { '80E7349A06ED541C': key_server => 'hkp://keyserver.ubuntu.com:80' }
-      apt::ppa { 'ppa:nijel/phpmyadmin': require => Apt::Key['80E7349A06ED541C'] }
-    }
-
-    $phpMyAdmin_package = 'phpmyadmin'
-    $phpMyAdmin_folder = 'phpmyadmin'
-  } elsif $::osfamily == 'redhat' {
-    $phpMyAdmin_package = 'phpMyAdmin.noarch'
-    $phpMyAdmin_folder = 'phpMyAdmin'
-  }
-
-  if ! defined(Package[$phpMyAdmin_package]) {
-    package { $phpMyAdmin_package:
-      require => Class['mysql::server']
-    }
-  }
-
-  include puphpet::params
-
-  if is_hash($apache_values) {
-    $mysql_pma_webroot_location = $puphpet::params::apache_webroot_location
-  } elsif is_hash($nginx_values) {
-    $mysql_pma_webroot_location = $puphpet::params::nginx_webroot_location
-
-    mysql_nginx_default_conf { 'override_default_conf':
-      webroot => $mysql_pma_webroot_location
-    }
-  }
-
-  exec { 'cp phpmyadmin to webroot':
-    command => "cp -LR /usr/share/${phpMyAdmin_folder} ${mysql_pma_webroot_location}/phpmyadmin",
-    onlyif  => "test ! -d ${mysql_pma_webroot_location}/phpmyadmin",
-    require => [
-      Package[$phpMyAdmin_package],
-      File[$mysql_pma_webroot_location]
-    ]
-  }
-}
-
-if has_key($mysql_values, 'adminer') and $mysql_values['adminer'] == 1 and is_hash($php_values) {
-  if is_hash($apache_values) {
-    $mysql_adminer_webroot_location = $puphpet::params::apache_webroot_location
-  } elsif is_hash($nginx_values) {
-    $mysql_adminer_webroot_location = $puphpet::params::nginx_webroot_location
-  } else {
-    $mysql_adminer_webroot_location = $puphpet::params::apache_webroot_location
-  }
-
-  class { 'puphpet::adminer':
-    location => "${mysql_adminer_webroot_location}/adminer",
-    owner    => 'www-data'
-  }
-}
-
+# @todo update this
 define mysql_nginx_default_conf (
+  $webroot
+) {
+  if $php5_fpm_sock == undef {
+    $php5_fpm_sock = '/var/run/php5-fpm.sock'
+  }
+
+  if $fastcgi_pass == undef {
+    $fastcgi_pass = $php_values['version'] ? {
+      undef   => null,
+      '53'    => '127.0.0.1:9000',
+      default => "unix:${php5_fpm_sock}"
+    }
+  }
+
+  class { 'puphpet::nginx':
+    fastcgi_pass => $fastcgi_pass,
+    notify       => Class['nginx::service'],
+  }
+}
+
+## Begin PostgreSQL manifest
+
+if $postgresql_values == undef {
+  $postgresql_values = hiera('postgresql', false)
+} if $php_values == undef {
+  $php_values = hiera('php', false)
+} if $hhvm_values == undef {
+  $hhvm_values = hiera('hhvm', false)
+}
+
+if hash_key_equals($postgresql_values, 'install', 1) {
+  if hash_key_equals($apache_values, 'install', 1) or hash_key_equals($nginx_values, 'install', 1) {
+    $postgresql_webserver_restart = true
+  } else {
+    $postgresql_webserver_restart = false
+  }
+
+  if hash_key_equals($php_values, 'install', 1) {
+    $postgresql_php_installed = true
+    $postgresql_php_package   = 'php'
+  } elsif hash_key_equals($hhvm_values, 'install', 1) {
+    $postgresql_php_installed = true
+    $postgresql_php_package   = 'hhvm'
+  } else {
+    $postgresql_php_installed = false
+  }
+
+  if $postgresql_values['root_password'] {
+    group { $postgresql_values['user_group']:
+      ensure => present
+    }
+
+    class { 'postgresql::server':
+      postgres_password => $postgresql_values['root_password'],
+      require           => Group[$postgresql_values['user_group']]
+    }
+
+    if is_hash($postgresql_values['databases']) and count($postgresql_values['databases']) > 0 {
+      create_resources(postgresql_db, $postgresql_values['databases'])
+    }
+
+    if $postgresql_php_installed and $postgresql_php_package == 'php' and ! defined(Php::Module['pgsql']) {
+      php::module { 'pgsql':
+        service_autorestart => $postgresql_webserver_restart,
+      }
+    }
+  }
+
+  if hash_key_equals($postgresql_values, 'adminer', 1) and $postgresql_php_installed {
+    if hash_key_equals($apache_values, 'install', 1) {
+      $postgresql_adminer_webroot_location = $puphpet::params::apache_webroot_location
+    } elsif hash_key_equals($nginx_values, 'install', 1) {
+      $postgresql_adminer_webroot_location = $puphpet::params::nginx_webroot_location
+    } else {
+      $postgresql_adminer_webroot_location = $puphpet::params::apache_webroot_location
+    }
+
+    class { 'puphpet::adminer':
+      location    => "${postgresql_adminer_webroot_location}/adminer",
+      owner       => 'www-data',
+      php_package => $postgresql_php_package
+    }
+  }
+}
+
+define postgresql_db (
+  $user,
+  $password,
+  $grant,
+  $sql_file = false
+) {
+  if $name == '' or $user == '' or $password == '' or $grant == '' {
+    fail( 'PostgreSQL DB requires that name, user, password and grant be set. Please check your settings!' )
+  }
+
+  postgresql::server::db { $name:
+    user     => $user,
+    password => $password,
+    grant    => $grant
+  }
+
+  if $sql_file {
+    $table = "${name}.*"
+
+    exec{ "${name}-import":
+      command     => "psql ${name} < ${sql_file}",
+      logoutput   => true,
+      refreshonly => $refresh,
+      require     => Postgresql::Server::Db[$name],
+      onlyif      => "test -f ${sql_file}"
+    }
+  }
+}
+
+## Begin MariaDb manifest
+
+if $mariadb_values == undef {
+  $mariadb_values = hiera('mariadb', false)
+} if $php_values == undef {
+  $php_values = hiera('php', false)
+} if $hhvm_values == undef {
+  $hhvm_values = hiera('hhvm', false)
+} if $apache_values == undef {
+  $apache_values = hiera('apache', false)
+} if $nginx_values == undef {
+  $nginx_values = hiera('nginx', false)
+}
+
+if hash_key_equals($mariadb_values, 'install', 1) {
+  if hash_key_equals($apache_values, 'install', 1) or hash_key_equals($nginx_values, 'install', 1) {
+    $mariadb_webserver_restart = true
+  } else {
+    $mariadb_webserver_restart = false
+  }
+
+  if hash_key_equals($php_values, 'install', 1) {
+    $mariadb_php_installed = true
+    $mariadb_php_package   = 'php'
+  } elsif hash_key_equals($hhvm_values, 'install', 1) {
+    $mariadb_php_installed = true
+    $mariadb_php_package   = 'hhvm'
+  } else {
+    $mariadb_php_installed = false
+  }
+
+  if has_key($mariadb_values, 'root_password') and $mariadb_values['root_password'] {
+    class { 'puphpet::mariadb':
+      version => $mariadb_values['version']
+    }
+
+    class { 'mysql::server':
+      package_name  => $puphpet::params::mariadb_package_server_name,
+      root_password => $mariadb_values['root_password']
+    }
+
+    class { 'mysql::client':
+      package_name => $puphpet::params::mariadb_package_client_name
+    }
+
+    if is_hash($mariadb_values['databases']) and count($mariadb_values['databases']) > 0 {
+      create_resources(mariadb_db, $mariadb_values['databases'])
+    }
+
+    if $mariadb_php_installed and $mariadb_php_package == 'php' {
+      if $::osfamily == 'redhat' and $php_values['version'] == '53' {
+        $mariadb_php_module = 'mysql'
+      } elsif $lsbdistcodename == 'lucid' or $lsbdistcodename == 'squeeze' {
+        $mariadb_php_module = 'mysql'
+      } else {
+        $mariadb_php_module = 'mysqlnd'
+      }
+
+      if ! defined(Php::Module[$mariadb_php_module]) {
+        php::module { $mariadb_php_module:
+          service_autorestart => $mariadb_webserver_restart,
+        }
+      }
+    }
+  }
+
+  if hash_key_equals($mariadb_values, 'phpmyadmin', 1) and $mariadb_php_installed {
+    if hash_key_equals($apache_values, 'install', 1) {
+      $mariadb_pma_webroot_location = $puphpet::params::apache_webroot_location
+    } elsif hash_key_equals($nginx_values, 'install', 1) {
+      $mariadb_pma_webroot_location = $puphpet::params::nginx_webroot_location
+
+      mariadb_nginx_default_conf { 'override_default_conf':
+        webroot => $mariadb_pma_webroot_location
+      }
+    } else {
+      $mariadb_pma_webroot_location = '/var/www'
+    }
+
+    class { 'puphpet::phpmyadmin':
+      dbms             => 'mysql::server',
+      webroot_location => $mariadb_pma_webroot_location,
+    }
+  }
+
+  if hash_key_equals($mariadb_values, 'adminer', 1) and $mariadb_php_installed {
+    if hash_key_equals($apache_values, 'install', 1) {
+      $mariadb_adminer_webroot_location = $puphpet::params::apache_webroot_location
+    } elsif hash_key_equals($nginx_values, 'install', 1) {
+      $mariadb_adminer_webroot_location = $puphpet::params::nginx_webroot_location
+    } else {
+      $mariadb_adminer_webroot_location = $puphpet::params::apache_webroot_location
+    }
+
+    class { 'puphpet::adminer':
+      location    => "${mariadb_adminer_webroot_location}/adminer",
+      owner       => 'www-data',
+      php_package => $mariadb_php_package
+    }
+  }
+}
+
+define mariadb_db (
+  $user,
+  $password,
+  $host,
+  $grant    = [],
+  $sql_file = false
+) {
+  if $name == '' or $password == '' or $host == '' {
+    fail( 'MariaDB requires that name, password and host be set. Please check your settings!' )
+  }
+
+  mysql::db { $name:
+    user     => $user,
+    password => $password,
+    host     => $host,
+    grant    => $grant,
+    sql      => $sql_file,
+  }
+}
+
+# @todo update this!
+define mariadb_nginx_default_conf (
   $webroot
 ) {
   if $php5_fpm_sock == undef {
@@ -806,48 +968,39 @@ define mysql_nginx_default_conf (
 
 if $mongodb_values == undef {
   $mongodb_values = hiera('mongodb', false)
-}
-
-if $php_values == undef {
+} if $php_values == undef {
   $php_values = hiera('php', false)
-}
-
-if $apache_values == undef {
+} if $apache_values == undef {
   $apache_values = hiera('apache', false)
-}
-
-if $nginx_values == undef {
+} if $nginx_values == undef {
   $nginx_values = hiera('nginx', false)
 }
 
-if is_hash($apache_values) or is_hash($nginx_values) {
+if hash_key_equals($apache_values, 'install', 1)
+  or hash_key_equals($nginx_values, 'install', 1)
+{
   $mongodb_webserver_restart = true
 } else {
   $mongodb_webserver_restart = false
 }
 
-if has_key($mongodb_values, 'install') and $mongodb_values['install'] == 1 {
+if hash_key_equals($mongodb_values, 'install', 1) {
+  Class['Mongodb::Globals'] -> Class['Mongodb::Server']
+
+  class { 'mongodb::globals':
+    manage_package_repo => true,
+  }
+
+  create_resources('class', { 'mongodb::server' => $mongodb_values['settings'] })
+
   case $::osfamily {
     'debian': {
-      class {'::mongodb::globals':
-        manage_package_repo => true,
-      }->
-      class {'::mongodb::server':
-        auth => $mongodb_values['auth'],
-        port => $mongodb_values['port'],
-      }
-
       $mongodb_pecl = 'mongo'
     }
     'redhat': {
-      class {'::mongodb::globals':
-        manage_package_repo => true,
-      }->
-      class {'::mongodb::server':
-        auth => $mongodb_values['auth'],
-        port => $mongodb_values['port'],
-      }->
-      class {'::mongodb::client': }
+      class { '::mongodb::client':
+        require => Class['::Mongodb::Server']
+      }
 
       $mongodb_pecl = 'pecl-mongo'
     }
@@ -857,10 +1010,13 @@ if has_key($mongodb_values, 'install') and $mongodb_values['install'] == 1 {
     create_resources(mongodb_db, $mongodb_values['databases'])
   }
 
-  if is_hash($php_values) and ! defined(Php::Pecl::Module[$mongodb_pecl]) {
+  if hash_key_equals($php_values, 'install', 1)
+    and ! defined(Php::Pecl::Module[$mongodb_pecl])
+  {
     php::pecl::module { $mongodb_pecl:
-      service_autorestart => $mariadb_webserver_restart,
-      require             => Class['::mongodb::server']
+      use_package         => false,
+      service_autorestart => $mongodb_webserver_restart,
+      require             => Class['mongodb::server']
     }
   }
 }
@@ -879,36 +1035,73 @@ define mongodb_db (
   }
 }
 
+# Begin redis
+
+if $redis_values == undef {
+  $redis_values = hiera('redis', false)
+} if $php_values == undef {
+  $php_values = hiera('php', false)
+} if $apache_values == undef {
+  $apache_values = hiera('apache', false)
+} if $nginx_values == undef {
+  $nginx_values = hiera('nginx', false)
+}
+
+if hash_key_equals($apache_values, 'install', 1)
+  or hash_key_equals($nginx_values, 'install', 1)
+{
+  $redis_webserver_restart = true
+} else {
+  $redis_webserver_restart = false
+}
+
+if hash_key_equals($redis_values, 'install', 1) {
+  create_resources('class', { 'redis' => $redis_values['settings'] })
+
+  if hash_key_equals($php_values, 'install', 1) and ! defined(Php::Pecl::Module['redis']) {
+    php::pecl::module { 'redis':
+      use_package         => false,
+      service_autorestart => $redis_webserver_restart,
+      require             => Class['redis']
+    }
+  }
+}
+
 # Begin beanstalkd
 
 if $beanstalkd_values == undef {
   $beanstalkd_values = hiera('beanstalkd', false)
-}
-
-if $php_values == undef {
+} if $php_values == undef {
   $php_values = hiera('php', false)
-}
-
-if $apache_values == undef {
+} if $hhvm_values == undef {
+  $hhvm_values = hiera('hhvm', false)
+} if $apache_values == undef {
   $apache_values = hiera('apache', false)
-}
-
-if $nginx_values == undef {
+} if $nginx_values == undef {
   $nginx_values = hiera('nginx', false)
 }
 
-if is_hash($apache_values) {
+if hash_key_equals($apache_values, 'install', 1) {
   $beanstalk_console_webroot_location = "${puphpet::params::apache_webroot_location}/beanstalk_console"
-} elsif is_hash($nginx_values) {
+} elsif hash_key_equals($nginx_values, 'install', 1) {
   $beanstalk_console_webroot_location = "${puphpet::params::nginx_webroot_location}/beanstalk_console"
 } else {
   $beanstalk_console_webroot_location = undef
 }
 
-if has_key($beanstalkd_values, 'install') and $beanstalkd_values['install'] == 1 {
-  create_resources(beanstalkd::config, {'beanstalkd' => $beanstalkd_values['settings']})
+if hash_key_equals($php_values, 'install', 1) or hash_key_equals($hhvm_values, 'install', 1) {
+  $beanstalkd_php_installed = true
+} else {
+  $beanstalkd_php_installed = false
+}
 
-  if has_key($beanstalkd_values, 'beanstalk_console') and $beanstalkd_values['beanstalk_console'] == 1 and $beanstalk_console_webroot_location != undef and is_hash($php_values) {
+if hash_key_equals($beanstalkd_values, 'install', 1) {
+  create_resources(beanstalkd::config, { 'beanstalkd' => $beanstalkd_values['settings'] })
+
+  if hash_key_equals($beanstalkd_values, 'beanstalk_console', 1)
+    and $beanstalk_console_webroot_location != undef
+    and $beanstalkd_php_installed
+  {
     exec { 'delete-beanstalk_console-path-if-not-git-repo':
       command => "rm -rf ${beanstalk_console_webroot_location}",
       onlyif  => "test ! -d ${beanstalk_console_webroot_location}/.git"
@@ -927,19 +1120,31 @@ if has_key($beanstalkd_values, 'install') and $beanstalkd_values['install'] == 1
 
 if $rabbitmq_values == undef {
   $rabbitmq_values = hiera('rabbitmq', false)
-}
-
-if $php_values == undef {
+} if $php_values == undef {
   $php_values = hiera('php', false)
+} if $apache_values == undef {
+  $apache_values = hiera('apache', false)
+} if $nginx_values == undef {
+  $nginx_values = hiera('nginx', false)
 }
 
-if has_key($rabbitmq_values, 'install') and $rabbitmq_values['install'] == 1 {
-  class { 'rabbitmq':
-    port => $rabbitmq_values['port']
-  }
+if hash_key_equals($apache_values, 'install', 1)
+  or hash_key_equals($nginx_values, 'install', 1)
+{
+  $rabbitmq_webserver_restart = true
+} else {
+  $rabbitmq_webserver_restart = false
+}
 
-  if is_hash($php_values) and ! defined(Php::Pecl::Module['amqp']) {
-    php_pecl_mod { 'amqp': }
+if hash_key_equals($rabbitmq_values, 'install', 1) {
+  create_resources('class', { 'rabbitmq' => $rabbitmq_values['settings'] })
+
+  if hash_key_equals($php_values, 'install', 1) and ! defined(Php::Pecl::Module['amqp']) {
+    php::pecl::module { 'amqp':
+      use_package         => false,
+      service_autorestart => $rabbitmq_webserver_restart,
+      require             => Class['rabbitmq']
+    }
   }
 }
 

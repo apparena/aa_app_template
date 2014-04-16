@@ -7,14 +7,14 @@ vagrantfile-local:
         network:
             private_network: 192.168.111.222
             forwarded_port:
-                t4LTMYpdSuj2:
-                    host: '80'
-                    guest: '80'
+                mimHQ3ktS9Ic:
+                    host: '8900'
+                    guest: '22'
         provider:
             virtualbox:
                 modifyvm:
                     natdnshostresolver1: on
-                    memory: '1022'
+                    memory: '1024'
                 setextradata:
                     VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root: 1
         provision:
@@ -26,7 +26,7 @@ vagrantfile-local:
                     - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
                     - '--parser future'
         synced_folder:
-            mz5CZPAr4A6K:
+            SO3qhcaXcVij:
                 id: vagrant-root
                 source: ./
                 target: /var/www
@@ -62,14 +62,22 @@ mailcatcher:
         smtp_port: 1025
         http_ip: 0.0.0.0
         http_port: '1080'
-        path: /usr/local/bin
-        log: /var/log/mailcatcher/mailcatcher.log
+        mailcatcher_path: /usr/local/bin
+        log_path: /var/log/mailcatcher/mailcatcher.log
 apache:
+    install: '1'
+    settings:
+        user: www-data
+        group: www-data
+        default_vhost: true
+        manage_user: false
+        manage_group: false
+        sendfile: 0
     modules:
         - php
         - rewrite
     vhosts:
-        H1MXHpXlozUj:
+        0AKJV5gtPX8h:
             servername: app.dev
             serveraliases:
                 - www.app.dev
@@ -77,10 +85,11 @@ apache:
             port: '80'
             setenv:
                 - 'APP_ENV dev'
-                - 'APP_ENV_SERVER vigrant'
+                - 'APP_ENV_SERVER vagrant'
             override:
                 - All
-        460oCaWTRrVF:
+            custom_fragment: ''
+        7dsGhXFvUIYL:
             servername: applive.dev
             serveraliases:
                 - www.applive.dev
@@ -90,7 +99,8 @@ apache:
                 - 'APP_ENV product'
             override:
                 - All
-        2KfyTfHoYfzU:
+            custom_fragment: ''
+        x0r2C7ZD4jRP:
             servername: applive.dev
             serveraliases:
                 - www.applive.dev
@@ -100,13 +110,11 @@ apache:
                 - 'APP_ENV product'
             override:
                 - All
-    user: www-data
-    group: www-data
-    default_vhost: true
-    mpm_module: prefork
+            custom_fragment: ''
     mod_pagespeed: 0
     mod_spdy: 0
 php:
+    install: '1'
     version: '53'
     composer: '1'
     modules:
@@ -120,8 +128,8 @@ php:
             - memcache
         pear: {  }
         pecl:
-            - pecl_http
             - APC
+            - pecl_http
     ini:
         display_errors: On
         error_reporting: '-1'
@@ -144,18 +152,17 @@ xdebug:
         xdebug.profiler_enable_trigger: '1'
         xdebug.trace_output_dir: /var/www/xdebug/traces
         xdebug.trace_output_name: trace.%R.%t
-xhprof:
-    install: '1'
 drush:
     install: 0
     settings:
         drush.tag_branch: 6.x
 mysql:
+    install: '1'
     root_password: root
     phpmyadmin: '1'
     adminer: '1'
     databases:
-        jaSv1knTxrky:
+        dBOWmgKTULTJ:
             grant:
                 - ALL
             name: app
@@ -163,11 +170,29 @@ mysql:
             user: app
             password: app
             sql_file: ''
+postgresql:
+    install: 0
+    root_password: '123'
+    user_group: postgres
+    databases: {  }
+    adminer: 0
+mariadb:
+    install: 0
+    root_password: '123'
+    phpmyadmin: 0
+    adminer: 0
+    databases: {  }
+    version: '10.0'
 mongodb:
     install: '1'
-    auth: 1
-    port: '27017'
+    settings:
+        auth: 1
+        port: '27017'
     databases: {  }
+redis:
+    install: 0
+    settings:
+        conf_port: '6379'
 beanstalkd:
     install: 0
     settings:
@@ -182,5 +207,6 @@ beanstalkd:
     binlogdir: /var/lib/beanstalkd/binlog
 rabbitmq:
     install: 0
-    port: '5672'
+    settings:
+        port: '5672'
 
