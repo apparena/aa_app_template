@@ -27,17 +27,26 @@ Class Share extends \Apparena\Controller
         $instance = \Apparena\Api\Instance::init();
 
         // basic variables
+        if (isset($params['debug']))
+        {
+            pr($instance->data);
+        }
         $redirect_url = $instance->data->page_tab_url;
         $fb_share_url = $instance->data->share_url;
-        $params = $this->_request->params();
+        $params       = $this->_request->params();
 
         // variable modifications
         // redirect only desktops to facebook
         if (__c('app_using_on') === 'website'
             || ($instance->env->device->type !== 'desktop' && __c('app_using_on') !== 'facebook')
             || (!empty($base) && $base === 'website')
+            || empty($redirect_url)
         )
         {
+            if (isset($params['debug']))
+            {
+                pr(1);
+            }
             $redirect_url = $instance->data->fb_canvas_url . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/';
 
             if (is_array($params))
@@ -49,9 +58,8 @@ Class Share extends \Apparena\Controller
                 }
             }
         }
-
         // Check if app_data exists and concatenate it to the sharing url
-        if ($base !== 'website')
+        else
         {
             if (is_array($params))
             {
@@ -72,6 +80,10 @@ Class Share extends \Apparena\Controller
             // add language param to use is into app_data param for facebook
             $params = array_merge($params, array('locale' => \Apparena\App::$locale));
             // add all params as json data to facebook url
+            if (isset($params['debug']))
+            {
+                pr(2);
+            }
             $redirect_url = $this->addToUri($redirect_url, 'app_data=' . urlencode(json_encode($params)));
         }
 
@@ -83,8 +95,8 @@ Class Share extends \Apparena\Controller
             $fb_share_url = $this->addToUri($fb_share_url, 'og-object=' . urlencode($og_object));
         }
 
-        $share_image   = __c('share_image', 'src');
-        if(!is_null($this->_request->get('share_image')))
+        $share_image = __c('share_image', 'src');
+        if (!is_null($this->_request->get('share_image')))
         {
             $share_image = $this->_request->get('share_image');
         }
@@ -95,7 +107,7 @@ Class Share extends \Apparena\Controller
             $general_title = $this->_request->get('general_title');
         }
 
-        $general_desc  = __c('general_desc');
+        $general_desc = __c('general_desc');
         if (!is_null($this->_request->get('general_desc')))
         {
             $general_desc = $this->_request->get('general_desc');
@@ -112,8 +124,13 @@ Class Share extends \Apparena\Controller
             'share_image'       => $share_image,
             'share_title'       => $general_title,
             'share_description' => $general_desc,
-            'redirect_url'      => $redirect_url,
+            'redirect_url'      => '<script type="text/javascript">top.location = "' . $redirect_url . '";</script>',
         );
+
+        if (isset($params['debug']))
+        {
+            $this->_data['redirect_url'] = $redirect_url;
+        }
 
         $this->response->setStatus(200);
     }

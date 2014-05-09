@@ -9,11 +9,11 @@ return array(
     // checkes only all devices
     'all'     => array(
         'firefox'  => array(
-            'version'  => '5',
+            'version'  => '35',
             'operator' => '<',
         ),
         'msie'     => array(
-            'version'  => '8',
+            'version'  => '9',
             'operator' => '<',
         ),
         'chrome'   => array(

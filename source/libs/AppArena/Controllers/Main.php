@@ -130,6 +130,7 @@ Class Main extends \Apparena\Controller
 
     public function browserAction()
     {
+        define('CHECKBROWSER', false);
         $this->callApi();
         $this->config('templates.base', $this->config('templates.small'));
         $this->_data = array(

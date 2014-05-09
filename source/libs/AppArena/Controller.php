@@ -163,7 +163,10 @@ Class Controller extends \Slim\Slim
         {
             $this->checkInstance($instance->data);
         }
-        $this->checkBrowserSupport($instance->env);
+        if (!defined('CHECKBROWSER'))
+        {
+            $this->checkBrowserSupport($instance->env);
+        }
 
         // define some basic constance's that we get over config values
         define('GP_CLIENT_ID', __c('gp_client_id'));
@@ -330,7 +333,8 @@ Class Controller extends \Slim\Slim
 
         if (!$this->request->isAjax() && __c('activate_browser_detection') === '1' && ($checkBrowser('all') === false || $checkBrowser($device) === false))
         {
-            $this->redirect('/' . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/browser/');
+            echo 'weiterleitung';
+            //$this->redirect('/' . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/browser/');
         }
     }
 

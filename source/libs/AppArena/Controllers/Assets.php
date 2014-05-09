@@ -69,30 +69,17 @@ Class Assets extends \Apparena\Controller
                 )
         );
 
-        if($this->isFacebook())
+        if ($this->isFacebook())
         {
             $aaForJs->app_data = \Apparena\App::$_app_data;
         }
 
-        /*if (isset($aa->fb))
+        if (isset($aa->facebook))
         {
-            $aaForJs->fb                   = $aa->fb;
-            $aaForJs->fb->request_id       = $fb_request_id;
-            $aaForJs->fb->invited_by       = $fb_invited_by;
-            $aaForJs->fb->invited_for_door = $invited_for_door;
+            $aaForJs->fb = $aa->facebook;
+            /*$aaForJs->fb->request_id       = $fb_request_id;
+            $aaForJs->fb->invited_by       = $fb_invited_by;*/
         }
-
-        if (!empty($_GET['app_data']))
-        {
-            $aaForJs->app_data = $_GET['app_data'];
-        }
-        else
-        {
-            if (!empty($fb_signed_request['app_data']))
-            {
-                $aaForJs->app_data = $fb_signed_request['app_data'];
-            }
-        }*/
 
         // save current time as timestamp in JS varible to handle temporary uid
         $aaForJs->timestamp = \Apparena\App::getCurrentDate();
