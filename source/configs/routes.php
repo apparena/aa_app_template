@@ -11,6 +11,7 @@ return array(
         'put'    => 'Ajax:missingId',
         'delete' => 'Ajax:missingId',
     ),
+    '/:i_id/:lang/idbyfb/'                                => 'Main:idbyfb',
     // old ajax calls with jquery
     '/ajax/'                                              => 'Ajax:index@post',
     // new ajax calls ober backbone models and collections

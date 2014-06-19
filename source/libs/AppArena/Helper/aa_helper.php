@@ -206,7 +206,7 @@ function getBrowser()
     );
 }
 
-//escape $_GET, $_POST, $_REQUIRE $_COOKIE ()
+//escape $_GET, $_POST, $_REQUIRE $_COOKIE
 if (!function_exists('global_escape'))
 {
     function global_escape()

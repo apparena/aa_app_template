@@ -20,6 +20,20 @@ Class Main extends \Apparena\Controller
     }
 
     /**
+     * handle facebook calls with defined instance id in app settings
+     * This is a special case to use one instance in more than one facebook pages
+     *
+     * @param $i_id
+     * @param $locale
+     */
+    public function idbyfbAction($i_id, $locale)
+    {
+        \Apparena\App::$i_id = $i_id;
+        \Apparena\App::setLocale($locale, $this);
+        $this->MissingIdAction();
+    }
+
+    /**
      * Action when instance ID is missing, for example in facebook tabs and canvas pages.
      * On facebook, we detect the fb id and get the instance id from the appmanager api
      * and redirect the call to the right url. Otherwise we display an error page.

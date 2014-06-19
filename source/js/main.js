@@ -19,6 +19,9 @@
         var admin = $('.nav-admin'),
             nav, aaInstanceModel, QueryString;
 
+        // disable ajax request cache - this is a problem on IE usually - see http://stackoverflow.com/questions/6178366/backbone-js-fetch-results-cached
+        $.ajaxSetup({ cache: false });
+
         // extend underscore with our aa object, so that it is accessible everywhere where the _ underscore object is known.
         _.extend(_, {
             sprintf:   AaHelper.sprintf,  // aa helper sprintf like in php but inly for %s
