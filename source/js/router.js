@@ -170,7 +170,7 @@ define([
         },
 
         /**
-         * call index page or load team
+         * call index page
          * @method homeAction
          * @return
          */
