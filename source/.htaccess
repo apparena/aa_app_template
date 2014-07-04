@@ -323,16 +323,23 @@ FileETag None
 # FollowSymLinks must be enabled for this to work.
 
 <IfModule mod_rewrite.c>
-  Options +FollowSymlinks
-  RewriteEngine On
+    #RewriteLog /var/log/rewrite.log
+    #RewriteLogLevel 5
 
-#    RewriteCond %{REQUEST_FILENAME} !-f
-#    RewriteCond %{REQUEST_FILENAME} !-d
-#    RewriteRule (.*)call/(.*)$ $1ajax.php?request=$2 [QSA,NC,L]
+   Options +FollowSymlinks
+   RewriteEngine On
+
+   RewriteCond %{HTTPS} off
+   RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
 # options for slim framework
+    #RewriteBase /
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [QSA,L]
+    RewriteRule !\.(js|ico|gif|jpg|png|css|woff|ttf|php|html)$ index.php [QSA,L]
+
+    #RewriteBase /
+    #RewriteCond %{REQUEST_FILENAME} !-f
+    #RewriteRule ^(.*)$ /index.php [QSA]
 </IfModule>
 
 
@@ -475,11 +482,11 @@ AddCharset utf-8 .css .js .xml .json .rss .atom
 # Block access to backup and source files
 # This files may be left by some text/html editors and
 # pose a great security danger, when someone can access them
-<FilesMatch "(\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~)$">
-  Order allow,deny
-  Deny from all
-  Satisfy All
-</FilesMatch>
+#<FilesMatch "(\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~)$">
+#  Order allow,deny
+#  Deny from all
+#  Satisfy All
+#</FilesMatch>
 
 
 # If your server is not already configured as such, the following directive

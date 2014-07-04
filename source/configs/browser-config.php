@@ -9,7 +9,7 @@ return array(
     // checkes only all devices
     'all'     => array(
         'firefox'  => array(
-            'version'  => '35',
+            'version'  => '5',
             'operator' => '<',
         ),
         'msie'     => array(

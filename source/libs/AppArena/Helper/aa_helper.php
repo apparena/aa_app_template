@@ -206,7 +206,7 @@ function getBrowser()
     );
 }
 
-//escape $_GET, $_POST, $_REQUIRE $_COOKIE
+//escape $_GET, $_POST, $_REQUIRE $_COOKIE ()
 if (!function_exists('global_escape'))
 {
     function global_escape()
@@ -297,6 +297,38 @@ if (!function_exists('pr'))
             echo '<pre>';
             print_r($args[0]);
             echo '</pre>';
+        }
+
+        if ($num === 2 && $args[1] === true)
+        {
+            exit();
+        }
+
+        return true;
+    }
+}
+
+if (!function_exists('prx'))
+{
+    function prx()
+    {
+        $args = func_get_args();
+        $num  = func_num_args();
+
+        if ($num > 1 && $args[1] !== true)
+        {
+            foreach ($args AS $var)
+            {
+                echo '<!--<pre>';
+                print_r($var);
+                echo '</pre>-->';
+            }
+        }
+        else
+        {
+            echo '<!--<pre>';
+            print_r($args[0]);
+            echo '</pre>-->';
         }
 
         if ($num === 2 && $args[1] === true)

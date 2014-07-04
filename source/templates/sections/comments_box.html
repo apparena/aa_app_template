@@ -1,8 +1,8 @@
 <section class="widget">
     <header>
-        <h4><i class="fa fa-comments"></i> {{title}} <small style="display: inline !important;" class="hidden-xs"></small></h4>
+        <h4><i class="fa fa-comments"></i> <%= title %> <small style="display: inline !important;" class="hidden-xs"></small></h4>
     </header>
     <div class="body">
-        <div class="fb-comments" data-href="{{{href}}}" data-colorscheme="dark" data-num_posts="{{comments_amount}}"></div>
+        <div class="fb-comments" data-href="<%= href %>" data-colorscheme="dark" data-width="470" data-num_posts="<%= comments_amount %>"></div>
     </div>
 </section>

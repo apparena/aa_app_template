@@ -33,7 +33,7 @@ Class Share extends \Apparena\Controller
         }
         $redirect_url = $instance->data->page_tab_url;
         $fb_share_url = $instance->data->share_url;
-        $params       = $this->_request->params();
+        $params = $this->_request->params();
 
         // variable modifications
         // redirect only desktops to facebook
@@ -95,8 +95,8 @@ Class Share extends \Apparena\Controller
             $fb_share_url = $this->addToUri($fb_share_url, 'og-object=' . urlencode($og_object));
         }
 
-        $share_image = __c('share_image', 'src');
-        if (!is_null($this->_request->get('share_image')))
+        $share_image   = __c('share_image', 'src');
+        if(!is_null($this->_request->get('share_image')))
         {
             $share_image = $this->_request->get('share_image');
         }
@@ -107,7 +107,7 @@ Class Share extends \Apparena\Controller
             $general_title = $this->_request->get('general_title');
         }
 
-        $general_desc = __c('general_desc');
+        $general_desc  = __c('general_desc');
         if (!is_null($this->_request->get('general_desc')))
         {
             $general_desc = $this->_request->get('general_desc');
@@ -127,7 +127,7 @@ Class Share extends \Apparena\Controller
             'redirect_url'      => '<script type="text/javascript">top.location = "' . $redirect_url . '";</script>',
         );
 
-        if (isset($params['debug']))
+        if(isset($params['debug']))
         {
             $this->_data['redirect_url'] = $redirect_url;
         }

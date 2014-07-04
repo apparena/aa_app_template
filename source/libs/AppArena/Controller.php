@@ -11,6 +11,7 @@ Class Controller extends \Slim\Slim
     protected $_request;
     protected $_data = array();
     protected $_sign_request = null;
+    protected $_link_count = 0;
 
     public function __construct()
     {
@@ -77,13 +78,6 @@ Class Controller extends \Slim\Slim
         }
     }
 
-    /**
-     * render and return a template with data
-     *
-     * @param string   $template template path
-     * @param array    $data     template data as array
-     * @param null|int $status   http header status
-     */
     public function render($template, $data = array(), $status = null)
     {
         if (strpos($template, '.html') === false)
@@ -100,12 +94,6 @@ Class Controller extends \Slim\Slim
         return $this->view->fetch($template, $data);
     }
 
-    /**
-     * display rendered data with layout template
-     *
-     * @param array $data   template data as array
-     * @param null  $status http header status
-     */
     public function display($data = array(), $status = null)
     {
         $settings = array_merge(array(
@@ -117,9 +105,6 @@ Class Controller extends \Slim\Slim
         echo $this->render($this->config('templates.base'), $settings, $status);
     }
 
-    /**
-     * define API settings and initialization
-     */
     protected function defineApi()
     {
         \Apparena\App::$api = \Apparena\Api\AppManager::init(array(
@@ -130,9 +115,6 @@ Class Controller extends \Slim\Slim
         ));
     }
 
-    /**
-     * call appmanager api and get all instance information
-     */
     protected function callApi()
     {
         $this->defineApi();
@@ -145,12 +127,12 @@ Class Controller extends \Slim\Slim
         $instance->locale = $api->getTranslation('data');
 
         // add additionals
-        $instance->addData(array(
-            'page_tab_url' => $instance->data->fb_page_url . '?sk=app_' . $instance->data->fb_app_id,
-            'share_url'    => $instance->data->fb_canvas_url . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/share/',
-            'base_url'     => $this->_request->getScheme() . '://' . $this->_request->getHost() . $this->_request->getRootUri() . '/',
-            'root_url'     => $this->_request->getScheme() . '://' . $this->_request->getHost()
-        ));
+        $instance->addData(array('page_tab_url' => ''));
+        if(!empty($instance->data->fb_page_url))
+        {
+            $instance->addData(array('page_tab_url' => $instance->data->fb_page_url . '?sk=app_' . $instance->data->fb_app_id));
+        }
+        $instance->addData(array('share_url' => $instance->data->fb_canvas_url . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/share/'));
 
         $instance = $this->defineInstanceEnv($instance);
 
@@ -159,7 +141,7 @@ Class Controller extends \Slim\Slim
             $instance = $this->defineInstanceFb($instance);
         }
 
-        if (!defined('CHECKINSTANCE'))
+        if(!defined('CHECKINSTANCE'))
         {
             $this->checkInstance($instance->data);
         }
@@ -175,13 +157,6 @@ Class Controller extends \Slim\Slim
         define('TW_CONSUMER_SECRET', __c('tw_consumer_secret'));
     }
 
-    /**
-     * define instance by facebook information
-     *
-     * @param object $instance instance object
-     *
-     * @return mixed
-     */
     protected function defineInstanceFb($instance)
     {
         $fb_data = array(
@@ -211,13 +186,6 @@ Class Controller extends \Slim\Slim
         return $instance;
     }
 
-    /**
-     * define environment information in instance object
-     *
-     * @param  object $instance instance object
-     *
-     * @return mixed
-     */
     protected function defineInstanceEnv($instance)
     {
         $instance->env           = $this->environment;
@@ -259,9 +227,6 @@ Class Controller extends \Slim\Slim
 
     /**
      * Check instance and redirect on errors to a special error page
-     *
-     *
-     * @param object $aa_instance instance object
      */
     protected function checkInstance($aa_instance)
     {
@@ -293,8 +258,6 @@ Class Controller extends \Slim\Slim
 
     /**
      * check browser version and redirect on old browser
-     *
-     * @param object $env environment information
      */
     protected function checkBrowserSupport($env)
     {
@@ -360,6 +323,32 @@ Class Controller extends \Slim\Slim
         exit();
     }
 
+    protected function getRespClass()
+    {
+        $this->_link_count++;
+        if ($this->_link_count === 1)
+        {
+            return array(
+                'normal'   => 'hidden-sm visible-xs',
+                'dropdown' => 'visible-sm',
+            );
+        }
+        elseif ($this->_link_count > 1 && $this->_link_count < 4)
+        {
+            return array(
+                'normal'   => 'hidden-md hidden-sm visible-xs',
+                'dropdown' => 'visible-md visible-sm',
+            );
+        }
+        else
+        {
+            return array(
+                'normal'   => 'visible-xs',
+                'dropdown' => 'hidden-xs',
+            );
+        }
+    }
+
     /**
      * define basic variables and settings for layout rendering
      */
@@ -368,10 +357,13 @@ Class Controller extends \Slim\Slim
         $instance    = \Apparena\Api\Instance::init();
         $custom_tabs = explode(',', __c('navigation_pagetab_selector'));
         $links       = array();
+        $class       = $this->getRespClass();
         $links[]     = array(
-            'url'   => '#/',
-            'class' => 'home',
-            'text'  => __t('home')
+            'url'        => '#',
+            'main_class' => 'home',
+            'resp_class' => $class['normal'],
+            'drop_class' => $class['dropdown'],
+            'text'       => __t('home'),
         );
 
         if (!empty($custom_tabs[0]))
@@ -389,20 +381,25 @@ Class Controller extends \Slim\Slim
                             $url = $external_link;
                         }
                     }
-
+                    $class   = $this->getRespClass();
                     $links[] = array(
-                        'url'   => $url,
-                        'class' => $identifier,
-                        'text'  => __c($identifier . '_name')
+                        'url'        => $url,
+                        'main_class' => $identifier,
+                        'resp_class' => $class['normal'],
+                        'drop_class' => $class['dropdown'],
+                        'text'       => __c($identifier . '_name')
                     );
                 }
 
                 if ($identifier === 'imprint' || $identifier === '' || $identifier === 'privacy' || $identifier === 'terms')
                 {
+                    $class   = $this->getRespClass();
                     $links[] = array(
-                        'url'   => '#/mod/app/' . $identifier,
-                        'class' => 'app-' . $identifier,
-                        'text'  => __t($identifier)
+                        'url'        => '#/mod/static/' . $identifier,
+                        'main_class' => 'app-' . $identifier,
+                        'resp_class' => $class['normal'],
+                        'drop_class' => $class['dropdown'],
+                        'text'       => __t($identifier)
                     );
                 }
             }
@@ -411,39 +408,98 @@ Class Controller extends \Slim\Slim
         // add greetingcards
         if (__c('greetingcard_activated') === '1')
         {
+            $class   = $this->getRespClass();
             $links[] = array(
-                'url'   => '#/mod/greetingcards',
-                'class' => 'greetingcards',
-                'text'  => __t('tab-greetingcards')
+                'url'        => '#/mod/greetingcards',
+                'main_class' => 'greetingcards',
+                'resp_class' => $class['normal'],
+                'drop_class' => $class['dropdown'],
+                'text'       => __t('tab-greetingcards')
             );
         }
         // add profile
         if (__c('profile_activated') === '1')
         {
+            $class   = $this->getRespClass();
             $links[] = array(
-                'url'   => '#/mod/profile',
-                'class' => 'nav-profile',
-                'text'  => __t('profile')
+                'url'        => '#/mod/profile',
+                'main_class' => 'nav-profile',
+                'resp_class' => $class['normal'],
+                'drop_class' => $class['dropdown'],
+                'text'       => __t('profile')
             );
         }
 
+        /**
+         * some links only for mobile version
+         */
+        // admin
+        $links[] = array(
+            'url'        => '#/mod/admin',
+            'main_class' => 'nav-admin hide',
+            'resp_class' => 'visible-xs',
+            'drop_class' => 'hide',
+            'text'       => __t('admin')
+        );
+        // profile
+        $links[] = array(
+            'url'        => '#/mod/profile',
+            'main_class' => 'nav-admin hide',
+            'resp_class' => 'visible-xs',
+            'drop_class' => 'hide',
+            'text'       => __t('settings')
+        );
+        // login
+        $links[] = array(
+            'url'        => '#/app/login',
+            'main_class' => 'nav-login',
+            'resp_class' => 'visible-xs',
+            'drop_class' => 'hide',
+            'text'       => __t('login')
+        );
+        // logout
+        $links[] = array(
+            'url'        => '#/mod/auth/logout',
+            'main_class' => 'nav-logout hide',
+            'resp_class' => 'visible-xs',
+            'drop_class' => 'hide',
+            'text'       => __t('logout')
+        );
+
+        // define dropdown showing
+        $show_dropdown = '';
+        if ($this->_link_count <= 3)
+        {
+            $show_dropdown = 'hidden-lg';
+        }
+        elseif ($this->_link_count <= 1)
+        {
+            $show_dropdown = 'hidden-md hidden-sm';
+        }
+
         $navigation = array(
-            'customer_logo_square' => __c('customer_logo_square'),
+            'customer_logo_square' => __c('customer_logo_square', 'src'),
             'navi'                 => __t('navi'),
             'links'                => $links,
+            'app_i_id'             => \Apparena\App::$i_id,
         );
         // show login and admin buttons only if auth module is installed
         if (file_exists('modules/aa_app_mod_auth/'))
         {
             $navigation['login'] = $this->render('sections/nav_login', array(
-                'login'       => __t('login'),
-                'admin'       => __t('admin'),
-                'logout'      => __t('logout'),
-                'user'        => md5(''),
-                'show_login'  => '',
-                'show_admin'  => 'hide',
-                'show_profil' => 'hide',
-                'show_logout' => 'hide',
+                'login'            => __t('login'),
+                'admin'            => __t('admin'),
+                //'logout'      => __t('logout'),
+                'user'             => md5(''),
+                'show_login'       => '',
+                'show_admin'       => 'hide',
+                'show_profil'      => 'hide',
+                'show_logout'      => 'hide',
+                'show_dropdown'    => $show_dropdown,
+                'settings'         => __t('settings'),
+                'settings_popover' => $this->render('sections/popovers/settings', array(
+                        'logout' => __t('logout')
+                    )),
             ));
         }
 
@@ -477,22 +533,24 @@ Class Controller extends \Slim\Slim
         $this->_data = array_merge($this->_data, array(
             'url_path'          => $this->environment()->offsetGet('SCRIPT_NAME'),
             'app_navigation'    => $this->render('sections/navigation', $navigation),
-            'app_header'        => __c('header_custom'),
-            'app_footer'        => __c('footer_custom'),
-            'app_terms_box'     => $this->render('sections/terms_box', array('link' => __t('footer_terms', '<a href="#/mod/app/terms">' . __t('terms') . '</a>'))),
+            'app_terms_box'     => $this->render('sections/terms_box', array('link' => __t('footer_terms', '<a href="#/mod/static/terms">' . __t('terms') . '</a>'))),
             'app_i_id'          => \Apparena\App::$i_id,
             'app_base_path'     => $this->environment()->offsetGet('SCRIPT_NAME'),
             'app_url_path'      => $this->_request->getPath(),
-            'layout_body_class' => '',
+            'layout_body_class' => __c('background_image_select'),
         ));
 
-        if (__c('show_comments') === '1')
+        if (strpos(__c('navigation_pagetab_selector'), 'terms') !== false)
         {
-            $this->_data['app_comments_box'] = $this->render('sections/comments_box', array(
-                'title'           => __c('fb_comments_title'),
-                'href'            => $instance->data->share_url,
-                'comments_amount' => __c('fb_comments_amount'),
-            ));
+            $this->_data['terms'] = '<li><a href="#/mod/static/terms"><span class="name">' . __t('terms') . '</span></a></li>';
+        }
+        if (strpos(__c('navigation_pagetab_selector'), 'privacy') !== false)
+        {
+            $this->_data['privacy'] = '<li><a href="#/mod/static/privacy"><span class="name">' . __t('privacy') . '</span></a></li>';
+        }
+        if (strpos(__c('navigation_pagetab_selector'), 'imprint') !== false)
+        {
+            $this->_data['imprint'] = '<li><a href="#/mod/static/imprint"><span class="name">' . __t('imprint') . '</span></a></li>';
         }
 
         if (__c('branding_activated') === '1')

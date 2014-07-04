@@ -1,12 +1,25 @@
-<li id="nav-login" class="link-element {{show_login}}">
-    <a href="#/mod/auth/modal"><i class="fa fa-sign-in"></i> {{login}}</a>
+<li id="nav-login" class="nav-login link-element {{show_login}}">
+    <a href="#/app/login" class="hidden-xs"><i class="fa fa-sign-in"></i> {{login}}</a>
 </li>
 <li id="nav-admin" class="nav-admin link-element {{show_admin}}">
-    <a href="#" class="btn btn-danger"><i class="fa fa-wrench"> </i> {{admin}}</a>
+    <a href="#" class="btn btn-danger btn-sm hidden-xs"><i class="fa fa-wrench"> </i> {{admin}}</a>
 </li>
 <li id="nav-profile" class="nav-profile {{show_profil}}">
-    <a href="#/mod/profile"><img src="https://secure.gravatar.com/avatar/{{user}}?s=40&amp;d=mm" alt="avatar"></a>
-</li>
-<li class="link-element nav-logout {{show_logout}}">
-    <a href="#/mod/auth/logout"><i class="fa fa-sign-out"></i> {{logout}}</a>
+    <div class="list-group users-list-group hidden-xs">
+        <a href="#mod/profile"><img class="img-circle" src="https://secure.gravatar.com/avatar/{{user}}?s=40&amp;d=mm" alt="avatar"></a>
+
+        <div class="pull-right">
+            <a class="" href="#mod/profile">
+                <h5 class="no-margin">&nbsp;</h5>
+            </a>
+            <div>
+                <!--<a data-placement="bottom" id="settings" data-toggle="popover" data-html="true" data-content="{{settings_popover}}" style="cursor: pointer">
+                    <small class="text-muted">{{settings}}</small>
+                </a>-->
+                <a href="#mod/auth/logout">
+                    <small class="text-muted">{{logout}}</small>
+                </a>
+            </div>
+        </div>
+    </div>
 </li>

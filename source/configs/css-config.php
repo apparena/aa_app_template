@@ -8,8 +8,8 @@ $css_import = array(
     '/js/vendor/bootstrap/dist/css/bootstrap.css'          => 'file',
     '/js/vendor/font-awesome/css/font-awesome.css'         => 'file',
     '/modules/notification/css/jquery.pnotify.default.css' => 'file',
-    //'css_app'                                              => 'config',
-    //'css_user'                                             => 'config',
+    'css_app'                                              => 'config',
+    'css_user'                                             => 'config',
 );
 
 // some stuff that replaces after compiling key = search, value = replace
@@ -27,7 +27,7 @@ $css_path_replacements = array(
 
 // import some google fonts
 /**
- * Changed google font name to the right url syntax
+ * Chnaged google font name to the right url syntax
  *
  * @param string $name google fontname
  *

@@ -1,34 +1,8 @@
-body {
-    padding-top: 55px;
-}
-
-.env-mode {
-    position: fixed;
-    top: 0;
-    left: 0;
-    padding: 3px 5px;
-    z-index: 9999;
-    background-color: #F2DEDE;
-    border-color: #EED3D7;
-    color: #B94A48;
-    border-radius: 4px;
-    font-size: .8em;
-}
-
-#debug,
-#debug-config,
-#debug-instance,
-#debug-locale,
-#debug-fb,
-#debug-env {
-    display: none;
-}
-
 /*
 online sprite generator: http://de.spritegen.website-performance.org/
 */
 .flag-sprite {
-    background: url(../../../../img/flag-sprite-01.png) no-repeat top left;
+    background: url({{base_path}}/img/flag-sprite-01.png) no-repeat top left;
     display: inline-block;
     vertical-align: middle;
 }
@@ -98,3 +72,9 @@ online sprite generator: http://de.spritegen.website-performance.org/
     width: 24px;
     height: 24px;
 }
+
+/* FACEBOOK BUGFIXES */
+.fb-comments, .fb-comments * {
+    width: 100% !important;
+}
+/*see later for a JS solution, thats works better: http://stackoverflow.com/questions/22187961/responsive-facebook-comments-css-hack-broken/22257586#22257586*/
