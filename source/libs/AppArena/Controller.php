@@ -333,8 +333,7 @@ Class Controller extends \Slim\Slim
 
         if (!$this->request->isAjax() && __c('activate_browser_detection') === '1' && ($checkBrowser('all') === false || $checkBrowser($device) === false))
         {
-            echo 'weiterleitung';
-            //$this->redirect('/' . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/browser/');
+            $this->redirect('/' . \Apparena\App::$i_id . '/' . \Apparena\App::$locale . '/browser/');
         }
     }
 
