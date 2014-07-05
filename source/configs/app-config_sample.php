@@ -5,14 +5,26 @@
 define('APP_ID', 0);
 define('APP_SECRET', '');
 define('APP_BASIC_PATH', '/');
+// define app admins
+define('APP_ADMINS', '');
+// date and time settings
 define('APP_BASIC_TIMEZONE', 'Europe/Berlin');
-$aa_default_locale = "de_DE";
+define('APP_DEFAULT_LOCALE', 'de_DE');
+define('DEBUG', true);
+define('LOG_LEVEL', true);
+// define ENV (dev|stage|product)
+$env_mode = 'product';
+if (!empty($_SERVER['APP_ENV']))
+{
+    $env_mode = $_SERVER['APP_ENV'];
+}
+define('ENV_MODE', $env_mode);
 
 /**
  * Setup your database access data
  */
-$db_activated = false;
-$db_option    = array(
+define('DB_ACTIVATED', true);
+$db_option = array(
     'type' => 'mysql', // database driver
     'pdo'  => array(
         // default driver attributes
@@ -35,17 +47,6 @@ else
     $db_pass           = "";
     $db_option['port'] = '3306'; // default port
 }
-
-// define app admins
-define('APP_ADMINS', '');
-
-// define ENV (dev|stage|product)
-$env_mode = 'product';
-if (!empty($_SERVER['APP_ENV']))
-{
-    $env_mode = $_SERVER['APP_ENV'];
-}
-define('ENV_MODE', $env_mode);
 
 // settings optivo mailing
 define('OPTIVO_SERVER', '');
