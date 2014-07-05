@@ -2,11 +2,14 @@
 /** translate functions **/
 function __t()
 {
-    global $aa;
+    #global $aa;
+
+    $instance = \Apparena\Api\Instance::init();
+    $data     = $instance->locale;
 
     // START version for old API version
-    $translate = json_decode(json_encode($aa->locale), true);
-    $index     = $aa->locale->index;
+    $translate = json_decode(json_encode($data), true);
+    $index     = $data->index;
 
     $args = func_get_args();
     $num  = func_num_args();
@@ -19,7 +22,7 @@ function __t()
     $hash = md5($args[0]);
 
     // if translation not exist, return key
-    if(empty($index->$hash))
+    if (empty($index->$hash))
     {
         return $args[0];
     }
@@ -28,14 +31,14 @@ function __t()
     // END version for old API version
 
     // ToDo - version for new API version, remove all above if you activate this one! REMOVE createTranslationIndex() from AppManager class too!
-    /*$translate = $aa->locale;
+    /*$translate = $data;
     $key = $args[0];
     $text = $translate->$key->value;*/
 
     if ($num > 1)
     {
         unset($args[0]);
-        $param = '"' . implode('","', $args) . '"';
+        $param = implode('","', $args);
         $text  = sprintf($text, $param);
     }
 
@@ -63,16 +66,18 @@ function __pt()
 */
 function __c($config, $key = 'value')
 {
-    global $aa;
+    $instance = \Apparena\Api\Instance::init();
+    $data     = $instance->config;
 
-    if (empty($config))
+    if (empty($data))
     {
-        throw new Exception('$config is empty in config helper');
+        #throw new Exception('$config is empty in config helper');
+        return false;
     }
 
-    if (!empty($aa->config->$config->$key))
+    if (is_object($data) && isset($data->$config->$key) && $data->$config->$key !== '')
     {
-        return $aa->config->$config->$key;
+        return $data->$config->$key;
     }
 
     return false;
@@ -201,35 +206,6 @@ function getBrowser()
     );
 }
 
-/**
- * get client's ip
- */
-function get_client_ip()
-{
-    // Get client ip address
-    $client_ip = '';
-    if (isset($_SERVER["REMOTE_ADDR"]))
-    {
-        $client_ip = $_SERVER["REMOTE_ADDR"];
-    }
-    else
-    {
-        if (isset($_SERVER["HTTP_X_FORWARDED_FOR"]))
-        {
-            $client_ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
-        }
-        else
-        {
-            if (isset($_SERVER["HTTP_CLIENT_IP"]))
-            {
-                $client_ip = $_SERVER["HTTP_CLIENT_IP"];
-            }
-        }
-    }
-
-    return $client_ip;
-}
-
 //escape $_GET, $_POST, $_REQUIRE $_COOKIE ()
 if (!function_exists('global_escape'))
 {
@@ -300,37 +276,16 @@ if (!function_exists('escape'))
     }
 }
 
-if (!function_exists('sql_escape'))
-{
-    function sql_escape($value, $specialchars = true)
-    {
-        $value = escape($value, $specialchars);
-
-        if (function_exists('mysql_real_escape_string'))
-        {
-            $value = mysql_real_escape_string($value);
-        }
-        else
-        {
-            //use old addslashes
-            $value = addslashes($value);
-        }
-
-        return $value;
-    }
-}
-
 if (!function_exists('pr'))
 {
     function pr()
     {
         $args = func_get_args();
-        //$num  = func_num_args();
+        $num  = func_num_args();
 
-        if (is_array($args[0]))
+        if ($num > 1 && $args[1] !== true)
         {
-
-            foreach ($args[0] AS $var)
+            foreach ($args AS $var)
             {
                 echo '<pre>';
                 print_r($var);
@@ -343,9 +298,42 @@ if (!function_exists('pr'))
             print_r($args[0]);
             echo '</pre>';
         }
-        if (!empty($args[1]))
+
+        if ($num === 2 && $args[1] === true)
         {
-            exit($args[1]);
+            exit();
+        }
+
+        return true;
+    }
+}
+
+if (!function_exists('prx'))
+{
+    function prx()
+    {
+        $args = func_get_args();
+        $num  = func_num_args();
+
+        if ($num > 1 && $args[1] !== true)
+        {
+            foreach ($args AS $var)
+            {
+                echo '<!--<pre>';
+                print_r($var);
+                echo '</pre>-->';
+            }
+        }
+        else
+        {
+            echo '<!--<pre>';
+            print_r($args[0]);
+            echo '</pre>-->';
+        }
+
+        if ($num === 2 && $args[1] === true)
+        {
+            exit();
         }
 
         return true;
@@ -357,12 +345,11 @@ if (!function_exists('vd'))
     function vd()
     {
         $args = func_get_args();
-        //$num  = func_num_args();
+        $num  = func_num_args();
 
-        if (is_array($args[0]))
+        if ($num > 1 && $args[1] !== true)
         {
-
-            foreach ($args[0] AS $var)
+            foreach ($args AS $var)
             {
                 echo '<pre>';
                 var_dump($var);
@@ -375,9 +362,10 @@ if (!function_exists('vd'))
             var_dump($args[0]);
             echo '</pre>';
         }
-        if (!empty($args[1]))
+
+        if ($num === 2 && $args[1] === true)
         {
-            exit($args[1]);
+            exit();
         }
 
         return true;
@@ -412,63 +400,5 @@ if (!function_exists('is_serialized'))
     function is_serialized($str)
     {
         return ($str == serialize(false) || @unserialize($str) !== false);
-    }
-}
-
-if (!function_exists('hrd'))
-{
-    function hrd($target = '/', $code = 301, $msg = '')
-    {
-        header("HTTP/1.1 " . $code . " Moved Permanently");
-        header("Location: " . $target);
-        header("Connection: close");
-        exit($msg);
-    }
-}
-
-if (!function_exists('isSSL'))
-{
-    function isSSL()
-    {
-        if (!empty($_SERVER['HTTPS']))
-        {
-            return true;
-        }
-
-        if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
-        {
-            return true;
-        }
-
-        return false;
-    }
-}
-
-if (!function_exists('_clearvar'))
-{
-    //clears an array or string
-    function _clearvar($var)
-    {
-        $result = array();
-        if (is_array($var))
-        {
-            foreach ($var AS $k => $v)
-            {
-                if (is_string($v))
-                {
-                    $result[$k] = htmlentities(strip_tags($v));
-                }
-                elseif (is_array($v))
-                {
-                    $result[$k] = _clearvar($v);
-                }
-                else
-                {
-                    $result[$k] = htmlentities(strip_tags($v));
-                }
-            }
-        }
-
-        return $result;
     }
 }

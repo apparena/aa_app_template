@@ -1,8 +1,18 @@
 define(['underscore'], function (_) {
+
     'use strict';
 
     return {
-        // return locale value on given identifier from global app arena variable
+        /**
+         * return locale value on given identifier from global app arena variable
+         *
+         * @method __t
+         *
+         * @param {String} translation  value
+         * @param {String} sprintf      value - not needed
+         *
+         * @return {String} text
+         */
         '__t': function () {
             var num = arguments.length,
                 translate, param, text;
@@ -31,7 +41,16 @@ define(['underscore'], function (_) {
             return text;
         },
 
-        // return config value or config key on given identifier from global app arena variable
+        /**
+         * return config value or config key on given identifier from global app arena variable
+         *
+         * @method __c
+         *
+         * @param {String} identifier   API identifier
+         * @param {String} key          API identifier value key (value|src|width|height|max|min)
+         *
+         * @return {String} MemberExpression
+         */
         '__c': function (identifier, key) {
             key = key || 'value';
 
@@ -48,10 +67,18 @@ define(['underscore'], function (_) {
             return _.aa.config[identifier][key];
         },
 
+        /**
+         * sprintf function like in PHP, but only for strings
+         *
+         * @method sprintf
+         *
+         * @return {XML|*|string|void}
+         */
         'sprintf': function () {
-            var key = 1;
-            return arguments[0].replace(/%((%)|s)/g, function (response) {
-                return response[2] || arguments[key++]
+            var key = 1,
+                args = arguments;
+            return args[0].replace(/%((%)|s)/g, function (response) {
+                return response[2] || args[key]
             });
         }
     };

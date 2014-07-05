@@ -20,7 +20,7 @@ define([
      */
     Remove = function () {
         if (!_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
-            _.singleton.view[ReturnObj.namespace].stopListening().undelegateEvents().remove();
+            _.singleton.view[ReturnObj.namespace].stopListening().undelegateEvents()/*.remove()*/;
             delete _.singleton.view[ReturnObj.namespace];
         }
     };
@@ -36,20 +36,23 @@ define([
      *  View().init({id : 123});
      *  View().init({attributes : {model : model.auth}});
      *
-     * @param settings {Object} Not required - JSON string with settings for attributes and view id
-     * @returns {Object}
+     * @param {Object} settings Not required - JSON string with settings for attributes and view id
+     * @returns {Object} Instance
      */
     Init = function (settings) {
         settings = settings || {};
+        var attributes = settings.attributes || {},
+            init = settings.init || false;
 
-        var init = settings.init || false;
+        attributes.id = settings.id || 1;
+        ReturnObj.namespace = ReturnObj.namespace + attributes.id;
 
         if (_.isUndefined(_.singleton.view[ReturnObj.namespace])) {
-            GetInstanze(settings);
+            GetInstanze(attributes);
         } else {
             if (init === true) {
                 Remove();
-                GetInstanze(settings);
+                GetInstanze(attributes);
             }
         }
 
@@ -63,14 +66,11 @@ define([
      * @submodule Init
      * @static
      *
-     * @param settings {Object} Not required - JSON string with settings for attributes and view id
+     * @param {Object} attributes Not required - JSON string with settings for attributes and view id
+
+     * @return
      */
-    GetInstanze = function (settings) {
-        settings = settings || {};
-
-        var attributes = settings.attributes || {};
-        attributes.id = settings.id || 1;
-
+    GetInstanze = function (attributes) {
         _.singleton.view[ReturnObj.namespace] = new ReturnObj.code(attributes);
     };
 

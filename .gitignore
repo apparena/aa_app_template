@@ -7,6 +7,17 @@ tmp/**/*
 *.iws
 workspace.xml
 tasks.xml
+atlassian-ide-plugin.xml
+.project
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
 
 # App stuff #
 ######################
@@ -15,20 +26,40 @@ source/configs/app-config.php
 build/node_modules/
 build/build_own.sh
 dist/
-source/tmp/cache/css*
-source/tmp/cache/api*
-source/tmp/cache/pd*
+source/tmp/cache/*_css_*
+source/tmp/cache/*_api_*
+source/tmp/cache/*_pd_*
 source/tmp/export/*.csv
+ssh/**/*
 atlassian-ide-plugin.xml
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
 
 # Vagrant stuff #
 ######################
 xhprof/
 .vagrant/
+phpmyadmin/
+adminer/
 
 # OS generated files #
 ######################
-.DS_Store?
-ehthumbs.db
 Icon?
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db

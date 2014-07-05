@@ -13,13 +13,12 @@ var require = {
             'main':     'lodash.underscore'
 
             /*'location': 'vendor/lodash-amd/underscore',
-            'main': 'main'*/
-
+             'main': 'main'*/
         }
     ],
 
     paths: {
-        'jquery':                  'vendor/jquery/jquery',
+        'jquery':                  'vendor/jquery/dist/jquery',
         'backbone':                'vendor/backbone-amd/backbone',
         'bootstrap':               'vendor/bootstrap/dist/js/bootstrap',
 
@@ -31,6 +30,7 @@ var require = {
         'jquery.validation':       'vendor/jquery.validation/jquery.validate',
         'jquery.serialize_object': 'utils/jquery/serialize-object',
         'jquery.validator_config': 'utils/jquery/validator-config',
+        'jMD5':                    'utils/jquery/jquery.md5',
 
         // directory settings
         'templates':               '../templates',
@@ -51,6 +51,11 @@ var require = {
 
         'debug': {
             exports: 'debug'
+        },
+
+        'jMD5': {
+            deps:    ['jquery'],
+            exports: 'jquery'
         },
 
         'jquery.validator_config': {
