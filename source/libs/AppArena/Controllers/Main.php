@@ -6,6 +6,16 @@ Class Main extends \Apparena\Controller
     public function indexAction()
     {
         $this->callApi();
+        $this->_data = array('app_content' => $this->render('pages/index'));
+
+        // ToDo: DEMO PART START. please remove this, before deployment
+        if (file_exists(ROOT_PATH . '/includes/demolinks.php'))
+        {
+            $demo_links                      = include_once ROOT_PATH . '/includes/demolinks.php';
+            $this->_data['app_demo_content'] = $demo_links;
+        }
+        // ToDo: DEMO PART END.
+
         $this->addBasicLayoutData();
     }
 

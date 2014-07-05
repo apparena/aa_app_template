@@ -4,10 +4,10 @@
  * path starts from root
  */
 $css_import = array(
-    '/css/style.css'                                       => 'main',
-    '/js/vendor/bootstrap/dist/css/bootstrap.css'          => 'file',
+    '/js/vendor/bootstrap/dist/css/bootstrap.css'          => 'main',
     '/js/vendor/font-awesome/css/font-awesome.css'         => 'file',
     '/modules/notification/css/jquery.pnotify.default.css' => 'file',
+    '/css/style.css'                                       => 'file',
     'css_app'                                              => 'config',
     'css_user'                                             => 'config',
 );
