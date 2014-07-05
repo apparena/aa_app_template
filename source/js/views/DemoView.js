@@ -3,7 +3,7 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'text!templates/demo_home.html'
+    'text!templates/pages/demo_home.html'
 ], function (View, $, _, Backbone, HomeTemplate) {
     'use strict';
 
@@ -15,10 +15,20 @@ define([
 
             events: {},
 
+            /**
+             * Description
+             * @method initialize
+             * @return 
+             */
             initialize: function () {
                 _.bindAll(this, 'render');// fixes loss of context for 'this' within methods, every function that uses 'this' as the current object should be in here
             },
 
+            /**
+             * Description
+             * @method render
+             * @return ThisExpression
+             */
             render: function () {
                 var compiledTemplate = _.template(HomeTemplate, {});
                 this.$el.html(compiledTemplate);

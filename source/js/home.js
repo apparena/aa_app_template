@@ -1,7 +1,6 @@
 define([
-    'underscore',
     'views/DemoView'
-], function (_, DemoView) {
+], function (DemoView) {
     'use strict';
 
     return function () {

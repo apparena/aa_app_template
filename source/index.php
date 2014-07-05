@@ -1,66 +1,56 @@
-<?php include_once('includes/bootstrap.php'); ?>
-<!doctype html>
-<html lang="de-DE">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title><?php __pc('general_title'); ?></title>
-    <meta name="description" content="<?php __pc('general_desc'); ?>" />
-    <link rel="canonical" href="<?php echo $aa->instance->share_url; ?>" />
+<?php
+/**
+ * Setup the environment
+ */
+date_default_timezone_set('Europe/Berlin'); // Set timezone
+ini_set('session.gc_probability', 0); // Disable session expired check
+header('P3P: CP=CAO PSA OUR'); // Fix IE save cookie in iframe problem
 
-    <link type="text/css" rel="stylesheet" href="<?php echo $css_file['name']; ?>" />
+// cache busting
+header("Expires: on, 01 Jan 1970 00:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
-    <!--[if gte IE 9]>
-    <link type="text/css" rel="stylesheet" href="css/ie9.css" />
-    <![endif]-->
+define('ROOT_PATH', realpath(dirname(__FILE__))); // Set include path
+define('DS', DIRECTORY_SEPARATOR);
 
-    <!--Current server date: <?php echo $current_date->format("d.m.Y H:i:s");?>-->
-</head>
-<body class="<?php echo $classbody ?>">
+/**
+ * Include necessary libraries
+ */
+if (file_exists(ROOT_PATH . '/configs/app-config.php'))
+{
+    require_once ROOT_PATH . '/configs/app-config.php';
 
-<?php include_once('includes/navigation.php'); ?>
+    if (ENV_MODE === 'dev')
+    {
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(-1);
+    }
+}
+else
+{
+    throw new Exception('Config file not exist. Please rename app-config_sample.php to app-config.php in /configs/ and fill it with live ;)');
+}
+require_once ROOT_PATH . '/libs/Slim/Slim.php';
+require_once ROOT_PATH . '/libs/AppArena/App.php';
 
-<div class="container">
-    <header>
-        <?php __pc('header_custom'); ?>
-    </header>
-    <div id="content">
+// configuration autoloaders
+spl_autoload_register('\Apparena\App::autoload');
+\Slim\Slim::registerAutoloader();
 
-        <!-- DEMO PART START. please remove this, before deployment -->
-        <?php
-        if(file_exists('includes/demolinks.php'))
-        {
-            include_once('includes/demolinks.php');
-        }
-        ?>
-        <!-- DEMO PART END. -->
+// set routes
+$router = new \Apparena\Router();
+$routes = require_once ROOT_PATH . '/configs/routes.php';
+$router->addRoutes($routes);
+$router->set404Handler("Main:notFound");
 
-        <div class="content-wrapper clearfix">
-            <i class="fa <?php __pc('loader_class') ?> fa-spin startloader"></i>
-        </div>
-    </div>
-    <footer>
-        <?php __pc('footer_custom') ?>
-    </footer>
-    <?php if (__c('show_comments') === '1'): ?>
-        <div id="comment-box">
-            <h3><?php __pc('fb_comments_title'); ?></h3>
+$db = null;
+if (DB_ACTIVATED)
+{
+    $db = \Apparena\App::getDatabase($db_user, $db_host, $db_name, $db_pass, $db_option);
+}
 
-            <div class="fb-comments" data-href="<?php echo $aa->instance->share_url; ?>" data-colorscheme="light" data-width="810" data-num_posts="<?php __pc('fb_comments_amount'); ?>"></div>
-        </div>
-    <?php ENDIF; ?>
-    <div class="content-terms text-center text-muted">
-        <small>
-            <?php __pt('footer_terms', '<a href="#/page/app/terms">' . __t('terms') . '</a>'); ?>
-        </small>
-    </div>
-    <?php if (__c('branding_activated') === '1'): ?>
-        <div class="branding">
-            <?php __pc('branding_footer'); ?>
-        </div>
-    <?php ENDIF; ?>
-</div>
-
-<?php include_once('includes/footer.php'); ?>
-</body>
-</html>
+$router->run();

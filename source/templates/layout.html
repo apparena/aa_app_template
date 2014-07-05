@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>{{meta_title}}</title>
+    <meta name="description" content="{{meta_description}}" />
+    <link rel="canonical" href="{{meta_canonical}}" />
+
+    <link type="text/css" rel="stylesheet" href="{{layout_css}}" />
+
+    <!--[if gte IE 9]>
+    <link type="text/css" rel="stylesheet" href="css/ie9.css" />
+    <![endif]-->
+</head>
+<body class="background-dark {{layout_body_class}}" data-instance="{{app_i_id}}" data-base-path="{{app_base_path}}" data-url-path="{{app_url_path}}">
+
+{{{app_navigation}}}
+
+<div class="content container">
+    <!-- DEMO PART START. please remove this, before deployment -->
+    {{{app_demo_content}}}
+    <!-- DEMO PART END. -->
+    <div class="content-wrapper">
+        {{{app_content}}}
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <section class="widget">
+                {{{app_terms_box}}}
+            </section>
+        </div>
+    </div>
+
+    {{{app_branding_footer}}}
+</div>
+
+<footer class="footer menu-header">
+    <ul id="menu-nav" class="nav navbar-nav">
+        {{{terms}}}
+        {{{privacy}}}
+        {{{imprint}}}
+    </ul>
+</footer>
+
+<script src="{{url_path}}/configs/require-config.js"></script>
+<script id="requirejs" data-main="{{url_path}}/js/main" src="{{url_path}}/js/vendor/requirejs/require.js"></script>
+</body>
+</html>

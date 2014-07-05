@@ -1,17 +1,17 @@
 {
     "name":         "APP-Template",
-    "version":      "1.2.1",
+    "version":      "1.3.0",
     "dependencies": {
         "backbone.localStorage": "1.1",
         "font-awesome":          "4.0",
-        "bootstrap":             "3.0",
+        "bootstrap":             "3.1",
         "requirejs-text":        "2.0",
         "requirejs":             "2.1",
         "backbone-amd":          "1.1",
         "javascript-debug":      "latest",
-        "jquery":                "2.0",
+        "jquery":                "2.1",
         "lodash":                "2.4",
         "jquery.validation":     "1.11",
-        "aa_app_mod_logging":    "latest"
+        "hashids":               "0.3"
     }
 }

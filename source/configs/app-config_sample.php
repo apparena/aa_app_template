@@ -2,24 +2,36 @@
 /**
  * Setup your app-model access credentials here
  */
-$aa_activated        = true;
-$aa_app_id           = 0;
-$aa_app_secret       = "";
-$aa_default_locale   = "de_DE";
-$aa_default_timezone = "Europe/Berlin";
+define('APP_ID', 0);
+define('APP_SECRET', '');
+define('APP_BASIC_PATH', '/');
+// define app admins
+define('APP_ADMINS', '');
+// date and time settings
+define('APP_BASIC_TIMEZONE', 'Europe/Berlin');
+define('APP_DEFAULT_LOCALE', 'de_DE');
+define('DEBUG', true);
+define('LOG_LEVEL', true);
+// define ENV (dev|stage|product)
+$env_mode = 'product';
+if (!empty($_SERVER['APP_ENV']))
+{
+    $env_mode = $_SERVER['APP_ENV'];
+}
+define('ENV_MODE', $env_mode);
 
 /**
  * Setup your database access data
  */
-$db_activated = false;
-$db_option    = array(
+define('DB_ACTIVATED', true);
+$db_option = array(
     'type' => 'mysql', // database driver
     'pdo'  => array(
         // default driver attributes
         \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
     )
 );
-if (!empty($_SERVER['APP_ENV_SERVER']) && $_SERVER['APP_ENV_SERVER'] === 'vigrant')
+if (!empty($_SERVER['APP_ENV_SERVER']) && $_SERVER['APP_ENV_SERVER'] === 'vagrant')
 {
     $db_host           = "localhost";
     $db_name           = "app";
@@ -35,17 +47,6 @@ else
     $db_pass           = "";
     $db_option['port'] = '3306'; // default port
 }
-
-// define app admins
-define('APP_ADMINS', '');
-
-// define ENV (dev|stage|product)
-$env_mode = 'product';
-if (!empty($_SERVER['APP_ENV']))
-{
-    $env_mode = $_SERVER['APP_ENV'];
-}
-define('ENV_MODE', $env_mode);
 
 // settings optivo mailing
 define('OPTIVO_SERVER', '');

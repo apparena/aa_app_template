@@ -1,0 +1,7 @@
+{
+    "name":         "APP-Template",
+    "version":      "1.3.0",
+    "dependencies": {
+        "aa_app_mod_logging": "latest"
+    }
+}
