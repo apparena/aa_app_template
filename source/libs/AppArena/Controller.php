@@ -329,14 +329,14 @@ Class Controller extends \Slim\Slim
         if ($this->_link_count === 1)
         {
             return array(
-                'normal'   => 'hidden-sm visible-xs',
+                'normal'   => 'hidden-sm /*visible-xs*/',
                 'dropdown' => 'visible-sm',
             );
         }
         elseif ($this->_link_count > 1 && $this->_link_count < 4)
         {
             return array(
-                'normal'   => 'hidden-md hidden-sm visible-xs',
+                'normal'   => 'hidden-md hidden-sm /*visible-xs*/',
                 'dropdown' => 'visible-md visible-sm',
             );
         }
